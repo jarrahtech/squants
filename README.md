@@ -7,8 +7,6 @@ their Units of Measure, and their Dimensional relationships.
 The API supports typesafe dimensional analysis, improved domain models and more.
 All types are immutable and thread-safe.
 
-[Website](http:/www.squants.com/)
-|
 [GitHub](https://github.com/typelevel/squants)
 |
 [Wiki](https://github.com/typelevel/squants/wiki)
