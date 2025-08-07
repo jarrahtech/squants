@@ -87,7 +87,7 @@ class AngleSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "return Length when angle is arc on circle" in {
-    Radians(1) onRadius Meters(1) should be(Meters(1))
+    Radians(1).onRadius(Meters(1)) should be(Meters(1))
   }
 
   behavior of "AngleConversion"

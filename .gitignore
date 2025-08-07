@@ -13,6 +13,7 @@ project/plugins/project/
 .lib/
 .bloop/
 .metals/
+.bsp/
 
 # Java
 *.class
@@ -55,3 +56,6 @@ project/metals.sbt
 # Windows
 Desktop.ini
 Thumbs.db
+
+# VScode
+.vscode/

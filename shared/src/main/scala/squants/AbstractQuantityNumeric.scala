@@ -15,7 +15,7 @@ package squants
  *
  * @tparam A Quantity type
  */
-abstract class AbstractQuantityNumeric[A <: Quantity[A]](val unit: UnitOfMeasure[A] with PrimaryUnit) extends Numeric[A] {
+abstract class AbstractQuantityNumeric[A <: Quantity[A]](val unit: UnitOfMeasure[A] & PrimaryUnit) extends Numeric[A] {
   def plus(x: A, y: A) = x + y
   def minus(x: A, y: A) = x - y
 

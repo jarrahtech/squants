@@ -54,8 +54,8 @@ object Density extends Dimension[Density] {
   def apply(m: Mass, v: Volume): Density = KilogramsPerCubicMeter(m.toKilograms / v.toCubicMeters)
   def apply(value: Any): Try[Density] = parse(value)
   def name = "Density"
-  def primaryUnit: UnitOfMeasure[Density] with PrimaryUnit = KilogramsPerCubicMeter
-  def siUnit: UnitOfMeasure[Density] with SiUnit = KilogramsPerCubicMeter
+  def primaryUnit: UnitOfMeasure[Density] & PrimaryUnit = KilogramsPerCubicMeter
+  def siUnit: UnitOfMeasure[Density] & SiUnit = KilogramsPerCubicMeter
   def units = Set(KilogramsPerCubicMeter,
     KilogramsPerLitre, GramsPerLitre, MilligramsPerLitre, MicrogramsPerLitre, NanogramsPerLitre,
     KilogramsPerMillilitre, GramsPerMillilitre, MilligramsPerMillilitre, MicrogramsPerMillilitre, NanogramsPerMillilitre,

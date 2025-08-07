@@ -93,19 +93,19 @@ class MoneySpec extends AnyFlatSpec with Matchers with TryValues {
   it should "return proper result when comparing dislike currencies with a MoneyContext in scope" in {
     implicit val moneyContext: MoneyContext = defaultMoneyContext.withExchangeRates(List(USD(1) -> JPY(100)))
 
-    USD(10) moneyEquals JPY(1000) should be(right = true)
+    USD(10).moneyEquals(JPY(1000)) should be(right = true)
     USD(10) ==# JPY(1000) should be(right = true)
-    USD(10) moneyEquals JPY(2000) should be(right = false)
+    USD(10).moneyEquals(JPY(2000)) should be(right = false)
     USD(10) ==# JPY(2000) should be(right = false)
 
-    USD(10) moneyNotEquals JPY(1000) should be(right = false)
+    USD(10).moneyNotEquals(JPY(1000)) should be(right = false)
     USD(10) !=# JPY(1000) should be(right = false)
-    USD(10) moneyNotEquals JPY(2000) should be(right = true)
+    USD(10).moneyNotEquals(JPY(2000)) should be(right = true)
     USD(10) !=# JPY(2000) should be(right = true)
 
-    USD(1) moneyCompare JPY(100) should be(0)
-    USD(1) moneyCompare JPY(1000) should be(-1)
-    USD(1) moneyCompare JPY(10) should be(1)
+    USD(1).moneyCompare(JPY(100)) should be(0)
+    USD(1).moneyCompare(JPY(1000)) should be(-1)
+    USD(1).moneyCompare(JPY(10)) should be(1)
 
     USD(1) ># JPY(99) should be(right = true)
     USD(1) ># JPY(100) should be(right = false)
@@ -363,8 +363,8 @@ class MoneySpec extends AnyFlatSpec with Matchers with TryValues {
   }
 
   it should "return an Exchange Rate on toThe (->) a different currency" in {
-    JPY(100) toThe USD(1) should be(CurrencyExchangeRate(USD(1), JPY(100)))
-    USD(1) toThe JPY(100) should be(CurrencyExchangeRate(JPY(100), USD(1)))
+    JPY(100).toThe(USD(1)) should be(CurrencyExchangeRate(USD(1), JPY(100)))
+    USD(1).toThe(JPY(100)) should be(CurrencyExchangeRate(JPY(100), USD(1)))
     JPY(100) -> USD(1) should be(CurrencyExchangeRate(USD(1), JPY(100)))
     USD(1) -> JPY(100) should be(CurrencyExchangeRate(JPY(100), USD(1)))
   }
@@ -394,19 +394,19 @@ class MoneySpec extends AnyFlatSpec with Matchers with TryValues {
     val r2 = CurrencyExchangeRate(USD(1), EUR(.75))
     implicit val moneyContext: MoneyContext = MoneyContext(USD, defaultCurrencySet, List(r1, r2))
 
-    USD(1.5) in JPY should be(JPY(150))
-    USD(1) in EUR should be(EUR(0.75))
-    JPY(100) in USD should be(USD(1))
-    EUR(75) in USD should be(USD(100))
-    EUR(75) in JPY should be(JPY(10000)) // Uses indirect rate via USD
-    JPY(100) in EUR should be(EUR(0.75)) // Uses indirect rate via USD
+    USD(1.5).in(JPY) should be(JPY(150))
+    USD(1).in(EUR) should be(EUR(0.75))
+    JPY(100).in(USD) should be(USD(1))
+    EUR(75).in(USD) should be(USD(100))
+    EUR(75).in(JPY) should be(JPY(10000)) // Uses indirect rate via USD
+    JPY(100).in(EUR) should be(EUR(0.75)) // Uses indirect rate via USD
 
-    USD(1.5) to JPY should be(150)
-    USD(1) to EUR should be(0.75)
-    JPY(100) to USD should be(1)
-    EUR(75) to USD should be(100)
-    EUR(75) to JPY should be(10000) // Uses indirect rate via USD
-    JPY(100) to EUR should be(0.75) // Uses indirect rate via USD
+    USD(1.5).to(JPY) should be(150)
+    USD(1).to(EUR) should be(0.75)
+    JPY(100).to(USD) should be(1)
+    EUR(75).to(USD) should be(100)
+    EUR(75).to(JPY) should be(10000) // Uses indirect rate via USD
+    JPY(100).to(EUR) should be(0.75) // Uses indirect rate via USD
   }
 
   it should "not compile cross currency conversions with no implicit MoneyContext in scope" in {
@@ -440,7 +440,7 @@ class MoneySpec extends AnyFlatSpec with Matchers with TryValues {
   }
 
   it should "return properly formatted strings in different currency with an implicit MoneyContext in scope" in {
-    implicit val moneyContext: MoneyContext = MoneyContext(USD, defaultCurrencySet, Seq(USD(1) toThe JPY(100)))
+    implicit val moneyContext: MoneyContext = MoneyContext(USD, defaultCurrencySet, Seq(USD(1).toThe(JPY(100))))
     USD(BigDecimal("10.123")).toString(JPY) should be("1012.3 JPY")
     USD(BigDecimal("10.123")).toFormattedString(JPY) should be("¥1012")
   }

@@ -1455,7 +1455,7 @@ class ScadaLoadListener(router: Router) extends Actor {
   def receive = {
    // ScadaLoadReading - from an external service - sends load as a string
    // eg, “10.3 MW”, “345 kW”
-   case msg @ ScadaLoadReading(meterId, time, loadString) ⇒
+   case msg @ ScadaLoadReading(meterId, time, loadString) =>
     // Parse the string and on success emit the Squants enabled event to routees
     Power(loadString) match {
       case Success(p) => router.route(LoadReading(meterId, time, p), sender())

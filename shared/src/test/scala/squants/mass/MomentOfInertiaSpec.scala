@@ -51,7 +51,7 @@ class MomentOfInertiaSpec extends AnyFlatSpec with Matchers with CustomMatchers 
   }
 
   it should "return mass when atCenter is called" in {
-    unitValueSi atCenter Meters(1) should be(Kilograms(1))
+    unitValueSi.atCenter(Meters(1)) should be(Kilograms(1))
   }
 
   it should "provide aliases for single unit values" in {

@@ -63,7 +63,7 @@ class AngularVelocitySpec extends AnyFlatSpec with Matchers {
   }
 
   it should "return Velocity of particle onRadius of AngularVelocity" in {
-    RadiansPerSecond(1) onRadius Meters(1) should be(MetersPerSecond(1))
+    RadiansPerSecond(1).onRadius(Meters(1)) should be(MetersPerSecond(1))
   }
 
   behavior of "AngularVelocityConversions"

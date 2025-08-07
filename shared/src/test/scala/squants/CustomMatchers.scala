@@ -29,14 +29,14 @@ trait CustomMatchers {
       extends Matcher[A] {
     def apply(left: A) = {
       MatchResult(
-        left approx expectedValue,
+        left.approx(expectedValue),
         s"$left was not approximately equal to $expectedValue ($tolerance)",
         s"$left was approximately equal to $expectedValue ($tolerance)")
     }
   }
 
   def beApproximately[A <: Quantity[A]](expectedValue: A)(implicit tolerance: A) =
-    new QuantityApproximatelyEqualTo(expectedValue)(tolerance)
+    new QuantityApproximatelyEqualTo(expectedValue)(using tolerance)
 
   class DoubleApproximatelyEqualTo(expectedValue: Double)(implicit tolerance: Double)
       extends Matcher[Double] {

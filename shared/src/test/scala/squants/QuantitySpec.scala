@@ -182,7 +182,7 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
     implicit val tol: Thingee = Thangs(.1)
     val x = Kilothangs(2.0)
     val y = Kilothangs(1.9999)
-    x approx y should be(right = true)
+    x.approx(y) should be(right = true)
     x =~ y should be(right = true)
     x ≈ y should be(right = true)
     (x ~= y) should be(right = true)
@@ -192,7 +192,7 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
     implicit val tol: Thingee = Thangs(.1)
     val x = Kilothangs(2.0)
     val y = Kilothangs(1.9998)
-    x approx y should be(right = false)
+    x.approx(y) should be(right = false)
     x =~ y should be(right = false)
     (x ~= y) should be(right = false)
   }
@@ -201,89 +201,89 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
     implicit val tol: Thingee = Thangs(.1)
     val x = Kilothangs(2.0)
     val y = Kilothangs(1.9999)
-    x approx y should be(right = true)
+    x.approx(y) should be(right = true)
     x =~ y should be(right = true)
     (x ~= y) should be(right = true)
     // apply approx with an explicit override of the tolerance
-    x.approx(y)(Thangs(.01)) should be(right = false)
-    x.=~(y)(Thangs(.01)) should be(right = false)
-    x.~=(y)(Thangs(.01)) should be(right = false)
+    x.approx(y)(using Thangs(.01)) should be(right = false)
+    x.=~(y)(using Thangs(.01)) should be(right = false)
+    x.~=(y)(using Thangs(.01)) should be(right = false)
   }
 
   it should "add two like values and result in a like value" in {
     val x = Thangs(14.999)
     val y = Thangs(0.001)
-    x plus y should be(Thangs(15))
+    x.plus(y) should be(Thangs(15))
     x + y should be(Thangs(15))
   }
 
   it should "add two like value in different units and result in a like value" in {
     val x = Kilothangs(14.999)
     val y = Thangs(1)
-    x plus y should be(Kilothangs(15))
+    x.plus(y) should be(Kilothangs(15))
     x + y should be(Kilothangs(15))
   }
 
   it should "minus two like values and result in a like value" in {
     val x = Thangs(15.0)
     val y = Thangs(0.001)
-    (x minus y) should be(Thangs(14.999))
+    (x.minus(y)) should be(Thangs(14.999))
     x - y should be(Thangs(14.999))
   }
 
   it should "minus two like value in different units and result in a like value" in {
     val x = Kilothangs(15)
     val y = Thangs(1)
-    x minus y should be(Kilothangs(14.999))
+    x.minus(y) should be(Kilothangs(14.999))
     x - y should be(Kilothangs(14.999))
   }
 
   it should "times by a Double and result in a like value" in {
     val x = Thangs(4.5)
     val y = 2.0
-    (x times y) should be(Thangs(9.0))
+    (x.times(y)) should be(Thangs(9.0))
     x * y should be(Thangs(9.0))
   }
 
   it should "divide by a Double and result in a like value" in {
     val x = Thangs(9.0)
     val y = 2.0
-    (x divide y) should be(Thangs(4.5))
+    (x.divide(y)) should be(Thangs(4.5))
     x / y should be(Thangs(4.5))
   }
 
   it should "divide by a like value and result in a Double" in {
     val x = Thangs(9.0)
     val y = Thangs(2.0)
-    (x divide y) should be(4.5)
+    (x.divide(y)) should be(4.5)
     x / y should be(4.5)
   }
 
   it should "divide by a like value in different units and result in a Double" in {
     val x = Kilothangs(9)
     val y = Thangs(2)
-    x divide y should be(4500.0)
+    x.divide(y) should be(4500.0)
     x / y should be(4500.0)
   }
 
   it should "remainder by a Double and result in a like value" in {
     val x = Thangs(9.0)
     val y = 2.0
-    x remainder y should be(Thangs(1))
+    x.remainder(y) should be(Thangs(1))
     x % y should be(Thangs(1))
   }
 
   it should "remainder by a like value and result in a Double" in {
     val x = Thangs(9.0)
     val y = Thangs(2.0)
-    (x remainder y) should be(1.0)
+    (x.remainder(y)) should be(1.0)
     x % y should be(1.0)
   }
 
   it should "divideAndRemainder by a Double and result in a pair of like values" in {
     val x = Thangs(9.0)
     val y = 2.0
-    val p1 = x divideAndRemainder y
+    val p1 = x.divideAndRemainder(y)
     p1._1 should be(Thangs(4))
     p1._2 should be(Thangs(1))
     val p2 = x /% y
@@ -294,7 +294,7 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
   it should "divideAndRemainder by a like value and result in a Double and like value" in {
     val x = Thangs(9.0)
     val y = Thangs(2.0)
-    val p1 = x divideAndRemainder y
+    val p1 = x.divideAndRemainder(y)
     p1._1 should be(4)
     p1._2 should be(Thangs(1))
     val p2 = x /% y
@@ -413,40 +413,40 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
 
   it should "compare a like value values and return 1, 0, or -1" in {
     val x = Kilothangs(5)
-    (x compare Kilothangs(4.999)) should be(1)
-    (x compare Kilothangs(5)) should be(0)
-    (x compare Kilothangs(5.001)) should be(-1)
+    (x.compare(Kilothangs(4.999))) should be(1)
+    (x.compare(Kilothangs(5))) should be(0)
+    (x.compare(Kilothangs(5.001))) should be(-1)
 
-    (x compare Thangs(4999.0)) should be(1)
-    (x compare Thangs(5000.0)) should be(0)
-    (x compare Thangs(5001.0)) should be(-1)
+    (x.compare(Thangs(4999.0))) should be(1)
+    (x.compare(Thangs(5000.0))) should be(0)
+    (x.compare(Thangs(5001.0))) should be(-1)
   }
 
   it should "max a like value and return the greater of the two" in {
     val x = Thangs(5)
     val y = Thangs(4.999)
-    (x max y) should be(Thangs(5))
+    (x.max(y)) should be(Thangs(5))
 
-    (x max y) should be(Thangs(5))
+    (x.max(y)) should be(Thangs(5))
   }
 
   it should "min a like value and return the greater of the two" in {
     val x = Thangs(5)
     val y = Thangs(4.999)
-    (x min y) should be(Thangs(4.999))
+    (x.min(y)) should be(Thangs(4.999))
   }
 
   it should "plusOrMinus a like value and return a QuantityRange" in {
     val x = Thangs(5)
     val y = Thangs(1)
-    (x plusOrMinus y) should be(QuantityRange(Thangs(4), Thangs(6)))
+    (x.plusOrMinus(y)) should be(QuantityRange(Thangs(4), Thangs(6)))
     x +- y should be(QuantityRange(Thangs(4), Thangs(6)))
   }
 
   it should "to a like value and return a QuantityRange" in {
     val x = Thangs(5)
     val y = Thangs(10)
-    val r = x to y
+    val r = x.to(y)
     r should be(QuantityRange(x, y))
   }
 
@@ -457,8 +457,8 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
     x.within(r) should be(right = true)
     y.within(r) should be(right = false)
 
-    Thangs(10) within (Thangs(9) +- Thangs(2)) should be(right = true)
-    Thangs(10) within (Thangs(9) to Thangs(12)) should be(right = true)
+    Thangs(10).within((Thangs(9) +- Thangs(2))) should be(right = true)
+    Thangs(10).within((Thangs(9).to(Thangs(12)))) should be(right = true)
   }
 
   it should "notWithin a QuantityRange and return a Boolean" in {
@@ -468,23 +468,23 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
     !x.notWithin(r) should be(right = true)
     y.notWithin(r) should be(right = true)
 
-    Thangs(13) notWithin (Thangs(9) +- Thangs(2)) should be(right = true)
-    Thangs(13) notWithin (Thangs(9) to Thangs(12)) should be(right = true)
+    Thangs(13).notWithin((Thangs(9) +- Thangs(2))) should be(right = true)
+    Thangs(13).notWithin((Thangs(9).to(Thangs(12)))) should be(right = true)
   }
 
   it should "to a unit and return a Double" in {
     val x = Thangs(1500)
-    (x to Kilothangs) should be(1.5)
+    (x.to(Kilothangs)) should be(1.5)
     x.toKilothangs should be(1.5)
   }
 
   it should "in a unit and return a like value in that unit" in {
     // The `in` method is only useful for Quantities that implement quantity classes for each unit
     val x = Fahrenheit(212)
-    (x in Celsius) should be(Celsius(100))
+    (x.in(Celsius)) should be(Celsius(100))
 
     val y = Seconds(3600)
-    (y in Hours) should be(Hours(1))
+    (y.in(Hours)) should be(Hours(1))
   }
 
   it should "toString and return a string formatted for the valueUnit" in {
@@ -494,7 +494,7 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
 
   it should "toString a unit and return a string formatted for the unit" in {
     val x = Thangs(1500)
-    (x toString Kilothangs) should be("1.5 kth")
+    (x.toString(Kilothangs)) should be("1.5 kth")
   }
 
   it should "toString a format and unit and return a string using the format and unit" in {
@@ -521,12 +521,12 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
   it should "return the correct Numeric value when pattern matched against a Unit of Measure" in {
     val x = Thangs(1200)
     val thangs = x match {
-      case Thangs(v) ⇒ v
+      case Thangs(v) => v
     }
     thangs should be(1200)
 
     val kilothangs = x match {
-      case Kilothangs(v) ⇒ v
+      case Kilothangs(v) => v
     }
     kilothangs should be(1.2)
   }
@@ -536,16 +536,16 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
   it should "multiply by a Quantity value and return the product as a like value" in {
     val l = 10.22 * Thangs(1000)
     l.getClass should be(classOf[Thingee])
-    (l to Thangs) should be(10220)
+    (l.to(Thangs)) should be(10220)
 
     val m = 10D * Kilograms(50)
     m.getClass should be(classOf[Mass])
-    (m to Kilograms) should be(500)
+    (m.to(Kilograms)) should be(500)
   }
 
   it should "divide by a Time value and return a Frequency" in {
     10D / Seconds(1) should be(Hertz(10))
-    10D per Seconds(1) should be(Hertz(10))
+    10D.per(Seconds(1)) should be(Hertz(10))
   }
 
   behavior of "SquantifiedLong"
@@ -553,16 +553,16 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
   it should "multiply by a Quantity value and return the product as a like value" in {
     val l = 10L * Thangs(1000)
     l.getClass should be(classOf[Thingee])
-    (l to Thangs) should be(10000)
+    (l.to(Thangs)) should be(10000)
 
     val m = 10L * Kilograms(50)
     m.getClass should be(classOf[Mass])
-    (m to Kilograms) should be(500)
+    (m.to(Kilograms)) should be(500)
   }
 
   it should "divide by a Time value and return a Frequency" in {
     10L / Seconds(1) should be(Hertz(10))
-    10L per Seconds(1) should be(Hertz(10))
+    10L.per(Seconds(1)) should be(Hertz(10))
   }
 
   behavior of "SquantifiedBigDecimal"
@@ -572,16 +572,16 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
 
     val l = multiple * Thangs(1000)
     l.getClass should be(classOf[Thingee])
-    (l to Thangs) should be(10000)
+    (l.to(Thangs)) should be(10000)
 
     val m = multiple * Kilograms(50)
     m.getClass should be(classOf[Mass])
-    (m to Kilograms) should be(500)
+    (m.to(Kilograms)) should be(500)
   }
 
   it should "divide by a Time value and return a Frequency" in {
     BigDecimal(10) / Seconds(1) should be(Hertz(10))
-    BigDecimal(10) per Seconds(1) should be(Hertz(10))
+    BigDecimal(10).per(Seconds(1)) should be(Hertz(10))
   }
 
   behavior of "QuantityNumeric"

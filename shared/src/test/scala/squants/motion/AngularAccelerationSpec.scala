@@ -51,7 +51,7 @@ class AngularAccelerationSpec extends AnyFlatSpec with Matchers{
   }
 
   it should "return Acceleration of particle onRadius of AngularAcceleration" in {
-    RadiansPerSecondSquared(1) onRadius Meters(1) should be(MetersPerSecondSquared(1))
+    RadiansPerSecondSquared(1).onRadius(Meters(1)) should be(MetersPerSecondSquared(1))
   }
 
   behavior of "AngularAccelerationConversions"

@@ -130,7 +130,7 @@ class SVectorSpec extends AnyFlatSpec with Matchers {
   it should "dot product with a QuantityVector" in {
     val dVector = SVector(1, 2, 3)
     val qVector = SVector(Meters(1), Meters(2), Meters(3))
-    dVector dotProduct qVector should be(qVector dotProduct dVector)
+    dVector.dotProduct(qVector) should be(qVector.dotProduct(dVector))
   }
 
   it should "cross product with a DoubleVector (with 3 coordinates each)" in {
@@ -144,8 +144,8 @@ class SVectorSpec extends AnyFlatSpec with Matchers {
 
     val up = SVector(1, 2, 3)
     val left = SVector(3, 2, 1)
-    val forward = up crossProduct left
-    val back = left crossProduct up
+    val forward = up.crossProduct(left)
+    val back = left.crossProduct(up)
 
     forward should be (DoubleVector(-4.0, 8.0, -4.0))
     back should be (DoubleVector(4.0, -8.0, 4.0))
@@ -154,14 +154,14 @@ class SVectorSpec extends AnyFlatSpec with Matchers {
   it should "crossProduct with a QuantityVector" in {
     val dVector = SVector(1, 2, 3)
     val qVector = SVector(Meters(1), Meters(2), Meters(3))
-    dVector crossProduct qVector should be(qVector crossProduct dVector)
+    dVector.crossProduct(qVector) should be(qVector.crossProduct(dVector))
   }
 
   it should "throw an exception on crossProduct two Vectors with 7 dimensions" in {
     val v1 = SVector(1, 2, 3, 4, 5, 6, 7)
     val v2 = SVector(1, 2, 3, 4, 5, 6, 7)
     intercept[UnsupportedOperationException] {
-      v1 crossProduct v2
+      v1.crossProduct(v2)
     }
   }
 
@@ -171,21 +171,21 @@ class SVectorSpec extends AnyFlatSpec with Matchers {
     val vector7 = SVector(1, 2, 3, 5, 6, 7)
 
     intercept[UnsupportedOperationException] {
-      vector3 crossProduct vector4
+      vector3.crossProduct(vector4)
     }
     intercept[UnsupportedOperationException] {
-      vector4 crossProduct vector3
-    }
-
-    intercept[UnsupportedOperationException] {
-      vector4 crossProduct vector4
+      vector4.crossProduct(vector3)
     }
 
     intercept[UnsupportedOperationException] {
-      vector7 crossProduct vector4
+      vector4.crossProduct(vector4)
+    }
+
+    intercept[UnsupportedOperationException] {
+      vector7.crossProduct(vector4)
     }
     intercept[UnsupportedOperationException] {
-      vector4 crossProduct vector7
+      vector4.crossProduct(vector7)
     }
   }
 
@@ -260,7 +260,7 @@ class SVectorSpec extends AnyFlatSpec with Matchers {
     val y = Kilometers(2)
     val z = Kilometers(3)
     val quantityVector = SVector(x, y, z)
-    quantityVector.map[Area](l ⇒ l * l).equals(SVector(SquareKilometers(1), SquareKilometers(4), SquareKilometers(9))) should be(right = true)
+    quantityVector.map[Area](l => l * l).equals(SVector(SquareKilometers(1), SquareKilometers(4), SquareKilometers(9))) should be(right = true)
     quantityVector.map[Length](_ * 2).equals(SVector(Kilometers(2), Kilometers(4), Kilometers(6))) should be(right = true)
   }
 
@@ -337,8 +337,8 @@ class SVectorSpec extends AnyFlatSpec with Matchers {
 
     val up = SVector(Kilometers(1), Kilometers(2), Kilometers(3))
     val left = SVector(3, 2, 1)
-    val forward = up crossProduct left
-    val back = left crossProduct up
+    val forward = up.crossProduct(left)
+    val back = left.crossProduct(up)
 
     forward should be (QuantityVector(Kilometers(-4), Kilometers(8), Kilometers(-4)))
     back should be (QuantityVector(Kilometers(-4), Kilometers(8), Kilometers(-4)))
@@ -357,8 +357,8 @@ class SVectorSpec extends AnyFlatSpec with Matchers {
 
     val up = SVector(Kilometers(1), Kilometers(2), Kilometers(3))
     val left = SVector(3, 2, 1)
-    val forward = up crossProduct left
-    val back = left crossProduct up
+    val forward = up.crossProduct(left)
+    val back = left.crossProduct(up)
 
     forward should be (QuantityVector(Kilometers(-4), Kilometers(8), Kilometers(-4)))
     back should be (QuantityVector(Kilometers(-4), Kilometers(8), Kilometers(-4)))
@@ -370,7 +370,7 @@ class SVectorSpec extends AnyFlatSpec with Matchers {
     val v1 = SVector[Length](1, 2, 3, 5, 6, 7)
     val v2 = SVector(1, 2, 3, 5, 6, 7)
     intercept[UnsupportedOperationException] {
-      v1 crossProduct v2
+      v1.crossProduct(v2)
     }
   }
 
@@ -386,38 +386,38 @@ class SVectorSpec extends AnyFlatSpec with Matchers {
 
     // No crossProduct 3D with other sized vectors
     intercept[UnsupportedOperationException] {
-      qv3 crossProduct dv7
+      qv3.crossProduct(dv7)
     }
     intercept[UnsupportedOperationException] {
-      qv3 crossProduct dv4
+      qv3.crossProduct(dv4)
     }
     intercept[UnsupportedOperationException] {
-      dv7 crossProduct qv3
+      dv7.crossProduct(qv3)
     }
     intercept[UnsupportedOperationException] {
-      dv4 crossProduct qv3
+      dv4.crossProduct(qv3)
     }
 
     // NO crossProduct 7D with other sized vectors
     intercept[UnsupportedOperationException] {
-      qv7 crossProduct dv3
+      qv7.crossProduct(dv3)
     }
     intercept[UnsupportedOperationException] {
-      qv7 crossProduct dv4
+      qv7.crossProduct(dv4)
     }
     intercept[UnsupportedOperationException] {
-      dv3 crossProduct qv7
+      dv3.crossProduct(qv7)
     }
     intercept[UnsupportedOperationException] {
-      dv4 crossProduct qv7
+      dv4.crossProduct(qv7)
     }
 
     // No crossProduct with other matching size vectors
     intercept[UnsupportedOperationException] {
-      dv4 crossProduct qv4
+      dv4.crossProduct(qv4)
     }
     intercept[UnsupportedOperationException] {
-      qv4 crossProduct dv4
+      qv4.crossProduct(dv4)
     }
   }
 

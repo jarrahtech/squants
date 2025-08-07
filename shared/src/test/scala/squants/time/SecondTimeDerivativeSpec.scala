@@ -25,7 +25,7 @@ class SecondTimeDerivativeSpec extends AnyFlatSpec with Matchers with CustomMatc
 
   it should "satisfy Derivative^2 = Integral / TimeSquared" in {
     MetersPerSecondSquared(55) should be(Meters(55) / SecondsSquared(1))
-    MetersPerSecondSquared(55) should be(Meters(55) per SecondsSquared(1))
+    MetersPerSecondSquared(55) should be(Meters(55).per(SecondsSquared(1)))
   }
 
   it should "satisfy Integral = Derivative^2 * TimeSquared" in {

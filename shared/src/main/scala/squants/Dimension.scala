@@ -35,20 +35,20 @@ trait Dimension[A <: Quantity[A]] {
    * The conversionFactor for other units should be set relative to this unit.
    * @return
    */
-  def primaryUnit: UnitOfMeasure[A] with PrimaryUnit
+  def primaryUnit: UnitOfMeasure[A] & PrimaryUnit
 
   /**
    * The International System of Units (SI) Base Unit
    * @return
    */
-  def siUnit: UnitOfMeasure[A] with SiUnit
+  def siUnit: UnitOfMeasure[A] & SiUnit
 
   /**
    * Maps a string representation of a unit symbol into the matching UnitOfMeasure object
    * @param symbol String
    * @return
    */
-  def symbolToUnit(symbol: String): Option[UnitOfMeasure[A]] = units.find(u ⇒ u.symbol == symbol)
+  def symbolToUnit(symbol: String): Option[UnitOfMeasure[A]] = units.find(u => u.symbol == symbol)
 
   /**
    * Tries to map a string or tuple value to Quantity of this Dimension
@@ -56,20 +56,20 @@ trait Dimension[A <: Quantity[A]] {
    * @return Try[A]
    */
   protected def parse(value: Any): Try[A] = value match {
-    case s: String              ⇒ parseString(s)
-    case (v: Byte, u: String)   ⇒ parseTuple((v, u))
-    case (v: Short, u: String)  ⇒ parseTuple((v, u))
-    case (v: Int, u: String)    ⇒ parseTuple((v, u))
-    case (v: Long, u: String)   ⇒ parseTuple((v, u))
-    case (v: Float, u: String)  ⇒ parseTuple((v, u))
-    case (v: Double, u: String) ⇒ parseTuple((v, u))
-    case _ ⇒ Failure(QuantityParseException(s"Unable to parse $name", value.toString))
+    case s: String              => parseString(s)
+    case (v: Byte, u: String)   => parseTuple((v, u))
+    case (v: Short, u: String)  => parseTuple((v, u))
+    case (v: Int, u: String)    => parseTuple((v, u))
+    case (v: Long, u: String)   => parseTuple((v, u))
+    case (v: Float, u: String)  => parseTuple((v, u))
+    case (v: Double, u: String) => parseTuple((v, u))
+    case _ => Failure(QuantityParseException(s"Unable to parse $name", value.toString))
   }
 
   def parseString(s: String): Try[A] = {
     s match {
-      case QuantityString(value, symbol) ⇒ Success(symbolToUnit(symbol).get(BigDecimal(value)))
-      case _                             ⇒ Failure(QuantityParseException(s"Unable to parse $name", s))
+      case QuantityString(value, symbol) => Success(symbolToUnit(symbol).get(BigDecimal(value)))
+      case _                             => Failure(QuantityParseException(s"Unable to parse $name", s))
     }
   }
   
@@ -79,8 +79,8 @@ trait Dimension[A <: Quantity[A]] {
     val value = t._1
     val symbol = t._2
     symbolToUnit(symbol) match {
-      case Some(unit) ⇒ Success(unit(value))
-      case None       ⇒ Failure(QuantityParseException(s"Unable to identify $name unit ${symbol}", s"(${Platform.crossFormat(num.toDouble(value))},${symbol})"))
+      case Some(unit) => Success(unit(value))
+      case None       => Failure(QuantityParseException(s"Unable to identify $name unit ${symbol}", s"(${Platform.crossFormat(num.toDouble(value))},${symbol})"))
     }
   }
 
@@ -100,7 +100,7 @@ case class QuantityParseException(message: String, expression: String) extends E
 /**
  * SI Base Quantity
  */
-trait BaseDimension { self: Dimension[_] ⇒
+trait BaseDimension { self: Dimension[?] =>
   /**
    * SI Base Unit for this Quantity
    * @return

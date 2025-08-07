@@ -195,7 +195,7 @@ class MassSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "return MomentOfInertia when onRadius of Length" in {
-    Kilograms(1) onRadius Meters(1) should be(KilogramsMetersSquared(1))
+    Kilograms(1).onRadius(Meters(1)) should be(KilogramsMetersSquared(1))
   }
 
   behavior of "MassConversions"
