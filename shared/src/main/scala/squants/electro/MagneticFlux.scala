@@ -19,8 +19,8 @@ import squants.time.TimeIntegral
  * @param value value in [[squants.electro.Webers]]
  */
 final class MagneticFlux private (val value: Double, val unit: MagneticFluxUnit)
-    extends Quantity[MagneticFlux]
-    with TimeIntegral[ElectricPotential] {
+  extends Quantity[MagneticFlux]
+  with TimeIntegral[ElectricPotential] {
 
   def dimension = MagneticFlux
 

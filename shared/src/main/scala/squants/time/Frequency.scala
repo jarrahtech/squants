@@ -23,7 +23,7 @@ import squants.photo.{ Illuminance, LuminousEnergy, LuminousExposure, LuminousFl
  * @param value Double
  */
 final class Frequency private (val value: Double, val unit: FrequencyUnit)
-    extends Quantity[Frequency] with TimeDerivative[Dimensionless] {
+  extends Quantity[Frequency] with TimeDerivative[Dimensionless] {
 
   def dimension = Frequency
 

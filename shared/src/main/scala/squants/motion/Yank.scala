@@ -18,9 +18,9 @@ import squants.time.{ SecondTimeDerivative, TimeDerivative, TimeSquared }
  * @param value Double
  */
 final class Yank private (val value: Double, val unit: YankUnit)
-    extends Quantity[Yank]
-    with TimeDerivative[Force]
-    with SecondTimeDerivative[Momentum] {
+  extends Quantity[Yank]
+  with TimeDerivative[Force]
+  with SecondTimeDerivative[Momentum] {
 
   def dimension = Yank
 

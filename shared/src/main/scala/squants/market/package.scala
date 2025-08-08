@@ -62,8 +62,7 @@ package object market {
     KRW, MXN, MYR, NOK, NZD,
     RUB, SEK, XAG, XAU, BTC,
     ETH, LTC, ZAR, NAD, TRY,
-    UAH, THB
-  )
+    UAH, THB)
 
   lazy val defaultMoneyContext = MoneyContext(USD, defaultCurrencySet, Nil)
 
@@ -71,6 +70,5 @@ package object market {
 
   case class NoSuchCurrencyException(code: String, fxContext: MoneyContext) extends Exception(
     s"Code $code cannot be matched against any context defined Currency. " +
-      s"Available Currencies are ${fxContext.currencies.map(_.code).mkString(", ")}"
-  )
+      s"Available Currencies are ${fxContext.currencies.map(_.code).mkString(", ")}")
 }

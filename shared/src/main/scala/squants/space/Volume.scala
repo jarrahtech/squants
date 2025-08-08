@@ -23,8 +23,8 @@ import squants.time.TimeIntegral
  * @param value value in [[squants.space.CubicMeters]]
  */
 final class Volume private (val value: Double, val unit: VolumeUnit)
-    extends Quantity[Volume]
-    with TimeIntegral[VolumeFlow] {
+  extends Quantity[Volume]
+  with TimeIntegral[VolumeFlow] {
 
   def dimension = Volume
 
@@ -36,18 +36,18 @@ final class Volume private (val value: Double, val unit: VolumeUnit)
 
   def /(that: Area): Length = unit match {
     case CubicUsMiles => UsMiles(this.value / that.toSquareUsMiles)
-    case CubicYards   => Yards(this.value / that.toSquareYards)
-    case CubicFeet    => Feet(this.value / that.toSquareFeet)
-    case CubicInches  => Inches(this.value / that.toSquareInches)
-    case _            => Meters(this.toCubicMeters / that.toSquareMeters)
+    case CubicYards => Yards(this.value / that.toSquareYards)
+    case CubicFeet => Feet(this.value / that.toSquareFeet)
+    case CubicInches => Inches(this.value / that.toSquareInches)
+    case _ => Meters(this.toCubicMeters / that.toSquareMeters)
   }
 
   def /(that: Length): Area = unit match {
     case CubicUsMiles => SquareUsMiles(this.value / that.toUsMiles)
-    case CubicYards   => SquareYards(this.value / that.toYards)
-    case CubicFeet    => SquareFeet(this.value / that.toFeet)
-    case CubicInches  => SquareInches(this.value / that.toInches)
-    case _            => SquareMeters(this.toCubicMeters / that.toMeters)
+    case CubicYards => SquareYards(this.value / that.toYards)
+    case CubicFeet => SquareFeet(this.value / that.toFeet)
+    case CubicInches => SquareInches(this.value / that.toInches)
+    case _ => SquareMeters(this.toCubicMeters / that.toMeters)
   }
 
   def /(that: Mass) = ??? // returns SpecificVolume (inverse of Density)

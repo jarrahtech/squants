@@ -17,7 +17,7 @@ import squants._
  * @param value value in [[squants.electro.OhmMeters]]
  */
 final class Resistivity private (val value: Double, val unit: ResistivityUnit)
-    extends Quantity[Resistivity] {
+  extends Quantity[Resistivity] {
 
   def dimension = Resistivity
 

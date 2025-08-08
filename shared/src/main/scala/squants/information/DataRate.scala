@@ -4,11 +4,11 @@ import squants._
 import squants.time.TimeDerivative
 
 /**
-  * Represents a rate of transfer of information
-  */
-final class DataRate private(val value: Double, val unit: DataRateUnit)
-    extends Quantity[DataRate]
-    with TimeDerivative[Information] {
+ * Represents a rate of transfer of information
+ */
+final class DataRate private (val value: Double, val unit: DataRateUnit)
+  extends Quantity[DataRate]
+  with TimeDerivative[Information] {
 
   def dimension = DataRate
   protected[squants] def timeIntegrated = Bytes(toBytesPerSecond)
@@ -52,7 +52,6 @@ final class DataRate private(val value: Double, val unit: DataRateUnit)
   def toZebibitsPerSecond = to(ZebibitsPerSecond)
   def toYobibitsPerSecond = to(YobibitsPerSecond)
 }
-
 
 object DataRate extends Dimension[DataRate] {
   private[information] def apply[A](n: A, unit: DataRateUnit)(implicit num: Numeric[A]) =
@@ -246,7 +245,6 @@ object YobibitsPerSecond extends DataRateUnit {
   val conversionFactor = BitsPerSecond.conversionFactor * Yobibytes.conversionFactor
 }
 
-
 object DataRateConversions {
   lazy val bytesPerSecond = BytesPerSecond(1)
   lazy val kilobytesPerSecond = KilobytesPerSecond(1)
@@ -321,6 +319,6 @@ object DataRateConversions {
     def yottabitsPerSecond = YottabitsPerSecond(n)
     def yobibitsPerSecond = YobibitsPerSecond(n)
   }
-  
+
   implicit object DataRateNumeric extends AbstractQuantityNumeric[DataRate](DataRate.primaryUnit)
 }

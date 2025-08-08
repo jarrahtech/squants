@@ -9,7 +9,7 @@
 package squants.radio
 
 import squants._
-import squants.energy.{ErgsPerSecond, Watts}
+import squants.energy.{ ErgsPerSecond, Watts }
 import squants.space._
 
 /**
@@ -19,7 +19,7 @@ import squants.space._
  * @param value Double
  */
 final class SpectralIrradiance private (val value: Double, val unit: SpectralIrradianceUnit)
-    extends Quantity[SpectralIrradiance] {
+  extends Quantity[SpectralIrradiance] {
 
   def dimension = SpectralIrradiance
 
@@ -49,7 +49,7 @@ object WattsPerCubicMeter extends SpectralIrradianceUnit with PrimaryUnit with S
 object WattsPerSquareMeterPerNanometer extends SpectralIrradianceUnit with SiUnit {
   val conversionFactor = 1 / MetricSystem.Nano
   val symbol = Watts.symbol + "/" + SquareMeters.symbol + "/" + Nanometers.symbol
- }
+}
 
 object WattsPerSquareMeterPerMicron extends SpectralIrradianceUnit with SiUnit {
   val conversionFactor = 1 / MetricSystem.Micro

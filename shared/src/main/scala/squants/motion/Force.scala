@@ -21,8 +21,8 @@ import squants.time.{ Seconds, TimeDerivative, TimeIntegral }
  * @param value Double
  */
 final class Force private (val value: Double, val unit: ForceUnit)
-    extends Quantity[Force]
-    with TimeDerivative[Momentum] with TimeIntegral[Yank] {
+  extends Quantity[Force]
+  with TimeDerivative[Momentum] with TimeIntegral[Yank] {
 
   def dimension = Force
 
@@ -52,7 +52,7 @@ object Force extends Dimension[Force] {
   def primaryUnit = Newtons
   def siUnit = Newtons
   def units = Set(
-    Newtons, KilogramForce, PoundForce, 
+    Newtons, KilogramForce, PoundForce,
     KiloElectronVoltsPerMicrometer, MegaElectronVoltsPerCentimeter)
 }
 

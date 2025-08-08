@@ -8,10 +8,10 @@
 
 package squants.motion
 
-import squants.{AbstractQuantityNumeric, Dimension, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure}
+import squants.{ AbstractQuantityNumeric, Dimension, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure }
 import squants.mass.Mass
-import squants.space.{Feet, Length, Meters, Millimeters, UsMiles}
-import squants.time.{SecondTimeDerivative, Seconds, Time, TimeDerivative, TimeIntegral, TimeSquared}
+import squants.space.{ Feet, Length, Meters, Millimeters, UsMiles }
+import squants.time.{ SecondTimeDerivative, Seconds, Time, TimeDerivative, TimeIntegral, TimeSquared }
 
 /**
  * Represents a quantity of acceleration
@@ -22,10 +22,10 @@ import squants.time.{SecondTimeDerivative, Seconds, Time, TimeDerivative, TimeIn
  * @param value Double
  */
 final class Acceleration private (val value: Double, val unit: AccelerationUnit)
-    extends Quantity[Acceleration]
-    with TimeDerivative[Velocity]
-    with SecondTimeDerivative[Length]
-    with TimeIntegral[Jerk] {
+  extends Quantity[Acceleration]
+  with TimeDerivative[Velocity]
+  with SecondTimeDerivative[Length]
+  with TimeIntegral[Jerk] {
 
   def dimension = Acceleration
 

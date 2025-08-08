@@ -17,8 +17,8 @@ import squants.time.TimeDerivative
  * @param value value in [[squants.photo.Lux]]
  */
 final class Illuminance private (val value: Double, val unit: IlluminanceUnit)
-    extends Quantity[Illuminance]
-    with TimeDerivative[LuminousExposure] {
+  extends Quantity[Illuminance]
+  with TimeDerivative[LuminousExposure] {
 
   def dimension = Illuminance
 

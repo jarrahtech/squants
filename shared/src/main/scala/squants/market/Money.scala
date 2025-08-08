@@ -10,7 +10,7 @@ package squants.market
 
 import squants._
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 import scala.language.implicitConversions
 import scala.math.BigDecimal.RoundingMode
 import scala.math.BigDecimal.RoundingMode.RoundingMode
@@ -43,7 +43,7 @@ import java.util.Objects
  * @param currency the currency in which the money is denominated
  */
 final class Money private (val amount: BigDecimal)(val currency: Currency)
-    extends Quantity[Money] {
+  extends Quantity[Money] {
 
   def dimension = Money
 
@@ -60,12 +60,12 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
   override def toString: String = amount.underlying.stripTrailingZeros.toString + " " + currency.code
 
   /**
-    * Converts the amount to the given currency and returns a string formatted with the original precision and the currency code
-    *
-    * @param c Currency
-    * @param context MoneyContext required for conversion
-    * @return
-    */
+   * Converts the amount to the given currency and returns a string formatted with the original precision and the currency code
+   *
+   * @param c Currency
+   * @param context MoneyContext required for conversion
+   * @return
+   */
   def toString(c: Currency)(implicit context: MoneyContext): String = in(c).toString
 
   /**
@@ -101,7 +101,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    */
   override def plus(that: Money): Money = that.currency match {
     case this.currency => new Money(this.amount + that.amount)(currency)
-    case _             => throw new UnsupportedOperationException("plus not supported for cross-currency comparison - use moneyPlus")
+    case _ => throw new UnsupportedOperationException("plus not supported for cross-currency comparison - use moneyPlus")
   }
 
   /**
@@ -126,7 +126,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    */
   override def minus(that: Money): Money = that.currency match {
     case this.currency => new Money(this.amount - that.amount)(currency)
-    case _             => throw new UnsupportedOperationException("minus not supported for cross-currency comparison - use moneyMinus")
+    case _ => throw new UnsupportedOperationException("minus not supported for cross-currency comparison - use moneyMinus")
   }
 
   /**
@@ -139,11 +139,11 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
   def *(that: BigDecimal): Money = times(that)
 
   /**
-    * Overrides Quantity.times to ensure BigDecimal math is performed
-    *
-    * @param that Double
-    * @return Quantity
-    */
+   * Overrides Quantity.times to ensure BigDecimal math is performed
+   *
+   * @param that Double
+   * @return Quantity
+   */
   override def times(that: Double): Money = new Money(amount * that)(currency)
   override def *(that: Double): Money = times(that)
 
@@ -167,11 +167,11 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
   def /(that: BigDecimal): Money = divide(that)
 
   /**
-    * Overrides Quantity.divide to ensure BigDecimal math is performed
-    *
-    * @param that Double
-    * @return Quantity
-    */
+   * Overrides Quantity.divide to ensure BigDecimal math is performed
+   *
+   * @param that Double
+   * @return Quantity
+   */
   override def divide(that: Double): Money = new Money(amount / that)(currency)
   override def /(that: Double): Money = divide(that)
 
@@ -226,7 +226,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    */
   override def divide(that: Money): Double = that.currency match {
     case this.currency => (this.amount / that.amount).toDouble
-    case _             => throw new UnsupportedOperationException("divide not supported for cross-currency comparison - use moneyDivide")
+    case _ => throw new UnsupportedOperationException("divide not supported for cross-currency comparison - use moneyDivide")
   }
 
   /**
@@ -236,7 +236,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    */
   override def max(that: Money): Money = (that, that.currency) match {
     case (m: Money, this.currency) => new Money(amount.max(m.amount))(currency)
-    case _                         => throw new UnsupportedOperationException("max not supported for cross-currency comparison - use moneyMax")
+    case _ => throw new UnsupportedOperationException("max not supported for cross-currency comparison - use moneyMax")
   }
 
   /**
@@ -246,7 +246,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    */
   override def min(that: Money): Money = (that, that.currency) match {
     case (m: Money, this.currency) => new Money(amount.min(m.amount))(currency)
-    case _                         => throw new UnsupportedOperationException("min not supported for cross-currency comparison - use moneyMin")
+    case _ => throw new UnsupportedOperationException("min not supported for cross-currency comparison - use moneyMin")
   }
 
   /**
@@ -256,7 +256,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    */
   override def equals(that: Any): Boolean = that match {
     case m: Money => amount == m.amount && currency == m.currency
-    case _        => false
+    case _ => false
   }
 
   /**
@@ -272,7 +272,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    */
   override def compare(that: Money): Int = that.currency match {
     case this.currency => if (this.amount > that.amount) 1 else if (this.amount < that.amount) -1 else 0
-    case _             => throw new UnsupportedOperationException("Comparison between Moneys of dislike Currency is not supported")
+    case _ => throw new UnsupportedOperationException("Comparison between Moneys of dislike Currency is not supported")
   }
 
   /**
@@ -283,7 +283,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    */
   def moneyMax(that: Money)(implicit moneyContext: MoneyContext) = moneyContext.compare(this, that) match {
     case -1 => that
-    case _  => this
+    case _ => this
   }
 
   /**
@@ -341,7 +341,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    */
   def toThe(that: Money) = that.currency match {
     case this.currency => throw new IllegalArgumentException("Can not create Exchange Rate on matching currencies")
-    case _             => CurrencyExchangeRate(that, this)
+    case _ => CurrencyExchangeRate(that, this)
   }
 
   /**
@@ -370,20 +370,20 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
   def in(unit: Currency)(implicit context: MoneyContext) = context.convert(this, unit)
 
   /**
-    * Returns a Money rounded using scale and mode.
-    *
-    * @param scale Int - scale of the Money to be returned
-    * @param mode RoundingMode - defaults to HALF_EVEN
-    * @return Quantity
-    */
+   * Returns a Money rounded using scale and mode.
+   *
+   * @param scale Int - scale of the Money to be returned
+   * @param mode RoundingMode - defaults to HALF_EVEN
+   * @return Quantity
+   */
   override def rounded(scale: Int, mode: RoundingMode = RoundingMode.HALF_EVEN) = currency(amount.setScale(scale, mode))
 
   /**
-    * Applies a function to the underlying amount of the Money, returning a Money in the same Currency
-    *
-    * @param f BigDecimal => BigDecimal function
-    * @return Money
-    */
+   * Applies a function to the underlying amount of the Money, returning a Money in the same Currency
+   *
+   * @param f BigDecimal => BigDecimal function
+   * @return Money
+   */
   def mapAmount(f: BigDecimal => BigDecimal) = currency(f(amount))
 }
 
@@ -408,7 +408,7 @@ object Money extends Dimension[Money] {
     val regex = ("([-+]?[0-9]*\\.?[0-9]+) *(" + fxContext.currencies.map(_.code).reduceLeft(_ + "|" + _) + ")").r
     s match {
       case regex(value, currency) => Currency(currency).map(Money(BigDecimal(value), _))
-      case _                      => Failure(QuantityParseException("Unable to parse Money", s))
+      case _ => Failure(QuantityParseException("Unable to parse Money", s))
     }
   }
   def name = "Money"
@@ -434,7 +434,6 @@ abstract class Currency(val code: String, val name: String, val symbol: String, 
   def /(that: Money): CurrencyExchangeRate = that.toThe(Money(1, this))
   override def toString: String = code
 
-
   def canEqual(other: Any): Boolean = other.isInstanceOf[Currency]
 
   override def equals(other: Any): Boolean = other match {
@@ -456,7 +455,7 @@ abstract class Currency(val code: String, val name: String, val symbol: String, 
 object Currency {
   def apply(currency: String)(implicit fxContext: MoneyContext) = {
     fxContext.currencyMap.get(currency)
-    .fold(Try[Currency](throw NoSuchCurrencyException(currency, fxContext)))(Success(_))
+      .fold(Try[Currency](throw NoSuchCurrencyException(currency, fxContext)))(Success(_))
   }
 }
 
@@ -553,9 +552,9 @@ object MoneyConversions {
     def parseString(str: String): Option[Money] = Money(str).toOption
 
     /**
-      * Custom implementation using SortedSets to ensure consistent output
-      * @return String representation of this instance
-      */
+     * Custom implementation using SortedSets to ensure consistent output
+     * @return String representation of this instance
+     */
     override def toString: String = s"MoneyNumeric($mc)"
   }
 }

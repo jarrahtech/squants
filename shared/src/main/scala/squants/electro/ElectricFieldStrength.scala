@@ -1,15 +1,15 @@
 package squants.electro
 
-import squants.space.{Length, Meters}
-import squants.{AbstractQuantityNumeric, Dimension, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure}
+import squants.space.{ Length, Meters }
+import squants.{ AbstractQuantityNumeric, Dimension, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure }
 
 /**
-  *
-  * @author Nicolas Vinuesa
-  * @since 1.4
-  *
-  * @param value Double
-  */
+ *
+ * @author Nicolas Vinuesa
+ * @since 1.4
+ *
+ * @param value Double
+ */
 final class ElectricFieldStrength private (val value: Double, val unit: ElectricFieldStrengthUnit)
   extends Quantity[ElectricFieldStrength] {
 

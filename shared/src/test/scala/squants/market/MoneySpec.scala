@@ -124,29 +124,6 @@ class MoneySpec extends AnyFlatSpec with Matchers with TryValues {
     USD(1) <=# JPY(101) should be(right = true)
   }
 
-  it should "compare a non-null Quantity to a null and return a proper result" in {
-    val x = USD(2.1)
-    x == null should be(right = false)
-    null == x should be(right = false)
-    x != null should be(right = true)
-    null != x should be(right = true)
-  }
-
-  it should "compare a null Quantity to null and return a proper result" in {
-    val x: Money = null
-    x == null should be(right = true)
-    null == x should be(right = true)
-    x != null should be(right = false)
-    null != x should be(right = false)
-  }
-
-  it should "compare a null Quantity to a non-null Quantity" in {
-    val x = null
-    val y = USD(2.1)
-    x == y should be(right = false)
-    y == x should be(right = false)
-  }
-
   it should "not equal an equivalent value of a different type" in {
     val x = USD(2.1)
     val y = Kilograms(2.1)

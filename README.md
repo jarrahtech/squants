@@ -1,5 +1,9 @@
 # Squants
 
+** Fork!
+
+This is a fork of [Typelevel's Squants](https://github.com/typelevel/squants) package. Done to update dependency version in my other projects.
+
 **The Scala API for Quantities, Units of Measure and Dimensional Analysis**
 
 Squants is a framework of data types and a domain specific language (DSL) for representing Quantities,

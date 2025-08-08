@@ -80,7 +80,7 @@ trait SVector[A] {
    * @return
    */
   def times(that: Double): SVectorType
-  def *(that: Double)  = times(that)
+  def *(that: Double) = times(that)
 
   /**
    * Reduce a Vector
@@ -183,11 +183,12 @@ case class DoubleVector(coordinates: Double*) extends SVector[Double] {
 
   def crossProduct(that: SVectorType) = (this.coordinates.length, that.coordinates.length) match {
     case (3, 3) =>
-      DoubleVector(this.coordinates(1) * that.coordinates(2) - this.coordinates(2) * that.coordinates(1),
+      DoubleVector(
+        this.coordinates(1) * that.coordinates(2) - this.coordinates(2) * that.coordinates(1),
         coordinates(2) * that.coordinates(0) - this.coordinates(0) * that.coordinates(2),
         coordinates(0) * that.coordinates(1) - this.coordinates(1) * that.coordinates(0))
     case (7, 7) => throw new UnsupportedOperationException("Seven-dimensional cross product is not currently supported")
-    case _      => throw new UnsupportedOperationException("Cross product is not supported on vectors with an arbitrary number of dimensions")
+    case _ => throw new UnsupportedOperationException("Cross product is not supported on vectors with an arbitrary number of dimensions")
   }
 
   def crossProduct[B <: Quantity[B]](that: QuantityVector[B]) = that.crossProduct(this)
@@ -263,7 +264,7 @@ case class QuantityVector[A <: Quantity[A]](coordinates: A*) extends SVector[A] 
         (this.coordinates(2) * that.coordinates(0)) - (this.coordinates(0) * that.coordinates(2)),
         (this.coordinates(0) * that.coordinates(1)) - (this.coordinates(1) * that.coordinates(0)))
     case (7, 7) => throw new UnsupportedOperationException("Seven-dimensional Cross Product is not currently supported")
-    case _      => throw new UnsupportedOperationException("Cross Product is not supported on vectors with an arbitrary number of dimensions")
+    case _ => throw new UnsupportedOperationException("Cross Product is not supported on vectors with an arbitrary number of dimensions")
   }
 
   def crossProduct[B <: Quantity[B], C <: Quantity[C]](that: SVector[B], quantTimes: (A, B) => C): QuantityVector[C] = {
@@ -274,7 +275,7 @@ case class QuantityVector[A <: Quantity[A]](coordinates: A*) extends SVector[A] 
           quantTimes(this.coordinates(2), that.coordinates(0)) - quantTimes(coordinates(0), that.coordinates(2)),
           quantTimes(this.coordinates(0), that.coordinates(1)) - quantTimes(coordinates(1), that.coordinates(0)))
       case (7, 7) => throw new UnsupportedOperationException("Seven-dimensional Cross Product is not currently supported")
-      case _      => throw new UnsupportedOperationException("Cross Product is not supported on vectors with an arbitrary number of dimensions")
+      case _ => throw new UnsupportedOperationException("Cross Product is not supported on vectors with an arbitrary number of dimensions")
     }
   }
 

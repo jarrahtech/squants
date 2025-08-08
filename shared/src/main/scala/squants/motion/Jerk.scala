@@ -21,9 +21,9 @@ import squants.time.{ SecondTimeDerivative, Seconds, TimeDerivative, TimeSquared
  * @param value Double
  */
 final class Jerk private (val value: Double, val unit: JerkUnit)
-    extends Quantity[Jerk]
-    with TimeDerivative[Acceleration]
-    with SecondTimeDerivative[Velocity] {
+  extends Quantity[Jerk]
+  with TimeDerivative[Acceleration]
+  with SecondTimeDerivative[Velocity] {
 
   def dimension = Jerk
 

@@ -21,8 +21,8 @@ import squants.time.{ Seconds, TimeDerivative }
  * @param value the amount of charge in [[squants.electro.Amperes]]'s
  */
 final class ElectricCurrent private (val value: Double, val unit: ElectricCurrentUnit)
-    extends Quantity[ElectricCurrent]
-    with TimeDerivative[ElectricCharge] {
+  extends Quantity[ElectricCurrent]
+  with TimeDerivative[ElectricCharge] {
 
   def dimension = ElectricCurrent
 

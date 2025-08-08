@@ -9,8 +9,8 @@
 package squants.space
 
 import squants._
-import squants.motion.{AngularVelocity, RadiansPerSecond}
-import squants.time.{Time, TimeIntegral}
+import squants.motion.{ AngularVelocity, RadiansPerSecond }
+import squants.time.{ Time, TimeIntegral }
 
 /**
  * @author  garyKeorkunian
@@ -19,7 +19,7 @@ import squants.time.{Time, TimeIntegral}
  * @param value value in [[squants.space.Radians]]
  */
 final class Angle private (val value: Double, val unit: AngleUnit)
-    extends Quantity[Angle] with TimeIntegral[AngularVelocity] {
+  extends Quantity[Angle] with TimeIntegral[AngularVelocity] {
 
   def dimension = Angle
 
@@ -37,14 +37,13 @@ final class Angle private (val value: Double, val unit: AngleUnit)
   def acos = math.acos(toRadians)
 
   /**
-    * length of the arc traveled by a point on the rim of a circle with this
-    * angle traveled and the given (constant) radius from the center of
-    * rotation
-    * @param radius the distance from the center of rotation
-    * @return arc length with given arc measure and radius
-    */
+   * length of the arc traveled by a point on the rim of a circle with this
+   * angle traveled and the given (constant) radius from the center of
+   * rotation
+   * @param radius the distance from the center of rotation
+   * @return arc length with given arc measure and radius
+   */
   def onRadius(radius: Length): Length = toRadians * radius
-
 
   protected def timeDerived: AngularVelocity = RadiansPerSecond(toRadians)
 

@@ -19,8 +19,8 @@ import squants.time.{ Seconds, TimeDerivative }
  * @param value value in [[squants.electro.Volts]]
  */
 final class ElectricPotential private (val value: Double, val unit: ElectricPotentialUnit)
-    extends Quantity[ElectricPotential]
-    with TimeDerivative[MagneticFlux] {
+  extends Quantity[ElectricPotential]
+  with TimeDerivative[MagneticFlux] {
 
   def dimension = ElectricPotential
 

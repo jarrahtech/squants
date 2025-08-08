@@ -9,7 +9,7 @@
 package squants.mass
 
 import squants._
-import squants.space.{CubicMeters, Litres, Microlitres, Millilitres, Nanolitres}
+import squants.space.{ CubicMeters, Litres, Microlitres, Millilitres, Nanolitres }
 
 import scala.util.Try
 
@@ -20,7 +20,7 @@ import scala.util.Try
  * @param value Double
  */
 final class Density private (val value: Double, val unit: DensityUnit)
-    extends Quantity[Density] {
+  extends Quantity[Density] {
 
   def dimension: Dimension[Density] = Density
 
@@ -56,12 +56,12 @@ object Density extends Dimension[Density] {
   def name = "Density"
   def primaryUnit: UnitOfMeasure[Density] & PrimaryUnit = KilogramsPerCubicMeter
   def siUnit: UnitOfMeasure[Density] & SiUnit = KilogramsPerCubicMeter
-  def units = Set(KilogramsPerCubicMeter,
+  def units = Set(
+    KilogramsPerCubicMeter,
     KilogramsPerLitre, GramsPerLitre, MilligramsPerLitre, MicrogramsPerLitre, NanogramsPerLitre,
     KilogramsPerMillilitre, GramsPerMillilitre, MilligramsPerMillilitre, MicrogramsPerMillilitre, NanogramsPerMillilitre,
     KilogramsPerMicrolitre, GramsPerMicrolitre, MilligramsPerMicrolitre, MicrogramsPerMicrolitre, NanogramsPerMicrolitre,
-    KilogramsPerNanolitre, GramsPerNanolitre, MilligramsPerNanolitre, MicrogramsPerNanolitre, NanogramsPerNanolitre
-  )
+    KilogramsPerNanolitre, GramsPerNanolitre, MilligramsPerNanolitre, MicrogramsPerNanolitre, NanogramsPerNanolitre)
 }
 
 trait DensityUnit extends UnitOfMeasure[Density] with UnitConverter {

@@ -10,8 +10,7 @@ object Platform {
   private[squants] def crossFormat(d: Double): String = {
     if (d.toLong == d) {
       "%.1f".format(d)
-    }
-    else {
+    } else {
       d.toString
     }
   }

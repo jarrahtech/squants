@@ -1,15 +1,15 @@
 package squants.electro
 
 import squants.mass.Kilograms
-import squants.{AbstractQuantityNumeric, Dimension, Mass, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure}
+import squants.{ AbstractQuantityNumeric, Dimension, Mass, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure }
 
 /**
-  *
-  * @author Nicolas Vinuesa
-  * @since 1.4
-  *
-  * @param value Double
-  */
+ *
+ * @author Nicolas Vinuesa
+ * @since 1.4
+ *
+ * @param value Double
+ */
 final class ElectricChargeMassRatio private (val value: Double, val unit: ElectricChargeMassRatioUnit)
   extends Quantity[ElectricChargeMassRatio] {
 

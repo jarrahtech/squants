@@ -8,9 +8,9 @@
 
 package squants.motion
 
-import squants.{AbstractQuantityNumeric, Dimension, PrimaryUnit, Quantity, SiUnit, UnitOfMeasure}
-import squants.mass.{Kilograms, Mass}
-import squants.time.{SecondTimeIntegral, Seconds, TimeIntegral, TimeSquared}
+import squants.{ AbstractQuantityNumeric, Dimension, PrimaryUnit, Quantity, SiUnit, UnitOfMeasure }
+import squants.mass.{ Kilograms, Mass }
+import squants.time.{ SecondTimeIntegral, Seconds, TimeIntegral, TimeSquared }
 
 /**
  * @author  garyKeorkunian
@@ -19,9 +19,9 @@ import squants.time.{SecondTimeIntegral, Seconds, TimeIntegral, TimeSquared}
  * @param value Double
  */
 final class Momentum private (val value: Double, val unit: MomentumUnit)
-    extends Quantity[Momentum]
-    with TimeIntegral[Force]
-    with SecondTimeIntegral[Yank] {
+  extends Quantity[Momentum]
+  with TimeIntegral[Force]
+  with SecondTimeIntegral[Yank] {
 
   def dimension = Momentum
 

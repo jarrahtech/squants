@@ -18,7 +18,7 @@ import squants.space.Acres
  * @param value Double
  */
 final class AreaDensity private (val value: Double, val unit: AreaDensityUnit)
-    extends Quantity[AreaDensity] {
+  extends Quantity[AreaDensity] {
 
   def dimension = AreaDensity
 
@@ -53,20 +53,20 @@ object KilogramsPerSquareMeter extends AreaDensityUnit with PrimaryUnit with SiU
 
 object KilogramsPerHectare extends AreaDensityUnit with UnitConverter {
   val symbol = "kg/hectare"
-  val conversionFactor = 1/(100*100d)
+  val conversionFactor = 1 / (100 * 100d)
 }
 
 object GramsPerSquareCentimeter extends AreaDensityUnit with UnitConverter with SiUnit {
   val symbol = "g/cm²"
-  val conversionFactor = (100*100d)/1000d
+  val conversionFactor = (100 * 100d) / 1000d
 }
 
 object PoundsPerAcre extends AreaDensityUnit with UnitConverter {
   val symbol = s"${Pounds.symbol}/${Acres.symbol}"
   // Base unit is kg/m^2
-  import squants.mass.MassConversions.{pound, kilogram}
-  import squants.space.AreaConversions.{acre, squareMeter}
-  val conversionFactor = (pound/kilogram) / (acre/squareMeter)
+  import squants.mass.MassConversions.{ pound, kilogram }
+  import squants.space.AreaConversions.{ acre, squareMeter }
+  val conversionFactor = (pound / kilogram) / (acre / squareMeter)
 }
 
 object AreaDensityConversions {

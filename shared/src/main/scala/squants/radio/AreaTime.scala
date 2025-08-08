@@ -17,13 +17,13 @@ import squants.space.SquareMeters
  * @param value Double
  */
 final class AreaTime private (val value: Double, val unit: AreaTimeUnit)
-    extends Quantity[AreaTime] {
+  extends Quantity[AreaTime] {
 
   def dimension = AreaTime
 
-  def /(that: Area): Time = 
+  def /(that: Area): Time =
     Seconds(this.toSquareMeterSeconds / that.toSquareMeters)
-  def /(that: Time): Area = 
+  def /(that: Time): Area =
     SquareMeters(this.toSquareMeterSeconds / that.toSeconds)
 
   def toSquareMeterSeconds = to(SquareMeterSeconds)
@@ -35,9 +35,10 @@ final class AreaTime private (val value: Double, val unit: AreaTimeUnit)
  */
 object AreaTime extends Dimension[AreaTime] {
   private[radio] def apply[A](n: A, unit: AreaTimeUnit)(
-    implicit num: Numeric[A]) = 
+    implicit
+    num: Numeric[A]) =
     new AreaTime(num.toDouble(n), unit)
-  def apply(area: Area, time: Time): AreaTime = 
+  def apply(area: Area, time: Time): AreaTime =
     SquareMeterSeconds(area.toSquareMeters * time.toSeconds)
   def apply(value: Any) = parse(value)
   def name = "AreaTime"

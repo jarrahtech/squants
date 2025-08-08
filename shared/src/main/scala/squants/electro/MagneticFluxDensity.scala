@@ -17,7 +17,7 @@ import squants._
  * @param value value in [[squants.electro.Teslas]]
  */
 final class MagneticFluxDensity private (val value: Double, val unit: MagneticFluxDensityUnit)
-    extends Quantity[MagneticFluxDensity] {
+  extends Quantity[MagneticFluxDensity] {
 
   def dimension = MagneticFluxDensity
 

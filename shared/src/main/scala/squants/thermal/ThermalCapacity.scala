@@ -22,7 +22,7 @@ import squants.energy.{ Energy, Joules }
  * @param value the value in [[squants.thermal.JoulesPerKelvin]]
  */
 final class ThermalCapacity private (val value: Double, val unit: ThermalCapacityUnit)
-    extends Quantity[ThermalCapacity] {
+  extends Quantity[ThermalCapacity] {
 
   def dimension = ThermalCapacity
 

@@ -19,8 +19,8 @@ import squants.time._
  * @param value Double
  */
 final class VolumeFlow private (val value: Double, val unit: VolumeFlowRateUnit)
-    extends Quantity[VolumeFlow]
-    with TimeDerivative[Volume] {
+  extends Quantity[VolumeFlow]
+  with TimeDerivative[Volume] {
 
   def dimension = VolumeFlow
 

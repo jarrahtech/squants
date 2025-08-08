@@ -17,7 +17,7 @@ import squants._
  */
 final class Activity private (
   val value: Double, val unit: ActivityUnit)
-    extends Quantity[Activity] {
+  extends Quantity[Activity] {
 
   def dimension = Activity
 
@@ -31,7 +31,8 @@ final class Activity private (
 
 object Activity extends Dimension[Activity] {
   private[radio] def apply[A](n: A, unit: ActivityUnit)(
-    implicit num: Numeric[A]) = 
+    implicit
+    num: Numeric[A]) =
     new Activity(num.toDouble(n), unit)
   def apply(value: Any) = parse(value)
   def name = "Activity"
@@ -40,8 +41,8 @@ object Activity extends Dimension[Activity] {
   def units = Set(Becquerels, Curies, Rutherfords)
 }
 
-trait ActivityUnit 
-    extends UnitOfMeasure[Activity] with UnitConverter {
+trait ActivityUnit
+  extends UnitOfMeasure[Activity] with UnitConverter {
   def apply[A](n: A)(implicit num: Numeric[A]) = Activity(n, this)
 }
 
@@ -65,12 +66,13 @@ object ActivityConversions {
   lazy val becquerel = Becquerels(1)
 
   implicit class ActivityConversions[A](n: A)(
-    implicit num: Numeric[A]) {
+    implicit
+    num: Numeric[A]) {
     def curies = Curies(n)
     def rutherfords = Rutherfords(n)
     def becquerels = Becquerels(n)
   }
 
-  implicit object ActivityNumeric 
-      extends AbstractQuantityNumeric[Activity](Activity.primaryUnit)
+  implicit object ActivityNumeric
+    extends AbstractQuantityNumeric[Activity](Activity.primaryUnit)
 }

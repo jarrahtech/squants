@@ -1,15 +1,15 @@
 package squants.electro
 
 import squants.space.Meters
-import squants.{AbstractQuantityNumeric, Area, Dimension, Length, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure}
+import squants.{ AbstractQuantityNumeric, Area, Dimension, Length, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure }
 
 /**
-  *
-  * @author Nicolas Vinuesa
-  * @since 1.4
-  *
-  * @param value Double
-  */
+ *
+ * @author Nicolas Vinuesa
+ * @since 1.4
+ *
+ * @param value Double
+ */
 final class ElectricCurrentDensity private (val value: Double, val unit: ElectricCurrentDensityUnit)
   extends Quantity[ElectricCurrentDensity] {
 

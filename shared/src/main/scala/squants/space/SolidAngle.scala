@@ -20,7 +20,7 @@ import squants.radio.RadiantIntensity
  * @param value value in [[squants.space.SquaredRadians]]
  */
 final class SolidAngle private (val value: Double, val unit: SolidAngleUnit)
-    extends Quantity[SolidAngle] {
+  extends Quantity[SolidAngle] {
 
   def dimension = SolidAngle
 

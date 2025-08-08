@@ -18,8 +18,8 @@ import squants.time.{ Seconds, TimeDerivative }
  * @param value Double
  */
 final class PressureChange private (val value: Double, val unit: PressureChangeUnit)
-    extends Quantity[PressureChange]
-    with TimeDerivative[Pressure] {
+  extends Quantity[PressureChange]
+  with TimeDerivative[Pressure] {
 
   def dimension = PressureChange
 

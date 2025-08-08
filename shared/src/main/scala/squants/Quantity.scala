@@ -156,12 +156,12 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
   def rint: A = unit(math.rint(value))
 
   /**
-    * Returns the Quantity with its coefficient value rounded using scale and mode.  The unit is maintained.
-    *
-    * @param scale Int - scale of the value to be returned
-    * @param mode RoundingMode - defaults to HALF_EVEN
-    * @return Quantity
-    */
+   * Returns the Quantity with its coefficient value rounded using scale and mode.  The unit is maintained.
+   *
+   * @param scale Int - scale of the value to be returned
+   * @param mode RoundingMode - defaults to HALF_EVEN
+   * @return Quantity
+   */
   def rounded(scale: Int, mode: RoundingMode = RoundingMode.HALF_EVEN): A = unit(BigDecimal(value).setScale(scale, mode))
 
   /**
@@ -259,7 +259,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    */
   def to(uom: UnitOfMeasure[A]): Double = uom match {
     case u if u == this.unit => value
-    case _                   => uom.convertTo(this.unit.convertFrom(value))
+    case _ => uom.convertTo(this.unit.convertFrom(value))
   }
 
   /**
@@ -269,7 +269,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    */
   def in(uom: UnitOfMeasure[A]) = uom match {
     case u if u == this.unit => this
-    case _                   => uom(uom.convertTo(this.unit.convertFrom(value)))
+    case _ => uom(uom.convertTo(this.unit.convertFrom(value)))
   }
 
   /**

@@ -17,7 +17,7 @@ import squants._
  * @param value value in [[squants.electro.Farads]]
  */
 final class Capacitance private (val value: Double, val unit: CapacitanceUnit)
-    extends Quantity[Capacitance] {
+  extends Quantity[Capacitance] {
 
   def dimension = Capacitance
 

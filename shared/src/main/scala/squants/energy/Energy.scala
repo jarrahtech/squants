@@ -9,12 +9,12 @@
 package squants.energy
 
 import squants._
-import squants.electro.{Coulombs, ElectricCharge, ElectricPotential, Volts}
-import squants.mass.{ChemicalAmount, Kilograms}
-import squants.motion.{NewtonMeters, Newtons, Torque}
+import squants.electro.{ Coulombs, ElectricCharge, ElectricPotential, Volts }
+import squants.mass.{ ChemicalAmount, Kilograms }
+import squants.motion.{ NewtonMeters, Newtons, Torque }
 import squants.space.CubicMeters
-import squants.thermal.{JoulesPerKelvin, Kelvin, ThermalCapacity}
-import squants.time.{Time, _}
+import squants.thermal.{ JoulesPerKelvin, Kelvin, ThermalCapacity }
+import squants.time.{ Time, _ }
 import squants.radio.{ Irradiance, ParticleFlux, WattsPerSquareMeter }
 
 /**
@@ -26,9 +26,9 @@ import squants.radio.{ Irradiance, ParticleFlux, WattsPerSquareMeter }
  * @param value value in [[squants.energy.WattHours]]
  */
 final class Energy private (val value: Double, val unit: EnergyUnit)
-    extends Quantity[Energy]
-    with TimeIntegral[Power]
-    with SecondTimeIntegral[PowerRamp] {
+  extends Quantity[Energy]
+  with TimeIntegral[Power]
+  with SecondTimeIntegral[PowerRamp] {
 
   def dimension = Energy
 
@@ -87,9 +87,9 @@ final class Energy private (val value: Double, val unit: EnergyUnit)
   def toErgs = to(Ergs)
 
   /**
-    * Energy and torque have the same unit, so convert appropriately
-    * @return numerically equivalent value in newton-meters
-    */
+   * Energy and torque have the same unit, so convert appropriately
+   * @return numerically equivalent value in newton-meters
+   */
   def asTorque = NewtonMeters(toJoules)
 }
 

@@ -20,7 +20,7 @@ import squants.space.CubicMeters
  * @param value value in [[squants.energy.WattHours]]
  */
 final class EnergyDensity private (val value: Double, val unit: EnergyDensityUnit)
-    extends Quantity[EnergyDensity] {
+  extends Quantity[EnergyDensity] {
 
   def dimension = EnergyDensity
 

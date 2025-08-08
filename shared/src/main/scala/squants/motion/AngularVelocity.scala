@@ -9,8 +9,8 @@
 package squants.motion
 
 import squants._
-import squants.space.{Degrees, Gradians, Turns}
-import squants.time.{TimeDerivative, TimeIntegral}
+import squants.space.{ Degrees, Gradians, Turns }
+import squants.time.{ TimeDerivative, TimeIntegral }
 
 /**
  * @author  garyKeorkunian
@@ -20,7 +20,7 @@ import squants.time.{TimeDerivative, TimeIntegral}
  *
  */
 final class AngularVelocity private (val value: Double, val unit: AngularVelocityUnit)
-    extends Quantity[AngularVelocity] with TimeDerivative[Angle] with TimeIntegral[AngularAcceleration]{
+  extends Quantity[AngularVelocity] with TimeDerivative[Angle] with TimeIntegral[AngularAcceleration] {
   def dimension = AngularVelocity
 
   def toRadiansPerSecond = to(RadiansPerSecond)
@@ -31,11 +31,11 @@ final class AngularVelocity private (val value: Double, val unit: AngularVelocit
   def toTurnsPerSecond = to(TurnsPerSecond)
 
   /**
-    * linear velocity of an object rotating with this angular velocity
-    * and the given radius from the center of rotation
-    * @param radius the distance from the center of rotation
-    * @return linear velocity with given angular velocity and radius
-    */
+   * linear velocity of an object rotating with this angular velocity
+   * and the given radius from the center of rotation
+   * @param radius the distance from the center of rotation
+   * @return linear velocity with given angular velocity and radius
+   */
   def onRadius(radius: Length): Velocity = toRadiansPerSecond * radius / Seconds(1)
 
   protected[squants] def timeIntegrated: Angle = Radians(toRadiansPerSecond)

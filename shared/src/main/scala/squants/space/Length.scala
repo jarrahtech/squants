@@ -24,9 +24,9 @@ import squants.time.{ SecondTimeIntegral, TimeIntegral, TimeSquared }
  * @param value value in  [[squants.space.Meters]]
  */
 final class Length private (val value: Double, val unit: LengthUnit)
-    extends Quantity[Length]
-    with TimeIntegral[Velocity]
-    with SecondTimeIntegral[Acceleration] {
+  extends Quantity[Length]
+  with TimeIntegral[Velocity]
+  with SecondTimeIntegral[Acceleration] {
 
   def dimension = Length
 
@@ -35,19 +35,19 @@ final class Length private (val value: Double, val unit: LengthUnit)
 
   def *(that: Length): Area = unit match {
     case Centimeters => SquareCentimeters(this.value * that.toCentimeters)
-    case Kilometers  => SquareKilometers(this.value * that.toKilometers)
-    case UsMiles     => SquareUsMiles(this.value * that.toUsMiles)
-    case Yards       => SquareYards(this.value * that.toYards)
-    case Feet        => SquareFeet(this.value * that.toFeet)
-    case Inches      => SquareInches(this.value * that.toInches)
-    case _           => SquareMeters(toMeters * that.toMeters)
+    case Kilometers => SquareKilometers(this.value * that.toKilometers)
+    case UsMiles => SquareUsMiles(this.value * that.toUsMiles)
+    case Yards => SquareYards(this.value * that.toYards)
+    case Feet => SquareFeet(this.value * that.toFeet)
+    case Inches => SquareInches(this.value * that.toInches)
+    case _ => SquareMeters(toMeters * that.toMeters)
   }
 
   def *(that: Area): Volume = unit match {
-    case Yards  => CubicYards(this.value * that.toSquareYards)
-    case Feet   => CubicFeet(this.value * that.toSquareFeet)
+    case Yards => CubicYards(this.value * that.toSquareYards)
+    case Feet => CubicFeet(this.value * that.toSquareFeet)
     case Inches => CubicInches(this.value * that.toSquareInches)
-    case _      => CubicMeters(this.toMeters * that.toSquareMeters)
+    case _ => CubicMeters(this.toMeters * that.toSquareMeters)
   }
 
   def *(that: Force): Energy = Joules(this.toMeters * that.toNewtons)

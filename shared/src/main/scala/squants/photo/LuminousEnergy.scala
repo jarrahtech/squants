@@ -17,8 +17,8 @@ import squants.time.{ Seconds, TimeIntegral }
  * @param value value in [[squants.photo.LumenSeconds]]
  */
 final class LuminousEnergy private (val value: Double, val unit: LuminousEnergyUnit)
-    extends Quantity[LuminousEnergy]
-    with TimeIntegral[LuminousFlux] {
+  extends Quantity[LuminousEnergy]
+  with TimeIntegral[LuminousFlux] {
 
   def dimension = LuminousEnergy
 

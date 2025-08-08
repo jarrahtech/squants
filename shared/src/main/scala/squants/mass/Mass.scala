@@ -23,8 +23,8 @@ import squants.{ Acceleration, Energy => _, Velocity, _ }
  * @param value the value in the [[squants.mass.Grams]]
  */
 final class Mass private (val value: Double, val unit: MassUnit)
-    extends Quantity[Mass]
-    with TimeIntegral[MassFlow] {
+  extends Quantity[Mass]
+  with TimeIntegral[MassFlow] {
 
   def dimension = Mass
 
@@ -40,11 +40,11 @@ final class Mass private (val value: Double, val unit: MassUnit)
   def /(that: Area): AreaDensity = KilogramsPerSquareMeter(this.toKilograms / that.toSquareMeters)
 
   /**
-    * Moment of inertia of a point mass with with this mass and the given
-    * radius from the center of rotation
-    * @param radius length to center of rotation
-    * @return moment of inertia of a point mass with given mass and radius
-    */
+   * Moment of inertia of a point mass with with this mass and the given
+   * radius from the center of rotation
+   * @param radius length to center of rotation
+   * @return moment of inertia of a point mass with given mass and radius
+   */
   def onRadius(radius: Length): MomentOfInertia = KilogramsMetersSquared(toKilograms * radius.squared.toSquareMeters)
 
   def toNanograms = to(Nanograms)
@@ -189,7 +189,7 @@ object SolarMasses extends MassUnit {
   val symbol = "M☉"
 }
 
-object Dalton extends MassUnit  {
+object Dalton extends MassUnit {
   // Value with reference to NIST (https://physics.nist.gov/cgi-bin/cuu/Value?u)
   val conversionFactor = 1.66053906660e-27 * MetricSystem.Kilo
   val symbol = "Da"

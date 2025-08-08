@@ -18,7 +18,7 @@ import squants.space.Length
  * @param value value in [[squants.electro.SiemensPerMeter]]
  */
 final class Conductivity private (val value: Double, val unit: ConductivityUnit)
-    extends Quantity[Conductivity] {
+  extends Quantity[Conductivity] {
 
   def dimension = Conductivity
 

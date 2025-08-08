@@ -11,7 +11,7 @@ package squants.motion
 import squants.mass.Mass
 import squants.space._
 import squants.time._
-import squants.{AbstractQuantityNumeric, Dimension, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure}
+import squants.{ AbstractQuantityNumeric, Dimension, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure }
 
 /**
  * Represents a quantify of Velocity
@@ -22,10 +22,10 @@ import squants.{AbstractQuantityNumeric, Dimension, PrimaryUnit, Quantity, SiUni
  * @param value Double
  */
 final class Velocity private (val value: Double, val unit: VelocityUnit)
-    extends Quantity[Velocity]
-    with TimeIntegral[Acceleration]
-    with SecondTimeIntegral[Jerk]
-    with TimeDerivative[Length] {
+  extends Quantity[Velocity]
+  with TimeIntegral[Acceleration]
+  with SecondTimeIntegral[Jerk]
+  with TimeDerivative[Length] {
 
   def dimension = Velocity
 

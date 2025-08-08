@@ -17,7 +17,7 @@ import squants._
  * @param value value in [[squants.electro.Siemens]]
  */
 final class ElectricalConductance private (val value: Double, val unit: ElectricalConductanceUnit)
-    extends Quantity[ElectricalConductance] {
+  extends Quantity[ElectricalConductance] {
 
   def dimension = ElectricalConductance
 

@@ -1,17 +1,17 @@
 package squants.electro
 
 import squants.space.Meters
-import squants.{AbstractQuantityNumeric, Dimension, Length, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure}
+import squants.{ AbstractQuantityNumeric, Dimension, Length, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure }
 
 /**
-  *
-  * @author Nicolas Vinuesa
-  * @since 1.4
-  *
-  * @param value Double
-  */
+ *
+ * @author Nicolas Vinuesa
+ * @since 1.4
+ *
+ * @param value Double
+ */
 final class Permittivity private (val value: Double, val unit: PermittivityUnit)
-    extends Quantity[Permittivity] {
+  extends Quantity[Permittivity] {
 
   def dimension = Permittivity
 

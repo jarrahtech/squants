@@ -8,7 +8,7 @@
 
 package squants
 
-import squants.time.{Frequency, Hertz, TimeIntegral}
+import squants.time.{ Frequency, Hertz, TimeIntegral }
 
 /**
  * Represents a quantity of some thing for which there is no dimension.
@@ -22,8 +22,8 @@ import squants.time.{Frequency, Hertz, TimeIntegral}
  * @param value Double the amount
  */
 final class Dimensionless private (val value: Double, val unit: DimensionlessUnit)
-    extends Quantity[Dimensionless]
-    with TimeIntegral[Frequency] {
+  extends Quantity[Dimensionless]
+  with TimeIntegral[Frequency] {
 
   def dimension = Dimensionless
 

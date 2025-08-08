@@ -22,7 +22,7 @@ import squants.motion.Newtons
  * @param value value in [[squants.electro.HenriesPerMeter]]
  */
 final class Permeability private (val value: Double, val unit: PermeabilityUnit)
-    extends Quantity[Permeability] {
+  extends Quantity[Permeability] {
 
   val dimension = Permeability
 

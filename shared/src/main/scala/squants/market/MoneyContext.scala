@@ -27,17 +27,17 @@ package squants.market
  * @param rates Collection of Exchange Rates used for currency conversions
  */
 case class MoneyContext(
-    defaultCurrency: Currency,
-    currencies: Set[Currency],
-    rates: Seq[CurrencyExchangeRate],
-    allowIndirectConversions: Boolean = true) {
+  defaultCurrency: Currency,
+  currencies: Set[Currency],
+  rates: Seq[CurrencyExchangeRate],
+  allowIndirectConversions: Boolean = true) {
 
   lazy val currencyMap = currencies.map { (c: Currency) => c.code -> c }.toMap
 
   /**
-    * Custom implementation using SortedSets to ensure consistent output
-    * @return String representation of this instance
-    */
+   * Custom implementation using SortedSets to ensure consistent output
+   * @return String representation of this instance
+   */
   override def toString: String = string
   private lazy val string = {
     val cSet = currencies.map(_.toString).toSeq.sorted.mkString(",")
@@ -85,7 +85,7 @@ case class MoneyContext(
 
         curs.headOption match {
           case Some(cur) => Some(CurrencyExchangeRate(convert(cur(1), curA), convert(cur(1), curB)))
-          case None      => None
+          case None => None
         }
     }
   }
@@ -109,7 +109,7 @@ case class MoneyContext(
       case Some(rate) => rate.convert(money)
       case _ if allowIndirectConversions => indirectRateFor(money.currency, currency) match {
         case Some(crossRate) => crossRate.convert(money)
-        case None            => throw new NoSuchExchangeRateException(s"Rate for currency pair (${money.currency} / $currency)")
+        case None => throw new NoSuchExchangeRateException(s"Rate for currency pair (${money.currency} / $currency)")
       }
       case _ => throw new NoSuchExchangeRateException(s"Rate for currency pair (${money.currency} / $currency)")
     }
@@ -161,16 +161,16 @@ case class MoneyContext(
     else 0
 
   /**
-    * Create a copy of this context with additional currencies added to the existing set
-    * @param additionalCurrencies Set[Currency]
-    * @return
-    */
-  def withAdditionalCurrencies(additionalCurrencies: Set[Currency]) = copy (currencies = currencies ++ additionalCurrencies)
+   * Create a copy of this context with additional currencies added to the existing set
+   * @param additionalCurrencies Set[Currency]
+   * @return
+   */
+  def withAdditionalCurrencies(additionalCurrencies: Set[Currency]) = copy(currencies = currencies ++ additionalCurrencies)
 
   /**
-    * Create a copy of this context with a new list of rates
-    * @param rates List[CurrencyExchangeRate]
-    * @return
-    */
+   * Create a copy of this context with a new list of rates
+   * @param rates List[CurrencyExchangeRate]
+   * @return
+   */
   def withExchangeRates(rates: List[CurrencyExchangeRate]) = copy(rates = rates)
 }

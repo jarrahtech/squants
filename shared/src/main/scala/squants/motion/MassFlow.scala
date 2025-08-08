@@ -19,8 +19,8 @@ import squants.time.{ Seconds, Time, TimeDerivative }
  * @param value Double
  */
 final class MassFlow private (val value: Double, val unit: MassFlowUnit)
-    extends Quantity[MassFlow]
-    with TimeDerivative[Mass] {
+  extends Quantity[MassFlow]
+  with TimeDerivative[Mass] {
 
   def dimension = MassFlow
 

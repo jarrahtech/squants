@@ -19,7 +19,7 @@ import squants.space.{ Meters, SquaredRadians }
  * @param value Double
  */
 final class SpectralIntensity private (val value: Double, val unit: SpectralIntensityUnit)
-    extends Quantity[SpectralIntensity] {
+  extends Quantity[SpectralIntensity] {
 
   def dimension = SpectralIntensity
 

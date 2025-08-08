@@ -1,18 +1,18 @@
 package squants.mass
 
-import squants.motion.{AngularAcceleration, NewtonMeters, Torque}
-import squants.space.{Feet, Meters}
-import squants.{AbstractQuantityNumeric, Dimension, Length, PrimaryUnit, Quantity, SiBaseUnit, UnitConverter, UnitOfMeasure}
+import squants.motion.{ AngularAcceleration, NewtonMeters, Torque }
+import squants.space.{ Feet, Meters }
+import squants.{ AbstractQuantityNumeric, Dimension, Length, PrimaryUnit, Quantity, SiBaseUnit, UnitConverter, UnitOfMeasure }
 
 /**
-  *
-  * @author paxelord
-  * @since 1.3
-  *
-  * @param value Double
-  */
+ *
+ * @author paxelord
+ * @since 1.3
+ *
+ * @param value Double
+ */
 final class MomentOfInertia private (val value: Double, val unit: MomentOfInertiaUnit)
-    extends Quantity[MomentOfInertia]{
+  extends Quantity[MomentOfInertia] {
 
   def dimension = MomentOfInertia
 
@@ -26,11 +26,11 @@ final class MomentOfInertia private (val value: Double, val unit: MomentOfInerti
   }
 
   /**
-    * For a point mass with the given MomentOfInertia rotating with a center of
-    * rotation at the given radius, return the mass of the point mass
-    * @param radius distance to axis of rotation
-    * @return mass of point mass with given radius and MomentOfInertia
-    */
+   * For a point mass with the given MomentOfInertia rotating with a center of
+   * rotation at the given radius, return the mass of the point mass
+   * @param radius distance to axis of rotation
+   * @return mass of point mass with given radius and MomentOfInertia
+   */
   def atCenter(radius: Length): Mass = {
     Kilograms(toKilogramsMetersSquared / radius.squared.toSquareMeters)
   }

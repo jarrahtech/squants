@@ -75,11 +75,11 @@ trait TimeIntegral[A <: Quantity[A] & TimeDerivative[?]] {
   def /(that: A): Time = that.time * (this.timeDerived / that)
 
   /**
-    * Returns the Time Derivative of this Quantity based on the Frequency this Quantity occurs
-    *
-    * @param that Frequency - the rate at which this Quantity occurs
-    * @return
-    */
+   * Returns the Time Derivative of this Quantity based on the Frequency this Quantity occurs
+   *
+   * @param that Frequency - the rate at which this Quantity occurs
+   * @return
+   */
   def *(that: Frequency): A = /(this.time) * (this.time * that).toEach
 }
 

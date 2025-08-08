@@ -18,9 +18,9 @@ import squants.time.TimeIntegral
  * @since 0.6.0
  * @param value value in [[squants.information.Bytes]]
  */
-final class Information private(val value: Double, val unit: InformationUnit)
-    extends Quantity[Information]
-    with TimeIntegral[DataRate] {
+final class Information private (val value: Double, val unit: InformationUnit)
+  extends Quantity[Information]
+  with TimeIntegral[DataRate] {
 
   def dimension = Information
 

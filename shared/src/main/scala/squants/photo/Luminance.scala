@@ -16,7 +16,7 @@ import squants._
  * @param value Double
  */
 final class Luminance private (val value: Double, val unit: LuminanceUnit)
-    extends Quantity[Luminance] {
+  extends Quantity[Luminance] {
 
   def dimension = Luminance
 

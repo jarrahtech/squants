@@ -17,7 +17,7 @@ import squants._
  * @param value in [[squants.mass.Moles]]
  */
 final class ChemicalAmount private (val value: Double, val unit: ChemicalAmountUnit)
-    extends Quantity[ChemicalAmount] {
+  extends Quantity[ChemicalAmount] {
 
   def dimension = ChemicalAmount
 

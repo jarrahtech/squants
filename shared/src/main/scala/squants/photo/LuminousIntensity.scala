@@ -17,7 +17,7 @@ import squants.space.{ SolidAngle, SquareMeters }
  * @param value value in [[squants.photo.Candelas]]
  */
 final class LuminousIntensity private (val value: Double, val unit: LuminousIntensityUnit)
-    extends Quantity[LuminousIntensity] {
+  extends Quantity[LuminousIntensity] {
 
   def dimension = LuminousIntensity
 

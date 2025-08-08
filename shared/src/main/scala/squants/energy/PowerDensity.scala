@@ -11,13 +11,13 @@ package squants.energy
 import squants._
 
 /**
-  * Represents a quantity of power density
-  *
-  * @author  Nicolas Vinuesa
-  * @since   1.4
-  *
-  * @param value value in [[squants.energy.WattsPerCubicMeter]]
-  */
+ * Represents a quantity of power density
+ *
+ * @author  Nicolas Vinuesa
+ * @since   1.4
+ *
+ * @param value value in [[squants.energy.WattsPerCubicMeter]]
+ */
 final class PowerDensity private (val value: Double, val unit: PowerDensityUnit)
   extends Quantity[PowerDensity] {
 

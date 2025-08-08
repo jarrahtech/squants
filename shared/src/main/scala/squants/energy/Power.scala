@@ -25,9 +25,9 @@ import squants.time.{ Hours, TimeDerivative, TimeIntegral }
  * @param value value in [[squants.energy.Watts]]
  */
 final class Power private (val value: Double, val unit: PowerUnit)
-    extends Quantity[Power]
-    with TimeDerivative[Energy]
-    with TimeIntegral[PowerRamp] {
+  extends Quantity[Power]
+  with TimeDerivative[Energy]
+  with TimeIntegral[PowerRamp] {
 
   def dimension = Power
 

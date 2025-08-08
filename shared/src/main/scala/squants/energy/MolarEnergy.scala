@@ -1,15 +1,15 @@
 package squants.energy
 
-import squants.mass.{ChemicalAmount, Moles}
-import squants.{AbstractQuantityNumeric, Dimension, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure}
+import squants.mass.{ ChemicalAmount, Moles }
+import squants.{ AbstractQuantityNumeric, Dimension, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure }
 
 /**
-  *
-  * @author Nicolas Vinuesa
-  * @since 1.4
-  *
-  * @param value Double
-  */
+ *
+ * @author Nicolas Vinuesa
+ * @since 1.4
+ *
+ * @param value Double
+ */
 final class MolarEnergy private (val value: Double, val unit: MolarEnergyUnit)
   extends Quantity[MolarEnergy] {
 

@@ -2,18 +2,18 @@ package squants.motion
 
 import squants.mass.MomentOfInertia
 import squants.space._
-import squants.time.{Seconds, Time, TimeDerivative}
-import squants.{AbstractQuantityNumeric, Dimension, Length, PrimaryUnit, Quantity, SiUnit, SquantifiedDouble, UnitConverter, UnitOfMeasure}
+import squants.time.{ Seconds, Time, TimeDerivative }
+import squants.{ AbstractQuantityNumeric, Dimension, Length, PrimaryUnit, Quantity, SiUnit, SquantifiedDouble, UnitConverter, UnitOfMeasure }
 
 /**
-  *
-  * @author paxelord
-  * @since 1.3
-  *
-  * @param value Double
-  */
+ *
+ * @author paxelord
+ * @since 1.3
+ *
+ * @param value Double
+ */
 final class AngularAcceleration private (val value: Double, val unit: AngularAccelerationUnit)
-    extends Quantity[AngularAcceleration] with TimeDerivative[AngularVelocity] {
+  extends Quantity[AngularAcceleration] with TimeDerivative[AngularVelocity] {
 
   def dimension = AngularAcceleration
 
@@ -25,13 +25,12 @@ final class AngularAcceleration private (val value: Double, val unit: AngularAcc
   def toArcsecondsPerSecondSquared = to(ArcsecondsPerSecondSquared)
 
   /**
-    * linear acceleration of an object rotating with this angular acceleration
-    * and the given radius from the center of rotation
-    * @param radius the distance from the center of rotation
-    * @return linear acceleration with given angular acceleration and radius
-    */
+   * linear acceleration of an object rotating with this angular acceleration
+   * and the given radius from the center of rotation
+   * @param radius the distance from the center of rotation
+   * @return linear acceleration with given angular acceleration and radius
+   */
   def onRadius(radius: Length): Acceleration = toRadiansPerSecondSquared * radius / Seconds(1).squared
-
 
   def *(that: MomentOfInertia): Torque = {
     NewtonMeters(this.toRadiansPerSecondSquared * that.toKilogramsMetersSquared)
@@ -65,7 +64,7 @@ trait AngularAccelerationUnit extends UnitOfMeasure[AngularAcceleration] with Un
   val conversionFactor: Double
 }
 
-object RadiansPerSecondSquared extends AngularAccelerationUnit with PrimaryUnit with SiUnit{
+object RadiansPerSecondSquared extends AngularAccelerationUnit with PrimaryUnit with SiUnit {
   val symbol = Radians.symbol + "/s²"
 }
 
@@ -89,7 +88,7 @@ object ArcminutesPerSecondSquared extends AngularAccelerationUnit {
   val conversionFactor = Arcminutes.conversionFactor
 }
 
-object ArcsecondsPerSecondSquared extends AngularAccelerationUnit{
+object ArcsecondsPerSecondSquared extends AngularAccelerationUnit {
   val symbol = Arcseconds.symbol + "/s²"
   val conversionFactor = Arcseconds.conversionFactor
 }

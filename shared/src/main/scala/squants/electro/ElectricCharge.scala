@@ -19,8 +19,8 @@ import squants.time.{ Time, TimeIntegral }
  * @param value value in [[squants.electro.Coulombs]]
  */
 final class ElectricCharge private (val value: Double, val unit: ElectricChargeUnit)
-    extends Quantity[ElectricCharge]
-    with TimeIntegral[ElectricCurrent] {
+  extends Quantity[ElectricCharge]
+  with TimeIntegral[ElectricCurrent] {
 
   def dimension = ElectricCharge
 

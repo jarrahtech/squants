@@ -56,12 +56,12 @@ trait Dimension[A <: Quantity[A]] {
    * @return Try[A]
    */
   protected def parse(value: Any): Try[A] = value match {
-    case s: String              => parseString(s)
-    case (v: Byte, u: String)   => parseTuple((v, u))
-    case (v: Short, u: String)  => parseTuple((v, u))
-    case (v: Int, u: String)    => parseTuple((v, u))
-    case (v: Long, u: String)   => parseTuple((v, u))
-    case (v: Float, u: String)  => parseTuple((v, u))
+    case s: String => parseString(s)
+    case (v: Byte, u: String) => parseTuple((v, u))
+    case (v: Short, u: String) => parseTuple((v, u))
+    case (v: Int, u: String) => parseTuple((v, u))
+    case (v: Long, u: String) => parseTuple((v, u))
+    case (v: Float, u: String) => parseTuple((v, u))
     case (v: Double, u: String) => parseTuple((v, u))
     case _ => Failure(QuantityParseException(s"Unable to parse $name", value.toString))
   }
@@ -69,10 +69,10 @@ trait Dimension[A <: Quantity[A]] {
   def parseString(s: String): Try[A] = {
     s match {
       case QuantityString(value, symbol) => Success(symbolToUnit(symbol).get(BigDecimal(value)))
-      case _                             => Failure(QuantityParseException(s"Unable to parse $name", s))
+      case _ => Failure(QuantityParseException(s"Unable to parse $name", s))
     }
   }
-  
+
   private lazy val QuantityString = ("^([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?) *(" + units.map { (u: UnitOfMeasure[A]) => u.symbol }.reduceLeft(_ + "|" + _) + ")$").r
 
   def parseTuple[N](t: (N, String))(implicit num: Numeric[N]): Try[A] = {
@@ -80,7 +80,7 @@ trait Dimension[A <: Quantity[A]] {
     val symbol = t._2
     symbolToUnit(symbol) match {
       case Some(unit) => Success(unit(value))
-      case None       => Failure(QuantityParseException(s"Unable to identify $name unit ${symbol}", s"(${Platform.crossFormat(num.toDouble(value))},${symbol})"))
+      case None => Failure(QuantityParseException(s"Unable to identify $name unit ${symbol}", s"(${Platform.crossFormat(num.toDouble(value))},${symbol})"))
     }
   }
 
