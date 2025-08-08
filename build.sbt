@@ -16,7 +16,7 @@ lazy val squants = crossProject(JSPlatform, JVMPlatform, NativePlatform).
   withoutSuffixFor(JVMPlatform).
   in(file(".")).
   settings(
-    name := "mapemounde",
+    name := "squants",
     version := "1.8.4",
 
     scalacOptions ++= Seq(

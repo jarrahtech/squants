@@ -1,6 +1,6 @@
 # Squants
 
-** Fork!
+## Fork
 
 This is a fork of [Typelevel's Squants](https://github.com/typelevel/squants) package. Done to update dependency version in my other projects.
 
