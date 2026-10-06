@@ -80,6 +80,12 @@ $S/sbtw.sh -batch 'clean; test'
 
 Run it in the background and read the log, because a full run takes several minutes.
 
+## sbt project ids
+
+The JVM project id is `squants` (the JVM suffix is dropped), not `squantsJVM`. The others are `squantsJS` and
+`squantsNative`. For one platform: `squants/test`, `squantsJS/test`, `squantsNative/test`. `squantsJVM` is only the Scala
+val name, so `sbt squantsJVM/test` fails with "Not a valid command".
+
 ## Known problems
 
 - **Maven Central 429s.** The sandbox shares an egress address and Central rate-limits bursts. Symptoms are
@@ -108,6 +114,13 @@ Run it in the background and read the log, because a full run takes several minu
   repositories override.
 - Add a setup script that does steps 1 to 3, so a new session starts with sbt ready. Use the `read_documentation` tool
   (topics `environment.setup_script` and `environment.network`) for how.
+
+## Observed on Scala 3.8.4 / sbt 1.13.0 (Task 1)
+
+JVM, JS and Native all pass 1008 ScalaTest tests and 65 ScalaCheck properties. `publishLocal` for all three platforms
+and a throwaway Scala 3.8.4 consumer project (run on JVM, JS and Native) also worked. For the consumer project, JS
+needs `scalaJSUseMainModuleInitializer := true` to run a `main`. Several first sbt starts on a new sbt version failed in
+the launcher on 429s; repeated `sbt about` runs (with 45 s pauses) warmed the cache until it started.
 
 ## Baseline (untouched checkout, Scala 3.7.1, sbt 1.11.2, JDK 21)
 
