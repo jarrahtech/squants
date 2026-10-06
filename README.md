@@ -88,17 +88,58 @@ How it behaves:
 - Works with `refineEither`, `refineOption` and `refineUnsafe` on JVM, Scala.js and Scala Native. The given is a runtime
   constraint (Iron's `RuntimeConstraint`), so it must be imported with `import squants.iron.given`.
 
+### Checking constants at compile time
+
+`Kilograms(5)` is a method call, so Iron cannot see the `5` inside it. For a constant you can write in code, `refined`
+builds the refined quantity from a number Iron has checked while compiling, so a bad constant is a compile error and not
+a runtime exception:
+
+```scala
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.autoRefine   // Iron's compile-time check of literals
+import squants.iron.*                       // the refined constructor
+import squants.iron.given
+import squants.mass.*
+
+def weigh(m: Mass :| Positive): Double = m.toKilograms
+
+val m: Mass :| Positive = Kilograms.refined[Positive](5.0)   // compiles
+weigh(Grams.refined[Positive](250.0))                         // compiles; 250 is a number of grams
+Kilograms.refined[Positive](-5.0)                             // does NOT compile
+Kilograms.refined[Positive](0.0)                              // does NOT compile
+
+val d: Double :| Positive = 5.0                               // a number checked once...
+Kilograms.refined(d)                                          // ...and reused; the constraint is inferred
+```
+
+Without `refined` the same constant is only checked when the program runs: `weigh(Kilograms(-5).refineUnsafe[Positive])`
+compiles and then throws.
+
+It is deliberately narrow:
+
+- **Only sign constraints** (`Positive`, `Positive0`, `Negative`, `Negative0`, and `Greater[0]`, `GreaterEqual[0]`,
+  `Less[0]`, `LessEqual[0]`). They are the ones that survive a change of unit: the number is in the unit you called
+  `refined` on, so `Greater[5]` would say nothing about kilograms (10 g is not more than 5 kg).
+  `Kilograms.refined[Greater[5]](10.0)` does not compile. If you have another constraint that is preserved by
+  multiplying by a positive factor, declare it with `given SignPreserving[MyConstraint] = SignPreserving.instance`.
+- **Only units that are a plain multiple of the SI unit.** `Celsius`, `Fahrenheit` and `Rankine` are not, so
+  `Celsius.refined[Positive](5.0)` does not compile (-10 degrees Celsius is above zero kelvin, so even the sign changes);
+  `Kelvin` is fine. `Money`'s currencies are not either.
+- **Only for constants.** A number that is only known at runtime (user input, a file, a calculation) is not a literal, so
+  `Kilograms.refined[Positive](input)` does not compile. Use `refineEither`, `refineOption` or `refineUnsafe` for those.
+- It needs Iron's `autoRefine` import for the compile-time check. (Iron's `.refine[C]` is not a compile-time check: in
+  Iron 3 it is a deprecated alias of the runtime `refineUnsafe`.)
+
 Limits:
 
 - **Arithmetic drops the refinement.** `m - Kilograms(10)` is a plain `Mass` and must be refined again.
 - **Conversion is `Double` arithmetic.** A value exactly on a boundary in another unit is converted before it is tested,
-  so in principle it can land one ulp on the wrong side of a strict or inclusive bound. The exact-boundary cases tested
+  so in principle it can land one ulp on the wrong side of a strict or inclusive bound (and a number small enough to
+  underflow to zero in the SI unit is the extreme case). The exact-boundary cases tested
   (kilograms, grams, tonnes, kilometres, hours, degrees Celsius and Fahrenheit) behave correctly, but there is no
   tolerance. Test against a boundary that is not exactly representable with care.
-- **No compile-time checking.** `Kilograms(5)` is a method call, not a literal, so Iron cannot check it at compile time and
-  `val m: Mass :| Positive = Kilograms(5)` does not compile. Refine at runtime as above. (A possible future addition is a
-  constructor that accepts a `Double` Iron has already checked at compile time, such as a `Double :| Positive` literal, and
-  returns `Mass :| Positive`; it was considered and deferred.)
+- **`Kilograms(5)` is not a constant to Iron.** `val m: Mass :| Positive = Kilograms(5)` does not compile. Use `refined`
+  (above) for constants and `refineEither`, `refineOption` or `refineUnsafe` for everything else.
 
 ### Current Versions
 Current Release: **1.6.0**
