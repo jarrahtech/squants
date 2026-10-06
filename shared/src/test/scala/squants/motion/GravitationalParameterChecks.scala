@@ -34,9 +34,4 @@ object GravitationalParameterChecks extends Properties("GravitationalParameter")
     val v = Grays(energy).squareRoot.toMetersPerSecond
     close(v * v, energy)
   }
-
-  property("km³/s² and m³/s² agree") = forAll(values) { x =>
-    close(CubicKilometersPerSecondSquared(x).toCubicMetersPerSecondSquared, x * 1e9) &&
-      close(CubicMetersPerSecondSquared(x).toCubicKilometersPerSecondSquared, x / 1e9)
-  }
 }

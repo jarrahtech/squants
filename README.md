@@ -215,9 +215,6 @@ Blackbody radiation by the Stefan–Boltzmann law, with the fourth power kept in
 `G * Mass` works), `StefanBoltzmann` (5.670374419e-8 W/(m²·K⁴), a `Double`) and `Boltzmann` (1.380649e-23 J/K, a
 `ThermalCapacity`). A code base that has used a rounded 5.67e-8 will see slightly different blackbody values.
 
-Dividing two temperatures still uses the left operand's scale (`Celsius(20) / Celsius(10)` is 2). A change to Kelvin
-was considered and deliberately not made.
-
 ### Current Versions
 Current Release: **1.6.0**
 ([API Docs](https://oss.sonatype.org/service/local/repositories/releases/archive/org/typelevel/squants_2.13/1.6.0/squants_2.13-1.6.0-javadoc.jar/!/index.html#squants.package))
