@@ -11,8 +11,8 @@ package squants.space
 import squants._
 import squants.energy.{ EnergyDensity, Joules }
 import squants.mass.{ ChemicalAmount, Kilograms }
-import squants.motion.{ CubicMetersPerSecond, VolumeFlow }
-import squants.time.TimeIntegral
+import squants.motion.{ CubicMetersPerSecond, GravitationalParameter, VolumeFlow }
+import squants.time.{ Seconds, TimeIntegral, TimeSquared }
 
 /**
  * Represents a quantity of Volume (three-dimensional space)
@@ -51,6 +51,8 @@ final class Volume private (val value: Double, val unit: VolumeUnit)
   }
 
   def /(that: Mass) = ??? // returns SpecificVolume (inverse of Density)
+  /** The period squared of an orbit whose semi-major axis cubed is this volume: `T² = a³ / mu`. */
+  def /(that: GravitationalParameter): TimeSquared = TimeSquared(Seconds(this.toCubicMeters / that.toCubicMetersPerSecondSquared), Seconds(1))
   def /(that: ChemicalAmount) = ??? // return MolarVolume
 
   def cubeRoot = Meters(math.cbrt(toCubicMeters))

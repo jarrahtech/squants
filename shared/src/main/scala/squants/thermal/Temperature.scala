@@ -11,6 +11,7 @@ package squants.thermal
 import squants._
 import squants.Platform.crossFormat
 import squants.energy.Joules
+import squants.radio.{Irradiance, WattsPerSquareMeter}
 import scala.util.{ Failure, Success, Try }
 
 /**
@@ -130,6 +131,9 @@ final class Temperature private (val value: Double, val unit: TemperatureScale)
   def toFahrenheitScale = toScale(Fahrenheit)
   def toCelsiusScale = toScale(Celsius)
   def toKelvinScale = toScale(Kelvin)
+
+  /** The irradiance a blackbody at this temperature radiates (Stefan-Boltzmann law): `E = sigma * T⁴`, with T in kelvin. */
+  def blackbodyIrradiance: Irradiance = WattsPerSquareMeter(PhysicalConstants.StefanBoltzmann * math.pow(toKelvinScale, 4))
 
   def toDegrees(unit: TemperatureScale) = convert(unit, withOffset = false).value
   def toFahrenheitDegrees = toDegrees(Fahrenheit)

@@ -11,6 +11,7 @@ package squants.radio
 import squants._
 import squants.energy.{ ErgsPerSecond, Watts, WattHours }
 import squants.space.{ SquareCentimeters, SquareMeters }
+import squants.thermal.Kelvin
 import squants.time.Hours
 
 /**
@@ -25,6 +26,8 @@ final class Irradiance private (val value: Double, val unit: IrradianceUnit)
   def dimension = Irradiance
 
   def *(that: Area): Power = Watts(this.toWattsPerSquareMeter * that.toSquareMeters)
+  /** The temperature of a blackbody that radiates this irradiance (Stefan-Boltzmann law): `T = (E / sigma)^(1/4)`. NaN if negative. */
+  def blackbodyTemperature: Temperature = Kelvin(math.pow(toWattsPerSquareMeter / PhysicalConstants.StefanBoltzmann, 0.25))
   // the Hours(1).toSeconds is to convert watt hours to watt seconds which
   // isn't a normal supported type in Squants
   def *(that: AreaTime): Energy = WattHours(

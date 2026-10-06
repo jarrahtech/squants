@@ -285,6 +285,14 @@ class TemperatureSpec extends AnyFlatSpec
     Kelvin(1) * JoulesPerKelvin(1) should be(Joules(1))
   }
 
+  it should "give the Irradiance a blackbody at that Temperature radiates (Stefan-Boltzmann law)" in {
+    // sigma * 100^4 = 5.670374419e-8 * 1e8 = 5.670374419 W/m²
+    Kelvin(100).blackbodyIrradiance.toWattsPerSquareMeter should be(5.670374419 +- 1e-9)
+    // the same temperature on another scale
+    Celsius(-173.15).blackbodyIrradiance.toWattsPerSquareMeter should be(5.670374419 +- 1e-9)
+    Kelvin(0).blackbodyIrradiance.toWattsPerSquareMeter should be(0.0)
+  }
+
   behavior of "TemperatureConversions"
 
   they should "provide aliases for single unit values" in {

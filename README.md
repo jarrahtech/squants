@@ -178,6 +178,46 @@ other way.
 - `clamp(value)` and `ratio(value)` take an `A` (the quantity type of the bounds) instead of a `Quantity[A]`, like the
   other methods.
 
+### Gravity and blackbody maths
+
+`GravitationalParameter` (μ = GM, in `m³/s²`, with units `CubicMetersPerSecondSquared` and
+`CubicKilometersPerSecondSquared`) and the helpers around it let orbital and radiation formulas stay typed end to end:
+
+```scala
+import squants.PhysicalConstants.G
+import squants.mass.{EarthMasses, SolarMasses}
+import squants.space.{AstronomicalUnits, EarthRadii}
+
+val mu = G * EarthMasses(1)                        // GravitationalParameter
+val g = mu / (EarthRadii(1) * EarthRadii(1))       // Acceleration, about 9.82 m/s²
+val escape = ((mu / EarthRadii(1)) * 2).squareRoot // Velocity, about 11.19 km/s
+
+val sun = G * SolarMasses(1)
+val a = AstronomicalUnits(1)
+val period = ((a * a * a) / sun).squareRoot * (2 * math.Pi) // Time, about 365.25 days
+```
+
+| Operation | Gives |
+|---|---|
+| `G * Mass` | `GravitationalParameter` |
+| `GravitationalParameter / Area` | `Acceleration` |
+| `GravitationalParameter / Acceleration` | `Area` |
+| `GravitationalParameter / Length` | `SpecificEnergy` |
+| `Volume / GravitationalParameter` | `TimeSquared` (so `.squareRoot` is a `Time`) |
+| `SpecificEnergy.squareRoot` | `Velocity` (NaN if negative) |
+| `Acceleration * Area`, `SpecificEnergy * Length`, `GravitationalParameter * TimeSquared` | the inverses: `GravitationalParameter`, `GravitationalParameter`, `Volume` |
+
+Blackbody radiation by the Stefan–Boltzmann law, with the fourth power kept inside the helper:
+`Kelvin(5772).blackbodyIrradiance` is the `Irradiance` a blackbody at that temperature radiates, and
+`irradiance.blackbodyTemperature` is the inverse.
+
+`PhysicalConstants` holds the CODATA 2018 values: `G` (6.67430e-11 m³/(kg·s²), a `GravitationalConstant` so that
+`G * Mass` works), `StefanBoltzmann` (5.670374419e-8 W/(m²·K⁴), a `Double`) and `Boltzmann` (1.380649e-23 J/K, a
+`ThermalCapacity`). A code base that has used a rounded 5.67e-8 will see slightly different blackbody values.
+
+Dividing two temperatures still uses the left operand's scale (`Celsius(20) / Celsius(10)` is 2). A change to Kelvin
+was considered and deliberately not made.
+
 ### Current Versions
 Current Release: **1.6.0**
 ([API Docs](https://oss.sonatype.org/service/local/repositories/releases/archive/org/typelevel/squants_2.13/1.6.0/squants_2.13-1.6.0-javadoc.jar/!/index.html#squants.package))
