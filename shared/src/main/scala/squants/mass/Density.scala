@@ -27,6 +27,7 @@ final class Density private (val value: Double, val unit: DensityUnit)
   def *(that: Volume): Mass = Kilograms(this.toKilogramsPerCubicMeter * that.toCubicMeters)
 
   def toKilogramsPerCubicMeter: Double = to(KilogramsPerCubicMeter)
+  def toEarthDensities: Double = to(EarthDensities)
   def toKilogramsPerLitre: Double = to(KilogramsPerLitre)
   def toGramsPerLitre: Double = to(GramsPerLitre)
   def toMilligramsPerLitre: Double = to(MilligramsPerLitre)
@@ -57,7 +58,7 @@ object Density extends Dimension[Density] {
   def primaryUnit: UnitOfMeasure[Density] & PrimaryUnit = KilogramsPerCubicMeter
   def siUnit: UnitOfMeasure[Density] & SiUnit = KilogramsPerCubicMeter
   def units = Set(
-    KilogramsPerCubicMeter,
+    KilogramsPerCubicMeter, EarthDensities,
     KilogramsPerLitre, GramsPerLitre, MilligramsPerLitre, MicrogramsPerLitre, NanogramsPerLitre,
     KilogramsPerMillilitre, GramsPerMillilitre, MilligramsPerMillilitre, MicrogramsPerMillilitre, NanogramsPerMillilitre,
     KilogramsPerMicrolitre, GramsPerMicrolitre, MilligramsPerMicrolitre, MicrogramsPerMicrolitre, NanogramsPerMicrolitre,
@@ -70,6 +71,11 @@ trait DensityUnit extends UnitOfMeasure[Density] with UnitConverter {
 
 object KilogramsPerCubicMeter extends DensityUnit with PrimaryUnit with SiUnit {
   val symbol = "kg/m³"
+}
+
+object EarthDensities extends DensityUnit {
+  val conversionFactor = 5513 * KilogramsPerCubicMeter.conversionFactor
+  val symbol = "D🜨"
 }
 
 object KilogramsPerLitre extends DensityUnit {

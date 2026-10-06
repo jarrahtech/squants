@@ -2,7 +2,7 @@ package squants
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import squants.mass.Kilograms
+import squants.mass.{Grams, Kilograms}
 import squants.space.Meters
 
 class QuantityBoundsTest extends AnyFlatSpec with Matchers {
@@ -20,7 +20,8 @@ class QuantityBoundsTest extends AnyFlatSpec with Matchers {
   }
 
   it should "throw an IllegalArgumentException when the lower bound > upper bound" in {
-    an[IllegalArgumentException] should be thrownBy QuantityBounds(Meters(2), Meters(1))
+    val e = the[IllegalArgumentException] thrownBy QuantityBounds(Meters(2), Meters(1))
+    e.getMessage should include("Lower bound must be equal or smaller than upper")
   }
 
   it should "know if it is a point (ie lower should be(upper)" in {
@@ -47,8 +48,7 @@ class QuantityBoundsTest extends AnyFlatSpec with Matchers {
 
   it should "shiftLower" in {
     bds1.shiftLower(Kilograms(1)) should be(QuantityBounds(Kilograms(4), Kilograms(5)))
-    (bds1 += Kilograms(1)) should be(QuantityBounds(Kilograms(4), Kilograms(5)))
-    (bds2 -= Meters(1)) should be(QuantityBounds(Meters(0), Meters(1)))
+    bds2.shiftLower(Meters(-1)) should be(QuantityBounds(Meters(0), Meters(1)))
   }
 
   it should "expand" in {
@@ -58,7 +58,6 @@ class QuantityBoundsTest extends AnyFlatSpec with Matchers {
 
   it should "shrink" in {
     bds1.shrink(Kilograms(1)) should be(QuantityBounds(Kilograms(4), Kilograms(4)))
-    (bds1 +- Kilograms(1)) should be(QuantityBounds(Kilograms(4), Kilograms(4)))
   }
 
   it should "containsPoint" in {
@@ -117,5 +116,63 @@ class QuantityBoundsTest extends AnyFlatSpec with Matchers {
     bds1.lerp(0.1) should be(Kilograms(3.2))
     bds1.mid should be(Kilograms(4))
     bds2.mid should be(Meters(1))
+  }
+
+  it should "no longer offer the aliases that look like mutation or clash with Quantity's +-, or accept a plain Quantity" in {
+    assertDoesNotCompile("bds1 += Kilograms(1)")
+    assertDoesNotCompile("bds1 -= Kilograms(1)")
+    assertDoesNotCompile("bds1 +- Kilograms(1)")
+    // clamp and ratio take an A, like the other methods, not a Quantity[A]
+    assertDoesNotCompile("val q: squants.Quantity[squants.mass.Mass] = Kilograms(4); bds1.clamp(q)")
+    assertDoesNotCompile("val q: squants.Quantity[squants.mass.Mass] = Kilograms(4); bds1.ratio(q)")
+  }
+
+  it should "show that contains excludes the ends and includes counts them" in {
+    bds1.contains(bds1.lower) should be(false)
+    bds1.contains(bds1.upper) should be(false)
+    bds1.includes(bds1.lower) should be(true)
+    bds1.includes(bds1.upper) should be(true)
+    // a point contains nothing, not even itself, but includes itself
+    bds2.contains(bds2.lower) should be(false)
+    bds2.includes(bds2.lower) should be(true)
+  }
+
+  it should "clamp a value into the bounds" in {
+    bds1.clamp(Kilograms(2)) should be(Kilograms(3))
+    bds1.clamp(Kilograms(4)) should be(Kilograms(4))
+    bds1.clamp(Kilograms(6)) should be(Kilograms(5))
+    bds2.clamp(Meters(7)) should be(Meters(1))
+    // a value in another unit is compared in its own unit
+    bds1.clamp(Grams(6000)).toKilograms should be(5.0)
+    bds1.clamp(Grams(4000)).toKilograms should be(4.0)
+  }
+
+  it should "give the ratio of a value along the bounds" in {
+    bds1.ratio(Kilograms(3)) should be(0.0)
+    bds1.ratio(Kilograms(4)) should be(0.5)
+    bds1.ratio(Kilograms(5)) should be(1.0)
+    // outside the bounds the ratio extrapolates
+    bds1.ratio(Kilograms(6)) should be(1.5)
+    bds1.ratio(Kilograms(2)) should be(-0.5)
+    // in another unit
+    bds1.ratio(Grams(4000)) should be(0.5)
+    // a point has no length, so the ratio is undefined: 0/0 and x/0
+    bds2.ratio(Meters(1)).isNaN should be(true)
+    bds2.ratio(Meters(2)).isInfinite should be(true)
+  }
+
+  it should "lerp outside 0 to 1 and invert ratio" in {
+    bds1.lerp(0.0) should be(Kilograms(3))
+    bds1.lerp(1.0) should be(Kilograms(5))
+    bds1.lerp(1.5) should be(Kilograms(6))
+    bds1.lerp(-0.5) should be(Kilograms(2))
+    bds1.ratio(bds1.lerp(0.25)) should be(0.25)
+  }
+
+  it should "convert to and from a QuantityRange, a point having no range" in {
+    val range = QuantityRange(Kilograms(3), Kilograms(5))
+    QuantityBounds.fromRange(range) should be(bds1)
+    bds1.toRange should be(Some(range))
+    bds2.toRange should be(None)
   }
 }

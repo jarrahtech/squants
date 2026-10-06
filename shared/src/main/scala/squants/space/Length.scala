@@ -86,6 +86,7 @@ final class Length private (val value: Double, val unit: LengthUnit)
   def toGigaParsecs = to(GigaParsecs)
   def toSolarRadii = to(SolarRadii)
   def toNominalSolarRadii = to(NominalSolarRadii)
+  def toEarthRadii = to(EarthRadii)
   def toeV = to(ElectronVoltLength)
   def tomeV = to(MilliElectronVoltLength)
   def tokeV = to(KiloElectronVoltLength)
@@ -109,7 +110,7 @@ object Length extends Dimension[Length] with BaseDimension {
   def units = Set(Angstroms, Nanometers, Microns, Millimeters, Centimeters,
     Decimeters, Meters, Decameters, Hectometers, Kilometers,
     Inches, Feet, Yards, UsMiles, InternationalMiles, NauticalMiles,
-    AstronomicalUnits, LightYears, Parsecs, KiloParsecs, MegaParsecs, GigaParsecs, SolarRadii, NominalSolarRadii,
+    AstronomicalUnits, LightYears, Parsecs, KiloParsecs, MegaParsecs, GigaParsecs, SolarRadii, NominalSolarRadii, EarthRadii,
     ElectronVoltLength, MilliElectronVoltLength, KiloElectronVoltLength, MegaElectronVoltLength,
     GigaElectronVoltLength, TeraElectronVoltLength, PetaElectronVoltLength, ExaElectronVoltLength)
   def dimensionSymbol = "L"
@@ -241,6 +242,11 @@ object SolarRadii extends LengthUnit {
 object NominalSolarRadii extends LengthUnit {
   val conversionFactor = 6.957e8
   val symbol = "RN☉"
+}
+
+object EarthRadii extends LengthUnit {
+  val conversionFactor = 6371 * Kilometers.conversionFactor
+  val symbol = "R🜨"
 }
 
 object ElectronVoltLength extends LengthUnit {

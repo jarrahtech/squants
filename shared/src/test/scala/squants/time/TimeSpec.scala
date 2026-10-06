@@ -99,6 +99,23 @@ class TimeSpec extends AnyFlatSpec with Matchers {
     Days(1).toString(Days) should be("1.0 d")
   }
 
+  it should "support the Earth-relative units EarthYears, EarthMegaYears and EarthGigaYears" in {
+    EarthYears(10.22).toEarthYears should be(10.22)
+    EarthMegaYears(10.22).toEarthMegaYears should be(10.22)
+    EarthGigaYears(10.22).toEarthGigaYears should be(10.22)
+    Time("10.22 Y🜨").get should be(EarthYears(10.22))
+    Time("10.22 MY🜨").get should be(EarthMegaYears(10.22))
+    Time("10.22 BY🜨").get should be(EarthGigaYears(10.22))
+    EarthYears(1).toDays should be(365.2421897)
+    // Converting between two factor-based units is a multiply and a divide, so it can be one ulp out.
+    EarthMegaYears(1).toEarthYears should be(1e6 +- 1e-9)
+    EarthGigaYears(1).toEarthYears should be(1e9 +- 1e-6)
+    EarthYears(1).toString(EarthYears) should be("1.0 Y🜨")
+    EarthMegaYears(1).toString(EarthMegaYears) should be("1.0 MY🜨")
+    EarthGigaYears(1).toString(EarthGigaYears) should be("1.0 BY🜨")
+    Time.units.map(_.symbol).size should be(Time.units.size)
+  }
+
   it should "return TimeIntegral when multiplied by a TimeDerivative" in {
     Seconds(1) * MetersPerSecond(1) should be(Meters(1))
     Seconds(1) * MetersPerSecondSquared(1) should be(MetersPerSecond(1))

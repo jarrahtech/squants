@@ -43,6 +43,9 @@ final class Time private (val value: Double, val unit: TimeUnit)
   def toMinutes = to(Minutes)
   def toHours = to(Hours)
   def toDays = to(Days)
+  def toEarthYears = to(EarthYears)
+  def toEarthMegaYears = to(EarthMegaYears)
+  def toEarthGigaYears = to(EarthGigaYears)
 }
 
 object Time extends Dimension[Time] with BaseDimension {
@@ -75,7 +78,8 @@ object Time extends Dimension[Time] with BaseDimension {
   def name = "Time"
   def primaryUnit = Milliseconds
   def siUnit = Seconds
-  def units = Set(Nanoseconds, Microseconds, Milliseconds, Seconds, Minutes, Hours, Days)
+  def units = Set(Nanoseconds, Microseconds, Milliseconds, Seconds, Minutes, Hours, Days,
+    EarthYears, EarthMegaYears, EarthGigaYears)
   def dimensionSymbol = "T"
 }
 
@@ -115,6 +119,21 @@ object Hours extends TimeUnit {
 object Days extends TimeUnit {
   val conversionFactor = Hours.conversionFactor * Time.HoursPerDay
   val symbol = "d"
+}
+
+object EarthYears extends TimeUnit {
+  val conversionFactor = Days.conversionFactor * 365.2421897
+  val symbol = "Y🜨"
+}
+
+object EarthMegaYears extends TimeUnit {
+  val conversionFactor = EarthYears.conversionFactor * MetricSystem.Mega
+  val symbol = "MY🜨"
+}
+
+object EarthGigaYears extends TimeUnit {
+  val conversionFactor = EarthYears.conversionFactor * MetricSystem.Giga
+  val symbol = "BY🜨"
 }
 
 object TimeConversions {

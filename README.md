@@ -144,6 +144,40 @@ Limits:
 - **`Kilograms(5)` is not a constant to Iron.** `val m: Mass :| Positive = Kilograms(5)` does not compile. Use `refined`
   (above) for constants and `refineEither`, `refineOption` or `refineUnsafe` for everything else.
 
+### Earth-relative units
+
+Units for planetary-scale values, defined relative to the Earth in the way `SolarMasses` and `SolarRadii` are defined
+relative to the Sun. Each is in its dimension's `units`, so it can be parsed by symbol (`Mass("1.5 M🜨")`), and each
+quantity has a `toEarth…` accessor named after the unit (`toEarthMasses`, `toEarthRadii`, and so on):
+
+| Unit | Dimension | Definition | Symbol |
+|---|---|---|---|
+| `EarthMasses` | `Mass` | 5.972168e24 kg | `M🜨` |
+| `EarthRadii` | `Length` | 6371 km | `R🜨` |
+| `EarthDensities` | `Density` | 5513 kg/m³ | `D🜨` |
+| `EarthEscapeVelocities` | `Velocity` | 11186 m/s | `Vₑ🜨` |
+| `EarthYears` | `Time` | 365.2421897 days | `Y🜨` |
+| `EarthMegaYears` | `Time` | 1e6 `EarthYears` | `MY🜨` |
+| `EarthGigaYears` | `Time` | 1e9 `EarthYears` | `BY🜨` |
+
+Each factor is the table value times the factor of the unit in the Definition column, so a conversion between two
+factor-based units (for example `EarthMegaYears(1).toEarthYears`) is `Double` arithmetic and can be one ulp out.
+
+### `QuantityBounds`
+
+`QuantityBounds(lower, upper)` is this fork's own type, like `QuantityRange` but the bounds may be equal (a point).
+`contains` is strict (both ends excluded) and `includes` is inclusive (both ends count). `bounds.toRange` gives an
+`Option[QuantityRange]` (None for a point, which a range cannot represent) and `QuantityBounds.fromRange(range)` goes the
+other way.
+
+**Breaking changes in 1.10.0:**
+
+- The operator aliases `+=`, `-=` and `+-` were removed, because the first two read as mutation and `+-` already means
+  "plus or minus" on `Quantity`. Use `shiftLower(x)`, `shiftLower(-x)` and `shrink(x)`. The aliases `++`, `--`, `=+`,
+  `=-` and `-+` are unchanged. (`QuantityRange` still has its own `+=`, `-=` and `+-`.)
+- `clamp(value)` and `ratio(value)` take an `A` (the quantity type of the bounds) instead of a `Quantity[A]`, like the
+  other methods.
+
 ### Current Versions
 Current Release: **1.6.0**
 ([API Docs](https://oss.sonatype.org/service/local/repositories/releases/archive/org/typelevel/squants_2.13/1.6.0/squants_2.13-1.6.0-javadoc.jar/!/index.html#squants.package))
