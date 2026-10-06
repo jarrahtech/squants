@@ -6,7 +6,8 @@ This is a fork of [Typelevel's Squants](https://github.com/typelevel/squants) pa
 
 ### Fork build and requirements
 
-Fork version **1.9.0** (`com.jarrahtechnology:squants`), built for JVM, Scala.js and Scala Native.
+Fork version **1.10.0**, built for JVM, Scala.js and Scala Native. Two artifacts are published: `com.jarrahtechnology:squants`
+(core, no runtime dependencies) and `com.jarrahtechnology:squants-iron` (Iron refinement support, see below).
 
 - **Scala 3.8.4.** An artifact built with Scala 3.8 cannot be read by a 3.7 compiler, so consumers must use Scala 3.8
   or later.
@@ -14,8 +15,9 @@ Fork version **1.9.0** (`com.jarrahtechnology:squants`), built for JVM, Scala.js
   version 61); Scala 3.7's library was Java 8. The CI workflows are configured for Java 17.
 - Toolchain: sbt 2.0.10 (needs Java 17 or later), sbt-scalajs 1.22.0, sbt-scala-native 0.5.12,
   sbt-scalajs-crossproject and sbt-scala-native-crossproject 1.4.0, ScalaTest 3.2.20, ScalaCheck 1.20.0,
-  scalajs-stubs 1.1.0.
-- sbt project ids are `squants` (JVM), `squantsJS` and `squantsNative`.
+  scalajs-stubs 1.1.0, Iron 3.3.2 (only in `squants-iron`).
+- sbt project ids are `squants` (JVM), `squantsJS` and `squantsNative` for core, and `squantsIron`, `squantsIronJS` and
+  `squantsIronNative` for the Iron module.
 - Run the full test suite with `sbt testFull`. In sbt 2 `test` is incremental and its results are cached on disk, so
   `sbt test` can legitimately report "No tests to run". CI uses `testFull`.
 - Publishing goes to GitHub Packages through plain `build.sbt` settings (`publishSettings`), authenticated by the
@@ -29,6 +31,51 @@ Fork version **1.9.0** (`com.jarrahtechnology:squants`), built for JVM, Scala.js
 Not moved to the latest release:
 
 - **Scala 3.9 and 3.10** exist; the fork targets the 3.8 line.
+- **Iron 3.4.0-RC3** exists; the module uses the latest stable release, 3.3.2.
+
+### Iron refinement (`squants-iron`)
+
+The optional `squants-iron` module lets a quantity carry an [Iron](https://github.com/Iltotore/iron) constraint, for example
+`Mass :| Positive`, while staying `Double`-backed. It depends on core and on Iron 3.3.2 (the latest stable release);
+core itself does not depend on Iron. Add `com.jarrahtechnology %%% squants-iron % 1.10.0` and import the given where you
+refine quantities:
+
+```scala
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.*
+import squants.iron.given
+import squants.mass.*
+import squants.thermal.*
+
+Kilograms(5).refineEither[Positive]      // Right(5.0 kg)
+Kilograms(-5).refineEither[Positive]     // Left("Should be strictly positive")
+Kilograms(5).refineOption[Greater[3]]    // Some(5.0 kg)
+Kilograms(-5).refineUnsafe[Positive]     // throws IllegalArgumentException
+
+val m: Mass :| Positive = Kilograms(5).refineUnsafe[Positive]
+def weigh(x: Mass): Mass = x
+weigh(m)                                 // a refined quantity is accepted wherever the plain quantity is expected
+```
+
+How it behaves:
+
+- **The value is tested in the SI unit** of the quantity's dimension, whatever unit it was built in. `Mass :| Greater[5]`
+  means "more than 5 kg": `Kilograms(6)`, `Grams(6000)` and `Tonnes(0.006)` pass, `Pounds(10)` (about 4.54 kg) fails.
+  `Time` is tested in seconds, not in its primary unit (milliseconds), so `Milliseconds(500)` passes `Less[1]`.
+- **Offset temperature scales are converted** before the test, so the constraint is on kelvin: `Celsius(-10)` (263.15 K)
+  passes `Positive`, while `Kelvin(0)` and `Celsius(-300)` fail it.
+- **Any dimension works**, including derived ones such as `Density`, with the constraints Iron provides for `Double`
+  (`Positive`, `Positive0`, `Negative`, `Negative0`, `Greater`, `Less`, `Interval.Closed`, and so on). Failure messages are
+  Iron's own messages for the constraint.
+- Works with `refineEither`, `refineOption` and `refineUnsafe` on JVM, Scala.js and Scala Native. The given is a runtime
+  constraint (Iron's `RuntimeConstraint`), so it must be imported with `import squants.iron.given`.
+
+Limits:
+
+- **Arithmetic drops the refinement.** `m - Kilograms(10)` is a plain `Mass` and must be refined again.
+- **No compile-time checking.** `Kilograms(5)` is a method call, not a literal, so Iron cannot check it at compile time and
+  `val m: Mass :| Positive = Kilograms(5)` does not compile. Refine at runtime as above. (A compile-time constructor for
+  already-refined literals was considered and deferred.)
 
 ### Current Versions
 Current Release: **1.6.0**
