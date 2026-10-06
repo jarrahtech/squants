@@ -5,6 +5,8 @@ import io.github.iltotore.iron.constraint.numeric.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import squants.iron.given
+import squants.Percent
+import squants.information.Bits
 import squants.mass.{Grams, GramsPerMillilitre, Kilograms, KilogramsPerCubicMeter, Mass, Pounds, Tonnes}
 import squants.space.{InternationalMiles, Kilometers, Length, Meters}
 import squants.thermal.{Celsius, Fahrenheit, Kelvin}
@@ -105,7 +107,26 @@ class QuantityConstraintSpec extends AnyFlatSpec with Matchers {
     Celsius(0).refineEither[Greater[273]].isRight should be(true) // 273.15 K
     Celsius(0).refineEither[Less[273]].isLeft should be(true)
     Fahrenheit(32).refineEither[Greater[273]].isRight should be(true) // 273.15 K
-    Fahrenheit(-459.67).refineEither[Positive0].isRight should be(true) // 0 K, within rounding
+    Fahrenheit(-459.67).refineEither[Positive0].isRight should be(true) // 0 K
+  }
+
+  it should "use the SI unit each dimension declares, even when that is not the obvious one" in {
+    // Information's SI unit is bytes: 4 bits is half a byte.
+    Bits(4).refineEither[Less[1]].isRight should be(true)
+    // Dimensionless's SI unit is Each: 50 percent is 0.5.
+    Percent(50).refineEither[Less[1]].isRight should be(true)
+    Percent(150).refineEither[Less[1]].isLeft should be(true)
+  }
+
+  it should "treat a value exactly on a boundary in another unit as on the boundary" in {
+    Grams(5000).refineEither[Greater[5]].isLeft should be(true)
+    Grams(5000).refineEither[Less[5]].isLeft should be(true)
+    Tonnes(0.005).refineEither[Greater[5]].isLeft should be(true)
+    Kilometers(0.5).refineEither[Greater[500]].isLeft should be(true)
+    Hours(1).refineEither[Greater[3600]].isLeft should be(true)
+    Celsius(0).refineEither[Greater[273.15]].isLeft should be(true)
+    Celsius(-273.15).refineEither[Positive0].isRight should be(true)
+    Fahrenheit(-459.67).refineEither[Positive].isLeft should be(true)
   }
 
   it should "report the same failure message as Iron does for a plain Double" in {
@@ -136,6 +157,10 @@ class QuantityConstraintSpec extends AnyFlatSpec with Matchers {
     val diff: Mass = fiveKilograms - Kilograms(10)
     diff should be(Kilograms(-5))
     assertDoesNotCompile("val r: Mass :| Positive = fiveKilograms - Kilograms(10)")
+  }
+
+  it should "reject Money at compile time, because Money has no SI unit" in {
+    assertDoesNotCompile("squants.market.USD(5).refineEither[Positive]")
   }
 
   it should "not treat a quantity constructor as a refined literal" in {

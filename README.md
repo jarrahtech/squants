@@ -69,15 +69,23 @@ How it behaves:
   `Time` is tested in seconds, not in its primary unit (milliseconds), so `Milliseconds(500)` passes `Less[1]`.
 - **Offset temperature scales are converted** before the test, so the constraint is on kelvin: `Celsius(-10)` (263.15 K)
   passes `Positive`, while `Kelvin(0)` and `Celsius(-300)` fail it.
-- **Any dimension works**, including derived ones such as `Density`, with the constraints Iron provides for `Double`
-  (`Positive`, `Positive0`, `Negative`, `Negative0`, `Greater`, `Less`, `Interval.Closed`, and so on). Failure messages are
-  Iron's own messages for the constraint.
+- **Any dimension that declares an SI unit works**, which is every dimension except `Money`, including derived ones
+  such as `Density`, with the constraints Iron provides for `Double` (`Positive`, `Positive0`, `Negative`, `Negative0`,
+  `Greater`, `Less`, `Interval.Closed`, and so on). Failure messages are Iron's own messages for the constraint.
+  "SI unit" means the unit each dimension declares as its `siUnit`, which is not always what you might guess:
+  `Information` is tested in bytes (not bits) and `Dimensionless` in `Each` (so `Percent(50)` is 0.5).
+- **`Money` is rejected at compile time.** It is `BigDecimal`-backed and has no SI unit, so `USD(5).refineEither[Positive]`
+  does not compile (there is no given instance for it) instead of failing at runtime.
 - Works with `refineEither`, `refineOption` and `refineUnsafe` on JVM, Scala.js and Scala Native. The given is a runtime
   constraint (Iron's `RuntimeConstraint`), so it must be imported with `import squants.iron.given`.
 
 Limits:
 
 - **Arithmetic drops the refinement.** `m - Kilograms(10)` is a plain `Mass` and must be refined again.
+- **Conversion is `Double` arithmetic.** A value exactly on a boundary in another unit is converted before it is tested,
+  so in principle it can land one ulp on the wrong side of a strict or inclusive bound. The exact-boundary cases tested
+  (kilograms, grams, tonnes, kilometres, hours, degrees Celsius and Fahrenheit) behave correctly, but there is no
+  tolerance. Test against a boundary that is not exactly representable with care.
 - **No compile-time checking.** `Kilograms(5)` is a method call, not a literal, so Iron cannot check it at compile time and
   `val m: Mass :| Positive = Kilograms(5)` does not compile. Refine at runtime as above. (A compile-time constructor for
   already-refined literals was considered and deferred.)
