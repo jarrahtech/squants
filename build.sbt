@@ -1,4 +1,4 @@
-ThisBuild / scalaVersion := "3.7.1"
+ThisBuild / scalaVersion := "3.8.4"
 ThisBuild / semanticdbEnabled := true
 ThisBuild / organization := "com.jarrahtechnology"
 ThisBuild / versionScheme := Some("early-semver")
@@ -17,11 +17,11 @@ lazy val squants = crossProject(JSPlatform, JVMPlatform, NativePlatform).
   in(file(".")).
   settings(
     name := "squants",
-    version := "1.8.4",
+    version := "1.9.0",
 
     scalacOptions ++= Seq(
       "-encoding", "utf8", // Option and arguments on same line
-      "-Xfatal-warnings",  // New lines for each options
+      "-Werror",            // New lines for each options
       "-Wunused:all",
       "-deprecation",
       "-feature",
@@ -31,8 +31,8 @@ lazy val squants = crossProject(JSPlatform, JVMPlatform, NativePlatform).
     ),
 
     //https://www.scalatest.org/
-    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.19" % "test",
-    libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.18.1" % "test"
+    libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.20" % "test",
+    libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.20.0" % "test"
 
   ).
   jvmSettings(

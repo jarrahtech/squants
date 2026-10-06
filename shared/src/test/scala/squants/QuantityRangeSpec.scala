@@ -121,7 +121,7 @@ class QuantityRangeSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "inc and return a QualityRange with lower and upper bounds incremented by the range value" in {
-    QuantityRange(Meters(0), Meters(10)).++ should be(QuantityRange(Meters(10), Meters(20)))
+    QuantityRange(Meters(0), Meters(10)).++() should be(QuantityRange(Meters(10), Meters(20)))
   }
 
   it should "inc a like value and return a QualityRange with lower and upper bounds incremented by the range value" in {
@@ -129,7 +129,7 @@ class QuantityRangeSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "dec and return a QualityRange with lower and upper bounds incremented by the range value" in {
-    QuantityRange(Meters(10), Meters(20)).-- should be(QuantityRange(Meters(0), Meters(10)))
+    QuantityRange(Meters(10), Meters(20)).--() should be(QuantityRange(Meters(0), Meters(10)))
   }
 
   it should "dec a like value and return a QualityRange with lower and upper bounds incremented by the range value" in {

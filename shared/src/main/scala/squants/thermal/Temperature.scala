@@ -146,11 +146,12 @@ object Temperature extends Dimension[Temperature] with BaseDimension {
   def apply(s: String): Try[Temperature] = {
     val regex = "([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?) *°? *(f|F|c|C|k|K|r|R)".r
     s match {
-      case regex(value, unit) => unit match {
-        case "f" | "F" => Success(Fahrenheit(value.toDouble))
-        case "c" | "C" => Success(Celsius(value.toDouble))
-        case "k" | "K" => Success(Kelvin(value.toDouble))
-        case "r" | "R" => Success(Rankine(value.toDouble))
+      case regex(value, unit) => unit.nn match {
+        case "f" | "F" => Success(Fahrenheit(value.nn.toDouble))
+        case "c" | "C" => Success(Celsius(value.nn.toDouble))
+        case "k" | "K" => Success(Kelvin(value.nn.toDouble))
+        case "r" | "R" => Success(Rankine(value.nn.toDouble))
+        case _ => Failure(QuantityParseException("Unable to parse Temperature", s))
       }
       case _ => Failure(QuantityParseException("Unable to parse Temperature", s))
     }

@@ -407,7 +407,7 @@ object Money extends Dimension[Money] {
   def apply(s: String)(implicit fxContext: MoneyContext): Try[Money] = {
     val regex = ("([-+]?[0-9]*\\.?[0-9]+) *(" + fxContext.currencies.map(_.code).reduceLeft(_ + "|" + _) + ")").r
     s match {
-      case regex(value, currency) => Currency(currency).map(Money(BigDecimal(value), _))
+      case regex(value, currency) => Currency(currency.nn).map(Money(BigDecimal(value.nn), _))
       case _ => Failure(QuantityParseException("Unable to parse Money", s))
     }
   }

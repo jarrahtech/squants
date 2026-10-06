@@ -4,23 +4,26 @@
 
 This is a fork of [Typelevel's Squants](https://github.com/typelevel/squants) package. Done to update dependency version in my other projects.
 
-**The Scala API for Quantities, Units of Measure and Dimensional Analysis**
+### Fork build and requirements
 
-Squants is a framework of data types and a domain specific language (DSL) for representing Quantities,
-their Units of Measure, and their Dimensional relationships.
-The API supports typesafe dimensional analysis, improved domain models and more.
-All types are immutable and thread-safe.
+Fork version **1.9.0** (`com.jarrahtechnology:squants`), built for JVM, Scala.js and Scala Native.
 
-[GitHub](https://github.com/typelevel/squants)
-|
-[Wiki](https://github.com/typelevel/squants/wiki)
-|
-[![Join the chat at https://gitter.im/typelevel/squants](https://badges.gitter.im/typelevel/squants.svg)](https://gitter.im/typelevel/squants?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-|
-[![Scaladocs](https://www.javadoc.io/badge/org.typelevel/squants_2.13.svg?label=scaladoc)](https://static.javadoc.io/org.typelevel/squants_2.13/1.6.0/squants/index.html)
-|
-[![Build Status](https://travis-ci.org/typelevel/squants.png?branch=master)](https://travis-ci.org/typelevel/squants)
+- **Scala 3.8.4.** An artifact built with Scala 3.8 cannot be read by a 3.7 compiler, so consumers must use Scala 3.8
+  or later.
+- **Java 17 or later** on the JVM. The Scala 3.8 standard library and compiler are Java 17 bytecode (class file
+  version 61); Scala 3.7's library was Java 8. The CI workflows are configured for Java 17.
+- Toolchain: sbt 1.13.0, sbt-scalajs 1.22.0, sbt-scala-native 0.5.12, sbt-scalajs-crossproject and
+  sbt-scala-native-crossproject 1.4.0, ScalaTest 3.2.20, ScalaCheck 1.20.0, scalajs-stubs 1.1.0.
+- sbt project ids are `squants` (JVM), `squantsJS` and `squantsNative`.
 
+Not moved to the latest release:
+
+- **sbt 2.x** (2.0.10 is the latest stable): the build stays on sbt 1.x for now. Moving needs build.sbt changes (sbt 2
+  builds are written in Scala 3) and replacing the `sbt-github-packages` plugin (no sbt 2 build is published) with plain
+  build.sbt configuration. sbt 2 builds of `sbt-scalajs` 1.22.0, `sbt-scala-native` 0.5.12 and both crossproject
+  plugins 1.4.0 are on Maven Central, so the plugins are not a blocker.
+- **sbt-github-packages 0.5.3** is the only version published on Maven Central, so there is nothing newer to move to.
+- **Scala 3.9 and 3.10** exist; the fork targets the 3.8 line.
 
 ### Current Versions
 Current Release: **1.6.0**
