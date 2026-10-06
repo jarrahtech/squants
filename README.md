@@ -9,6 +9,15 @@ This is a fork of [Typelevel's Squants](https://github.com/typelevel/squants) pa
 Fork version **1.10.0**, built for JVM, Scala.js and Scala Native. Two artifacts are published: `com.jarrahtechnology:squants`
 (core, no runtime dependencies) and `com.jarrahtechnology:squants-iron` (Iron refinement support, see below).
 
+Both are published to GitHub Packages only, so a project that uses them needs the repository and a GitHub token with
+`read:packages` access (shown here for sbt; set `GITHUB_TOKEN` in the environment):
+
+```scala
+resolvers += "GitHub Packages" at "https://maven.pkg.github.com/jarrahtech/squants"
+credentials += Credentials("GitHub Package Registry", "maven.pkg.github.com", "<your GitHub user name>", sys.env("GITHUB_TOKEN"))
+libraryDependencies += "com.jarrahtechnology" %% "squants" % "1.10.0" // %%% in an sbt 1 cross-platform build
+```
+
 - **Scala 3.8.4.** An artifact built with Scala 3.8 cannot be read by a 3.7 compiler, so consumers must use Scala 3.8
   or later.
 - **Java 17 or later** on the JVM. The Scala 3.8 standard library and compiler are Java 17 bytecode (class file
@@ -87,8 +96,9 @@ Limits:
   (kilograms, grams, tonnes, kilometres, hours, degrees Celsius and Fahrenheit) behave correctly, but there is no
   tolerance. Test against a boundary that is not exactly representable with care.
 - **No compile-time checking.** `Kilograms(5)` is a method call, not a literal, so Iron cannot check it at compile time and
-  `val m: Mass :| Positive = Kilograms(5)` does not compile. Refine at runtime as above. (A compile-time constructor for
-  already-refined literals was considered and deferred.)
+  `val m: Mass :| Positive = Kilograms(5)` does not compile. Refine at runtime as above. (A possible future addition is a
+  constructor that accepts a `Double` Iron has already checked at compile time, such as a `Double :| Positive` literal, and
+  returns `Mass :| Positive`; it was considered and deferred.)
 
 ### Current Versions
 Current Release: **1.6.0**
@@ -105,6 +115,9 @@ NOTE - This README reflects the feature set in the branch it can be found.
 For more information on feature availability of a specific version see the Release History or the README for a that version
 
 ## Installation
+*The rest of this section is upstream Typelevel Squants' text and does not apply to this fork. For the fork's
+coordinates and repository see "Fork build and requirements" above.*
+
 Repository hosting for Squants is provided by [Sonatype](https://oss.sonatype.org/).
 To use Squants in your SBT project add the following dependency to your build.
 
