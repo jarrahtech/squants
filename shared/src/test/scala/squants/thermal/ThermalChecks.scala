@@ -58,8 +58,6 @@ object ThermalChecks extends Properties("Thermal") with QuantityChecks {
       JoulesPerKelvin(thermCap) =~ Joules(thermCap * temp) / Kelvin(temp)
   }
 
-  private def close(a: Double, b: Double): Boolean = math.abs(a - b) <= 1e-9 * math.max(math.abs(a), math.abs(b))
-
   property("Blackbody Temperature -> Irradiance -> Temperature") = forAll(org.scalacheck.Gen.choose(1.0, 1e6)) { kelvin =>
     close(Kelvin(kelvin).blackbodyIrradiance.blackbodyTemperature.toKelvinScale, kelvin)
   }

@@ -63,6 +63,7 @@ package object squants {
   type Jerk = squants.motion.Jerk
   type Momentum = squants.motion.Momentum
   type Force = squants.motion.Force
+  type GravitationalParameter = squants.motion.GravitationalParameter
   type MassFlow = squants.motion.MassFlow
   type VolumeFlow = squants.motion.VolumeFlow
 

@@ -22,7 +22,7 @@ final class GravitationalParameter private (val value: Double, val unit: Gravita
   def /(that: Area): Acceleration = MetersPerSecondSquared(toCubicMetersPerSecondSquared / that.toSquareMeters)
   /** The area (a squared distance) at which the acceleration is `that`. */
   def /(that: Acceleration): Area = SquareMeters(toCubicMetersPerSecondSquared / that.toMetersPerSecondSquared)
-  /** The specific energy at a distance: `mu / r`. */
+  /** The specific energy at a distance: `mu / r`. `SpecificEnergy` (joules per kilogram, the Gray) is reused for orbital specific energy. */
   def /(that: Length): SpecificEnergy = Grays(toCubicMetersPerSecondSquared / that.toMeters)
   /** The volume (a cubed distance) whose period squared is `that`: `mu * T²`. */
   def *(that: TimeSquared): Volume = CubicMeters(toCubicMetersPerSecondSquared * that.time1.toSeconds * that.time2.toSeconds)

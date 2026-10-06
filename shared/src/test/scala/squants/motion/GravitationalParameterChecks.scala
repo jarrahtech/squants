@@ -2,15 +2,13 @@ package squants.motion
 
 import org.scalacheck.Prop.forAll
 import org.scalacheck.{Gen, Properties}
+import squants.QuantityChecks
 import squants.energy.Grays
 import squants.space.{CubicMeters, Meters, SquareMeters}
 
-object GravitationalParameterChecks extends Properties("GravitationalParameter") {
+object GravitationalParameterChecks extends Properties("GravitationalParameter") with QuantityChecks {
 
   private val values: Gen[Double] = Gen.choose(1e-3, 1e9)
-
-  // Double arithmetic, so equality is to a relative tolerance
-  private def close(a: Double, b: Double): Boolean = math.abs(a - b) <= 1e-9 * math.max(math.abs(a), math.abs(b))
 
   property("(mu / area) * area = mu") = forAll(values, values) { (mu, area) =>
     val a = CubicMetersPerSecondSquared(mu) / SquareMeters(area)

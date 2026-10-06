@@ -132,8 +132,11 @@ final class Temperature private (val value: Double, val unit: TemperatureScale)
   def toCelsiusScale = toScale(Celsius)
   def toKelvinScale = toScale(Kelvin)
 
-  /** The irradiance a blackbody at this temperature radiates (Stefan-Boltzmann law): `E = sigma * T⁴`, with T in kelvin. */
-  def blackbodyIrradiance: Irradiance = WattsPerSquareMeter(PhysicalConstants.StefanBoltzmann * math.pow(toKelvinScale, 4))
+  /** The irradiance a blackbody at this temperature radiates (Stefan-Boltzmann law): `E = sigma * T⁴`, with T in kelvin. NaN below absolute zero. */
+  def blackbodyIrradiance: Irradiance = {
+    val k = toKelvinScale
+    WattsPerSquareMeter(if (k < 0) Double.NaN else PhysicalConstants.StefanBoltzmann * (k * k) * (k * k))
+  }
 
   def toDegrees(unit: TemperatureScale) = convert(unit, withOffset = false).value
   def toFahrenheitDegrees = toDegrees(Fahrenheit)

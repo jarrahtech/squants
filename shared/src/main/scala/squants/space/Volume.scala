@@ -52,7 +52,10 @@ final class Volume private (val value: Double, val unit: VolumeUnit)
 
   def /(that: Mass) = ??? // returns SpecificVolume (inverse of Density)
   /** The period squared of an orbit whose semi-major axis cubed is this volume: `T² = a³ / mu`. */
-  def /(that: GravitationalParameter): TimeSquared = TimeSquared(Seconds(this.toCubicMeters / that.toCubicMetersPerSecondSquared), Seconds(1))
+  def /(that: GravitationalParameter): TimeSquared = {
+    val s = Seconds(math.sqrt(this.toCubicMeters / that.toCubicMetersPerSecondSquared))
+    TimeSquared(s, s)
+  }
   def /(that: ChemicalAmount) = ??? // return MolarVolume
 
   def cubeRoot = Meters(math.cbrt(toCubicMeters))

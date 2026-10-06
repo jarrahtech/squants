@@ -291,6 +291,9 @@ class TemperatureSpec extends AnyFlatSpec
     // the same temperature on another scale
     Celsius(-173.15).blackbodyIrradiance.toWattsPerSquareMeter should be(5.670374419 +- 1e-9)
     Kelvin(0).blackbodyIrradiance.toWattsPerSquareMeter should be(0.0)
+    // below absolute zero is not a temperature, so there is no irradiance (T⁴ would hide the sign)
+    Kelvin(-100).blackbodyIrradiance.toWattsPerSquareMeter.isNaN should be(true)
+    Celsius(-400).blackbodyIrradiance.toWattsPerSquareMeter.isNaN should be(true)
   }
 
   behavior of "TemperatureConversions"

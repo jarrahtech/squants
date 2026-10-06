@@ -202,7 +202,7 @@ val period = ((a * a * a) / sun).squareRoot * (2 * math.Pi) // Time, about 365.2
 | `G * Mass` | `GravitationalParameter` |
 | `GravitationalParameter / Area` | `Acceleration` |
 | `GravitationalParameter / Acceleration` | `Area` |
-| `GravitationalParameter / Length` | `SpecificEnergy` |
+| `GravitationalParameter / Length` | `SpecificEnergy` (J/kg, the same type as radiation dose) |
 | `Volume / GravitationalParameter` | `TimeSquared` (so `.squareRoot` is a `Time`) |
 | `SpecificEnergy.squareRoot` | `Velocity` (NaN if negative) |
 | `Acceleration * Area`, `SpecificEnergy * Length`, `GravitationalParameter * TimeSquared` | the inverses: `GravitationalParameter`, `GravitationalParameter`, `Volume` |

@@ -65,6 +65,8 @@ class GravitationalParameterSpec extends AnyFlatSpec with Matchers {
   it should "be the result of Volume divided by GravitationalParameter, as TimeSquared" in {
     val ts: TimeSquared = CubicMeters(100) / CubicMetersPerSecondSquared(4)
     ts.squareRoot should be(Seconds(5))
+    // the same value as any other 25 s² TimeSquared, not a lopsided (25 s, 1 s) pair
+    ts should be(Seconds(5) * Seconds(5))
   }
 
   it should "be the result of Acceleration multiplied by Area" in {

@@ -27,7 +27,7 @@ final class Irradiance private (val value: Double, val unit: IrradianceUnit)
 
   def *(that: Area): Power = Watts(this.toWattsPerSquareMeter * that.toSquareMeters)
   /** The temperature of a blackbody that radiates this irradiance (Stefan-Boltzmann law): `T = (E / sigma)^(1/4)`. NaN if negative. */
-  def blackbodyTemperature: Temperature = Kelvin(math.pow(toWattsPerSquareMeter / PhysicalConstants.StefanBoltzmann, 0.25))
+  def blackbodyTemperature: Temperature = Kelvin(math.sqrt(math.sqrt(toWattsPerSquareMeter / PhysicalConstants.StefanBoltzmann)))
   // the Hours(1).toSeconds is to convert watt hours to watt seconds which
   // isn't a normal supported type in Squants
   def *(that: AreaTime): Energy = WattHours(
