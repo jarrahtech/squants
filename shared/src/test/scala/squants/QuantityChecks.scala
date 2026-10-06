@@ -21,4 +21,7 @@ trait QuantityChecks {
   val posNum: Gen[TestData] = Gen.posNum[TestData]
   val tol = 1e-13
   implicit val tolTime: Time = Seconds(tol)
+
+  /** Double arithmetic, so equality is to a relative tolerance. */
+  def close(a: Double, b: Double): Boolean = math.abs(a - b) <= 1e-9 * math.max(math.abs(a), math.abs(b))
 }

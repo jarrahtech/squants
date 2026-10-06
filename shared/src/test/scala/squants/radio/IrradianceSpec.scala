@@ -72,6 +72,16 @@ class IrradianceSpec extends AnyFlatSpec with Matchers with CustomMatchers {
     WattsPerSquareMeter(1) / BecquerelsPerSquareMeterSecond(1.0 / Hours(1).toSeconds) should be(WattHours(1))
   }
 
+  it should "give the blackbody Temperature that radiates it (Stefan-Boltzmann law)" in {
+    // sigma * 100^4 = 5.670374419e-8 * 1e8 = 5.670374419 W/m²
+    WattsPerSquareMeter(5.670374419).blackbodyTemperature.toKelvinScale should be(100.0 +- 1e-9)
+    // in another unit
+    // 1 erg/s/cm² = 1e-3 W/m², and sigma * 1000^4 = 5.670374419e4 W/m²
+    ErgsPerSecondPerSquareCentimeter(5.670374419e7).blackbodyTemperature.toKelvinScale should be(1000.0 +- 1e-9)
+    WattsPerSquareMeter(0).blackbodyTemperature.toKelvinScale should be(0.0)
+    WattsPerSquareMeter(-1).blackbodyTemperature.toKelvinScale.isNaN should be(true)
+  }
+
   behavior of "IrradianceConversions"
 
   it should "provide aliases for single unit values" in {

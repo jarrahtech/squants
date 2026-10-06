@@ -10,7 +10,7 @@ package squants.motion
 
 import squants.{ AbstractQuantityNumeric, Dimension, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure }
 import squants.mass.Mass
-import squants.space.{ Feet, Length, Meters, Millimeters, UsMiles }
+import squants.space.{ Area, Feet, Length, Meters, Millimeters, UsMiles }
 import squants.time.{ SecondTimeDerivative, Seconds, Time, TimeDerivative, TimeIntegral, TimeSquared }
 
 /**
@@ -35,6 +35,8 @@ final class Acceleration private (val value: Double, val unit: AccelerationUnit)
 
   def *(that: Mass): Force = Newtons(this.toMetersPerSecondSquared * that.toKilograms)
   def *(that: TimeSquared): Length = this * that.time1 * that.time2
+  /** The gravitational parameter that gives this acceleration at a distance whose square is `that`: `mu = a * r²`. */
+  def *(that: Area): GravitationalParameter = CubicMetersPerSecondSquared(this.toMetersPerSecondSquared * that.toSquareMeters)
 
   def toFeetPerSecondSquared = to(FeetPerSecondSquared)
   def toMillimetersPerSecondSquared = to(MillimetersPerSecondSquared)
