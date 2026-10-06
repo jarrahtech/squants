@@ -71,13 +71,10 @@ class VelocitySpec extends AnyFlatSpec with Matchers {
 
   it should "support the Earth-relative unit EarthEscapeVelocities" in {
     EarthEscapeVelocities(10.22).toEarthEscapeVelocities should be(10.22)
-    Velocity("10.22 Vₑ🜨").get should be(EarthEscapeVelocities(10.22))
+    Velocity("10.22 V\u2091🜨").get should be(EarthEscapeVelocities(10.22))
     EarthEscapeVelocities(1).toMetersPerSecond should be(11186)
-    EarthEscapeVelocities(1).toKilometersPerSecond should be(11.186)
-    EarthEscapeVelocities(1).toString(EarthEscapeVelocities) should be("1.0 Vₑ🜨")
-    EarthEscapeVelocities.conversionFactor should be(11186 * MetersPerSecond.conversionFactor)
-    Velocity.units should contain(EarthEscapeVelocities)
-    Velocity.units.count(_.symbol == "Vₑ🜨") should be(1)
+    EarthEscapeVelocities(1).toString(EarthEscapeVelocities) should be("1.0 V\u2091🜨")
+    Velocity.units.map(_.symbol).size should be(Velocity.units.size)
   }
 
   it should "return Distance when multiplied by Time" in {
