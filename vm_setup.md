@@ -21,6 +21,19 @@ versions before relying on them.
 Do not try to route around blocked hosts or disable TLS verification. If a build needs a blocked host, report which one.
 The proxy status endpoint names recent denials: `curl -sS "$HTTPS_PROXY/__agentproxy/status"`.
 
+## Quick setup: use the script
+
+`scripts/claude-cloud-setup.sh` does steps 1 to 3 below for any sbt project, not just this one. It reads the sbt version
+from `project/build.properties`, installs sbt, writes `~/.sbt/repositories` with the mirror first (probing it and falling
+back to Central if it is unreachable) and puts an `sbt` wrapper on the PATH. Set it as the environment's Setup script (for
+example `bash scripts/claude-cloud-setup.sh` from the repo checkout) or run it by hand. Settings are environment variables
+described in the script header; `PREWARM=1` also resolves the repo's dependencies. Tested cold: install, wrapper and a
+full JVM test run with 0 429s. The manual steps below are the same thing spelled out.
+
+Note: Java takes its home directory from the password database, not from `$HOME`, so testing the script with a fake
+`HOME` still uses the real caches. Use `-J-Duser.home=...` (and `-Dsbt.global.base`, `-Dsbt.boot.directory`,
+`-Dsbt.ivy.home`) for a genuinely cold test.
+
 ## Setup
 
 Use the session scratchpad directory (shown in the system prompt) for everything below, so the repo stays clean.
