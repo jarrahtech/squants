@@ -5,7 +5,7 @@ import io.github.iltotore.iron.constraint.numeric.*
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import squants.iron.given
-import squants.Percent
+import squants.{Percent, Quantity}
 import squants.information.Bits
 import squants.mass.{Grams, GramsPerMillilitre, Kilograms, KilogramsPerCubicMeter, Mass, Pounds, Tonnes}
 import squants.space.{InternationalMiles, Kilometers, Length, Meters}
@@ -161,6 +161,12 @@ class QuantityConstraintSpec extends AnyFlatSpec with Matchers {
 
   it should "reject Money at compile time, because Money has no SI unit" in {
     assertDoesNotCompile("squants.market.USD(5).refineEither[Positive]")
+  }
+
+  it should "fail with a plain exception, not NotImplementedError, if Money reaches the given through generic code" in {
+    // In code generic over Q the compiler cannot tell it is Money, so the compile-time exclusion does not apply.
+    def check[Q <: Quantity[Q]](q: Q) = q.refineEither[Positive]
+    an[IllegalArgumentException] should be thrownBy check(squants.market.USD(5))
   }
 
   it should "not treat a quantity constructor as a refined literal" in {

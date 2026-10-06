@@ -83,8 +83,9 @@ How it behaves:
   `Greater`, `Less`, `Interval.Closed`, and so on). Failure messages are Iron's own messages for the constraint.
   "SI unit" means the unit each dimension declares as its `siUnit`, which is not always what you might guess:
   `Information` is tested in bytes (not bits) and `Dimensionless` in `Each` (so `Percent(50)` is 0.5).
-- **`Money` is rejected at compile time.** It is `BigDecimal`-backed and has no SI unit, so `USD(5).refineEither[Positive]`
-  does not compile (there is no given instance for it) instead of failing at runtime.
+- **`Money` is rejected.** It is `BigDecimal`-backed and has no SI unit, so `USD(5).refineEither[Positive]` does not
+  compile (there is no given instance for it). In code that is generic over `Q <: Quantity[Q]` the compiler cannot tell
+  it is `Money`, so there it throws an `IllegalArgumentException` when run.
 - Works with `refineEither`, `refineOption` and `refineUnsafe` on JVM, Scala.js and Scala Native. The given is a runtime
   constraint (Iron's `RuntimeConstraint`), so it must be imported with `import squants.iron.given`.
 
@@ -122,9 +123,10 @@ It is deliberately narrow:
   `refined` on, so `Greater[5]` would say nothing about kilograms (10 g is not more than 5 kg).
   `Kilograms.refined[Greater[5]](10.0)` does not compile. If you have another constraint that is preserved by
   multiplying by a positive factor, declare it with `given SignPreserving[MyConstraint] = SignPreserving.instance`.
-- **Only units that are a plain multiple of the SI unit.** `Celsius`, `Fahrenheit` and `Rankine` are not, so
-  `Celsius.refined[Positive](5.0)` does not compile (-10 degrees Celsius is above zero kelvin, so even the sign changes);
-  `Kelvin` is fine. `Money`'s currencies are not either.
+- **Only units that are a plain multiple of the SI unit.** `Celsius` and `Fahrenheit` are not, because they have
+  an offset, so `Celsius.refined[Positive](5.0)` does not compile (-10 degrees Celsius is above zero kelvin, so even the
+  sign changes). `Rankine` has no offset, but Squants does not define it as a plain-factor unit either, so it is
+  excluded too; `Kelvin` is fine. `Money`'s currencies are not accepted.
 - **Only for constants.** A number that is only known at runtime (user input, a file, a calculation) is not a literal, so
   `Kilograms.refined[Positive](input)` does not compile. Use `refineEither`, `refineOption` or `refineUnsafe` for those.
 - It needs Iron's `autoRefine` import for the compile-time check. (Iron's `.refine[C]` is not a compile-time check: in
@@ -135,7 +137,8 @@ Limits:
 - **Arithmetic drops the refinement.** `m - Kilograms(10)` is a plain `Mass` and must be refined again.
 - **Conversion is `Double` arithmetic.** A value exactly on a boundary in another unit is converted before it is tested,
   so in principle it can land one ulp on the wrong side of a strict or inclusive bound (and a number small enough to
-  underflow to zero in the SI unit is the extreme case). The exact-boundary cases tested
+  underflow to zero in the SI unit is the extreme case; `refined` trusts the number it is given, so a value that small in
+  a tiny unit, such as `Nanograms.refined[Positive](1e-320)`, would be typed positive yet be zero in kilograms). The exact-boundary cases tested
   (kilograms, grams, tonnes, kilometres, hours, degrees Celsius and Fahrenheit) behave correctly, but there is no
   tolerance. Test against a boundary that is not exactly representable with care.
 - **`Kilograms(5)` is not a constant to Iron.** `val m: Mass :| Positive = Kilograms(5)` does not compile. Use `refined`
