@@ -21,7 +21,7 @@ lazy val squants = crossProject(JSPlatform, JVMPlatform, NativePlatform).
 
     scalacOptions ++= Seq(
       "-encoding", "utf8", // Option and arguments on same line
-      "-Xfatal-warnings",  // New lines for each options
+      "-Werror",            // New lines for each options
       "-Wunused:all",
       "-deprecation",
       "-feature",
