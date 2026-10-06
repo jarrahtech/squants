@@ -136,11 +136,11 @@ Limits:
 
 - **Arithmetic drops the refinement.** `m - Kilograms(10)` is a plain `Mass` and must be refined again.
 - **Conversion is `Double` arithmetic.** A value exactly on a boundary in another unit is converted before it is tested,
-  so in principle it can land one ulp on the wrong side of a strict or inclusive bound (and a number small enough to
-  underflow to zero in the SI unit is the extreme case; `refined` trusts the number it is given, so a value that small in
-  a tiny unit, such as `Nanograms.refined[Positive](1e-320)`, would be typed positive yet be zero in kilograms). The exact-boundary cases tested
+  so in principle it can land one ulp on the wrong side of a strict or inclusive bound. The exact-boundary cases tested
   (kilograms, grams, tonnes, kilometres, hours, degrees Celsius and Fahrenheit) behave correctly, but there is no
-  tolerance. Test against a boundary that is not exactly representable with care.
+  tolerance. Test against a boundary that is not exactly representable with care. A number small enough to underflow to
+  zero in the SI unit is the extreme case: `refined` trusts the number it is given, so something like
+  `Nanograms.refined[Positive](1e-320)` would be typed positive yet be zero in kilograms.
 - **`Kilograms(5)` is not a constant to Iron.** `val m: Mass :| Positive = Kilograms(5)` does not compile. Use `refined`
   (above) for constants and `refineEither`, `refineOption` or `refineUnsafe` for everything else.
 

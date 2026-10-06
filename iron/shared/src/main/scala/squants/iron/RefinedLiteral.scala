@@ -51,9 +51,10 @@ object SignPreserving {
  * compile-time check: in Iron 3 it is a deprecated alias of the runtime `refineUnsafe`.)
  *
  * Only for constraints that survive a change of unit ([[SignPreserving]]), and only for units that are a plain
- * multiple of the SI unit ([[squants.UnitConverter]]). That leaves out `Celsius` and `Fahrenheit`, where even the sign
- * changes (-10 degrees Celsius is above zero kelvin), and `Money`. A number that is only known at runtime is not
- * a literal: refine the quantity at runtime with `refineEither`, `refineOption` or `refineUnsafe`.
+ * multiple of the SI unit ([[squants.UnitConverter]]). That leaves out `Celsius` and `Fahrenheit`, which have an offset,
+ * so even the sign changes (-10 degrees Celsius is above zero kelvin); `Rankine`, which has no offset but is not
+ * defined as a plain-factor unit in Squants; and `Money`. `Kelvin` is fine. A number that is only known at runtime is
+ * not a literal: refine the quantity at runtime with `refineEither`, `refineOption` or `refineUnsafe`.
  */
 extension [Q <: Quantity[Q]](unit: UnitOfMeasure[Q] & UnitConverter)
   def refined[C](value: Double :| C)(using SignPreserving[C]): Q :| C = unit(value: Double).assume[C]

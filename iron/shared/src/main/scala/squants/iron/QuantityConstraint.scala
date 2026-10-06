@@ -23,8 +23,9 @@ import scala.util.NotGiven
  * val m: Either[String, Mass :| Positive] = Kilograms(5).refineEither[Positive]
  * }}}
  *
- * This is a [[RuntimeConstraint]], which is what `refineEither`, `refineOption` and `refineUnsafe` use. It does not
- * support Iron's compile-time `refine`, because `Kilograms(5)` is a method call and not a literal.
+ * This is a [[RuntimeConstraint]], which is what `refineEither`, `refineOption` and `refineUnsafe` use, so the check
+ * happens when the program runs. `Kilograms(5)` is a method call, not a literal, so Iron cannot check it while
+ * compiling; for constants that should be checked at compile time see [[refined]].
  *
  * `Money` is excluded: it is `BigDecimal`-backed and has no SI unit (`Money.siUnit` is `???`). Where the compiler knows
  * the type, `USD(5).refineEither[Positive]` fails to compile. In code generic over `Q <: Quantity[Q]` it cannot know,
