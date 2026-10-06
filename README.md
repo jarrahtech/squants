@@ -163,6 +163,18 @@ each quantity has a matching `toEarth…` accessor:
 Each factor is the table value times the factor of the dimension's reference unit, so a conversion between two
 factor-based units (for example `EarthMegaYears(1).toEarthYears`) is `Double` arithmetic and can be one ulp out.
 
+### `QuantityBounds`
+
+`QuantityBounds(lower, upper)` is this fork's own type, like `QuantityRange` but the bounds may be equal (a point).
+
+- `contains` is strict: both ends are excluded, so a point contains nothing. `includes` is inclusive: both ends count.
+- `clamp(value)` and `ratio(value)` take an `A` (the same quantity type as the bounds), like the other methods.
+- `bounds.toRange` gives an `Option[QuantityRange]` (None for a point, which a range cannot represent), and
+  `QuantityBounds.fromRange(range)` goes the other way.
+- **Breaking change in 1.10.0:** the operator aliases `+=`, `-=` and `+-` were removed, because the first two read as
+  mutation and `+-` already means "plus or minus" on `Quantity`. Use `shiftLower(x)`, `shiftLower(-x)` and `shrink(x)`.
+  The aliases `++`, `--`, `=+`, `=-` and `-+` are unchanged.
+
 ### Current Versions
 Current Release: **1.6.0**
 ([API Docs](https://oss.sonatype.org/service/local/repositories/releases/archive/org/typelevel/squants_2.13/1.6.0/squants_2.13-1.6.0-javadoc.jar/!/index.html#squants.package))
