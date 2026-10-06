@@ -19,8 +19,6 @@ lazy val publishSettings = Seq(
   pomIncludeRepository := (_ => false),
 )
 
-val ironVersion = "3.3.2"
-
 lazy val commonSettings = Seq(
   scalacOptions ++= Seq(
     "-encoding", "utf8", // Option and arguments on same line
@@ -78,12 +76,7 @@ lazy val squantsIron = crossProject(JSPlatform, JVMPlatform, NativePlatform).
     name := "squants-iron",
     commonSettings,
     publishSettings,
-    libraryDependencies += "io.github.iltotore" %% "iron" % ironVersion,
-  ).
-  jvmSettings(
-    Test / parallelExecution := false,
-  ).
-  jsSettings(
+    libraryDependencies += "io.github.iltotore" %% "iron" % "3.3.2",
     Test / parallelExecution := false,
   ).
   nativeSettings(nativeCommonSettings)

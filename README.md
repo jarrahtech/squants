@@ -37,8 +37,13 @@ Not moved to the latest release:
 
 The optional `squants-iron` module lets a quantity carry an [Iron](https://github.com/Iltotore/iron) constraint, for example
 `Mass :| Positive`, while staying `Double`-backed. It depends on core and on Iron 3.3.2 (the latest stable release);
-core itself does not depend on Iron. Add `com.jarrahtechnology %%% squants-iron % 1.10.0` and import the given where you
-refine quantities:
+core itself does not depend on Iron. Add the dependency (`%%%` in an sbt 1 cross-platform build, `%%` in sbt 2 or a
+JVM-only build; the sbt 2 project's platform picks the suffix) and import the given where you refine quantities:
+
+```scala
+libraryDependencies += "com.jarrahtechnology" %%% "squants-iron" % "1.10.0" // sbt 1, cross-platform
+libraryDependencies += "com.jarrahtechnology" %%  "squants-iron" % "1.10.0" // sbt 2, or JVM only
+```
 
 ```scala
 import io.github.iltotore.iron.*

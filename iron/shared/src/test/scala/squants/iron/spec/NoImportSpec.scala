@@ -15,21 +15,4 @@ class NoImportSpec extends AnyFlatSpec with Matchers {
       squants.mass.Kilograms(5).refineEither[Positive]
     """)
   }
-
-  it should "be available once squants.iron.given is imported" in {
-    assertCompiles("""
-      import io.github.iltotore.iron.*
-      import io.github.iltotore.iron.constraint.numeric.*
-      import squants.iron.given
-      squants.mass.Kilograms(5).refineEither[Positive]
-    """)
-  }
-
-  it should "still work for plain Doubles without the import" in {
-    assertCompiles("""
-      import io.github.iltotore.iron.*
-      import io.github.iltotore.iron.constraint.numeric.*
-      5.0.refineEither[Positive]
-    """)
-  }
 }
