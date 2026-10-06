@@ -24,4 +24,4 @@ jobs:
     - name: Setup sbt launcher
       uses: sbt/setup-sbt@v1
     - name: Test/Publish
-      run: sbt test publish
+      run: sbt testFull publish

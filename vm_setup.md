@@ -1,7 +1,8 @@
 # Claude cloud VM setup for this repo
 
-Notes for future Claude cloud sessions on `jarrahtech/squants`. They record what is needed to get `sbt 'clean; test'`
-running on JVM, JS and Native in a fresh sandbox. Written 2026-10-06 against Scala 3.8.4 and sbt 1.13.0; re-check
+Notes for future Claude cloud sessions on `jarrahtech/squants`. They record what is needed to get `sbt 'clean; testFull'`
+running on JVM, JS and Native in a fresh sandbox. Written 2026-10-06 against Scala 3.8.4; the build moved from sbt 1.13.0 to 2.0.10 the same day (see the sbt 2 notes).
+Re-check
 versions before relying on them.
 
 ## What the sandbox has and lacks
@@ -20,6 +21,19 @@ versions before relying on them.
 
 Do not try to route around blocked hosts or disable TLS verification. If a build needs a blocked host, report which one.
 The proxy status endpoint names recent denials: `curl -sS "$HTTPS_PROXY/__agentproxy/status"`.
+
+## Quick setup: use the script
+
+`scripts/claude-cloud-setup.sh` does steps 1 to 3 below for any sbt project, not just this one. It reads the sbt version
+from `project/build.properties`, installs sbt, writes `~/.sbt/repositories` with the mirror first (probing it and falling
+back to Central if it is unreachable) and puts an `sbt` wrapper on the PATH. Set it as the environment's Setup script (for
+example `bash scripts/claude-cloud-setup.sh` from the repo checkout) or run it by hand. Settings are environment variables
+described in the script header; `PREWARM=1` also resolves the repo's dependencies. Tested cold: install, wrapper and a
+full JVM test run with 0 429s. The manual steps below are the same thing spelled out.
+
+Note: Java takes its home directory from the password database, not from `$HOME`, so testing the script with a fake
+`HOME` still uses the real caches. Use `-J-Duser.home=...` (and `-Dsbt.global.base`, `-Dsbt.boot.directory`,
+`-Dsbt.ivy.home`) for a genuinely cold test.
 
 ## Setup
 
@@ -75,7 +89,7 @@ copy is found.
 
 ```sh
 cd /home/user/squants
-$S/sbtw.sh -batch 'clean; test'
+$S/sbtw.sh -batch 'clean; testFull'
 ```
 
 Run it in the background and read the log, because a full cold run takes a couple of minutes.
@@ -125,6 +139,27 @@ here and should not be needed with the mirror.
   (Environment settings, then Setup script.)
 - Adding `repo.scala-sbt.org` and `repo.typesafe.com` to the network allowlist is no longer necessary, since the mirror
   covers everything this build needs.
+
+## sbt 2 notes
+
+The build is on sbt 2.0.10 (since the sbt 2 migration). Things that differ from sbt 1 in this sandbox:
+
+- **`sbt test` can run nothing.** sbt 2's `test` is incremental and cached on disk (`~/.cache/sbt`), so a run over sources
+  it has already tested prints `Passed: Total 0 ... No tests to run for Test / testQuick` and still succeeds. Use
+  `sbt testFull` for a real run, and always read the test counts before reporting a pass.
+- **Thin client and background server.** `sbt` starts a background server (`sbt shutdown` stops it). The server does not
+  see command-line `-J` flags, which is why the generated wrapper exports `SBT_OPTS` instead. A running server is reused
+  for the same directory, so stop it before changing sbt options or testing from a cold state.
+- **Socket path length.** The server's socket path must be short. A deeply nested `HOME` fails with "socket file absolute
+  path too long"; set `SBT_GLOBAL_SERVER_DIR=/tmp/s2` (or similar) in that case.
+- **Several commands in one call.** The thin client joins separate arguments, so pass one string with semicolons:
+  `sbt -batch 'clean; testFull'`, not `sbt -batch clean testFull`.
+- **`set` uses Scala names.** Inside `set` use `squantsJVM / publishTo`; on the command line use the project id
+  `squants/publish`.
+- **Dependencies:** `%%` replaces `%%%`.
+
+Verified cold (fresh install through `scripts/claude-cloud-setup.sh`, fresh Coursier and sbt caches, mirror first):
+`testFull` on JVM, JS and Native passed with 0 429s and 0 download errors, about 290 MB downloaded, 1 min 41 s.
 
 ## Observed on Scala 3.8.4 / sbt 1.13.0 (Task 1)
 

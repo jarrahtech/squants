@@ -12,17 +12,22 @@ Fork version **1.9.0** (`com.jarrahtechnology:squants`), built for JVM, Scala.js
   or later.
 - **Java 17 or later** on the JVM. The Scala 3.8 standard library and compiler are Java 17 bytecode (class file
   version 61); Scala 3.7's library was Java 8. The CI workflows are configured for Java 17.
-- Toolchain: sbt 1.13.0, sbt-scalajs 1.22.0, sbt-scala-native 0.5.12, sbt-scalajs-crossproject and
-  sbt-scala-native-crossproject 1.4.0, ScalaTest 3.2.20, ScalaCheck 1.20.0, scalajs-stubs 1.1.0.
+- Toolchain: sbt 2.0.10 (needs Java 17 or later), sbt-scalajs 1.22.0, sbt-scala-native 0.5.12,
+  sbt-scalajs-crossproject and sbt-scala-native-crossproject 1.4.0, ScalaTest 3.2.20, ScalaCheck 1.20.0,
+  scalajs-stubs 1.1.0.
 - sbt project ids are `squants` (JVM), `squantsJS` and `squantsNative`.
+- Run the full test suite with `sbt testFull`. In sbt 2 `test` is incremental and its results are cached on disk, so
+  `sbt test` can legitimately report "No tests to run". CI uses `testFull`.
+- Publishing goes to GitHub Packages through plain `build.sbt` settings (`publishSettings`), authenticated by the
+  `GITHUB_TOKEN` environment variable. The `sbt-github-packages` plugin has no sbt 2 build and was removed. Published POMs
+  are identical to the ones sbt 1 produced.
+- In sbt 2 a platform-aware dependency is written with `%%` (the project's platform picks the `_sjs1_3` or `_native0.5_3`
+  suffix); `%%%` no longer exists.
+- Scala Native's strict version scheme makes sbt 2 reject the ScalaTest/Scala Native `test-interface` version difference
+  (0.5.10 vs 0.5.12); `build.sbt` relaxes that one library for the Native project.
 
 Not moved to the latest release:
 
-- **sbt 2.x** (2.0.10 is the latest stable): the build stays on sbt 1.x for now. Moving needs build.sbt changes (sbt 2
-  builds are written in Scala 3) and replacing the `sbt-github-packages` plugin (no sbt 2 build is published) with plain
-  build.sbt configuration. sbt 2 builds of `sbt-scalajs` 1.22.0, `sbt-scala-native` 0.5.12 and both crossproject
-  plugins 1.4.0 are on Maven Central, so the plugins are not a blocker.
-- **sbt-github-packages 0.5.3** is the only version published on Maven Central, so there is nothing newer to move to.
 - **Scala 3.9 and 3.10** exist; the fork targets the 3.8 line.
 
 ### Current Versions
