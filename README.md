@@ -6,7 +6,17 @@ This is a fork of [Typelevel's Squants](https://github.com/typelevel/squants) pa
 
 ### Fork build and requirements
 
-Fork version **1.9.0** (`com.jarrahtechnology:squants`), built for JVM, Scala.js and Scala Native.
+Fork version **1.10.0**, built for JVM, Scala.js and Scala Native. Two artifacts are published: `com.jarrahtechnology:squants`
+(core, no runtime dependencies) and `com.jarrahtechnology:squants-iron` (Iron refinement support, see below).
+
+Both are published to GitHub Packages only, so a project that uses them needs the repository and a GitHub token with
+`read:packages` access (shown here for sbt; set `GITHUB_TOKEN` in the environment):
+
+```scala
+resolvers += "GitHub Packages" at "https://maven.pkg.github.com/jarrahtech/squants"
+credentials += Credentials("GitHub Package Registry", "maven.pkg.github.com", "<your GitHub user name>", sys.env("GITHUB_TOKEN"))
+libraryDependencies += "com.jarrahtechnology" %% "squants" % "1.10.0" // %%% in an sbt 1 cross-platform build
+```
 
 - **Scala 3.8.4.** An artifact built with Scala 3.8 cannot be read by a 3.7 compiler, so consumers must use Scala 3.8
   or later.
@@ -14,8 +24,9 @@ Fork version **1.9.0** (`com.jarrahtechnology:squants`), built for JVM, Scala.js
   version 61); Scala 3.7's library was Java 8. The CI workflows are configured for Java 17.
 - Toolchain: sbt 2.0.10 (needs Java 17 or later), sbt-scalajs 1.22.0, sbt-scala-native 0.5.12,
   sbt-scalajs-crossproject and sbt-scala-native-crossproject 1.4.0, ScalaTest 3.2.20, ScalaCheck 1.20.0,
-  scalajs-stubs 1.1.0.
-- sbt project ids are `squants` (JVM), `squantsJS` and `squantsNative`.
+  scalajs-stubs 1.1.0, Iron 3.3.2 (only in `squants-iron`).
+- sbt project ids are `squants` (JVM), `squantsJS` and `squantsNative` for core, and `squantsIron`, `squantsIronJS` and
+  `squantsIronNative` for the Iron module.
 - Run the full test suite with `sbt testFull`. In sbt 2 `test` is incremental and its results are cached on disk, so
   `sbt test` can legitimately report "No tests to run". CI uses `testFull`.
 - Publishing goes to GitHub Packages through plain `build.sbt` settings (`publishSettings`), authenticated by the
@@ -29,6 +40,109 @@ Fork version **1.9.0** (`com.jarrahtechnology:squants`), built for JVM, Scala.js
 Not moved to the latest release:
 
 - **Scala 3.9 and 3.10** exist; the fork targets the 3.8 line.
+- **Iron 3.4.0-RC3** exists; the module uses the latest stable release, 3.3.2.
+
+### Iron refinement (`squants-iron`)
+
+The optional `squants-iron` module lets a quantity carry an [Iron](https://github.com/Iltotore/iron) constraint, for example
+`Mass :| Positive`, while staying `Double`-backed. It depends on core and on Iron 3.3.2 (the latest stable release);
+core itself does not depend on Iron. Add the dependency (`%%%` in an sbt 1 cross-platform build, `%%` in sbt 2 or a
+JVM-only build; the sbt 2 project's platform picks the suffix) and import the given where you refine quantities:
+
+```scala
+libraryDependencies += "com.jarrahtechnology" %%% "squants-iron" % "1.10.0" // sbt 1, cross-platform
+libraryDependencies += "com.jarrahtechnology" %%  "squants-iron" % "1.10.0" // sbt 2, or JVM only
+```
+
+```scala
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.*
+import squants.iron.given
+import squants.mass.*
+import squants.thermal.*
+
+Kilograms(5).refineEither[Positive]      // Right(5.0 kg)
+Kilograms(-5).refineEither[Positive]     // Left("Should be strictly positive")
+Kilograms(5).refineOption[Greater[3]]    // Some(5.0 kg)
+Kilograms(-5).refineUnsafe[Positive]     // throws IllegalArgumentException
+
+val m: Mass :| Positive = Kilograms(5).refineUnsafe[Positive]
+def weigh(x: Mass): Mass = x
+weigh(m)                                 // a refined quantity is accepted wherever the plain quantity is expected
+```
+
+How it behaves:
+
+- **The value is tested in the SI unit** of the quantity's dimension, whatever unit it was built in. `Mass :| Greater[5]`
+  means "more than 5 kg": `Kilograms(6)`, `Grams(6000)` and `Tonnes(0.006)` pass, `Pounds(10)` (about 4.54 kg) fails.
+  `Time` is tested in seconds, not in its primary unit (milliseconds), so `Milliseconds(500)` passes `Less[1]`.
+- **Offset temperature scales are converted** before the test, so the constraint is on kelvin: `Celsius(-10)` (263.15 K)
+  passes `Positive`, while `Kelvin(0)` and `Celsius(-300)` fail it.
+- **Any dimension that declares an SI unit works**, which is every dimension except `Money`, including derived ones
+  such as `Density`, with the constraints Iron provides for `Double` (`Positive`, `Positive0`, `Negative`, `Negative0`,
+  `Greater`, `Less`, `Interval.Closed`, and so on). Failure messages are Iron's own messages for the constraint.
+  "SI unit" means the unit each dimension declares as its `siUnit`, which is not always what you might guess:
+  `Information` is tested in bytes (not bits) and `Dimensionless` in `Each` (so `Percent(50)` is 0.5).
+- **`Money` is rejected.** It is `BigDecimal`-backed and has no SI unit, so `USD(5).refineEither[Positive]` does not
+  compile (there is no given instance for it). In code that is generic over `Q <: Quantity[Q]` the compiler cannot tell
+  it is `Money`, so there it throws an `IllegalArgumentException` when run.
+- Works with `refineEither`, `refineOption` and `refineUnsafe` on JVM, Scala.js and Scala Native. The given is a runtime
+  constraint (Iron's `RuntimeConstraint`), so it must be imported with `import squants.iron.given`.
+
+### Checking constants at compile time
+
+`Kilograms(5)` is a method call, so Iron cannot see the `5` inside it. For a constant you can write in code, `refined`
+builds the refined quantity from a number Iron has checked while compiling, so a bad constant is a compile error and not
+a runtime exception:
+
+```scala
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.autoRefine   // Iron's compile-time check of literals
+import squants.iron.*                       // the refined constructor
+import squants.iron.given
+import squants.mass.*
+
+def weigh(m: Mass :| Positive): Double = m.toKilograms
+
+val m: Mass :| Positive = Kilograms.refined[Positive](5.0)   // compiles
+weigh(Grams.refined[Positive](250.0))                         // compiles; 250 is a number of grams
+Kilograms.refined[Positive](-5.0)                             // does NOT compile
+Kilograms.refined[Positive](0.0)                              // does NOT compile
+
+val d: Double :| Positive = 5.0                               // a number checked once...
+Kilograms.refined(d)                                          // ...and reused; the constraint is inferred
+```
+
+Without `refined` the same constant is only checked when the program runs: `weigh(Kilograms(-5).refineUnsafe[Positive])`
+compiles and then throws.
+
+It is deliberately narrow:
+
+- **Only sign constraints** (`Positive`, `Positive0`, `Negative`, `Negative0`, and `Greater[0]`, `GreaterEqual[0]`,
+  `Less[0]`, `LessEqual[0]`). They are the ones that survive a change of unit: the number is in the unit you called
+  `refined` on, so `Greater[5]` would say nothing about kilograms (10 g is not more than 5 kg).
+  `Kilograms.refined[Greater[5]](10.0)` does not compile. If you have another constraint that is preserved by
+  multiplying by a positive factor, declare it with `given SignPreserving[MyConstraint] = SignPreserving.instance`.
+- **Only units that are a plain multiple of the SI unit.** `Celsius` and `Fahrenheit` are not, because they have
+  an offset, so `Celsius.refined[Positive](5.0)` does not compile (-10 degrees Celsius is above zero kelvin, so even the
+  sign changes). `Rankine` has no offset, but Squants does not define it as a plain-factor unit either, so it is
+  excluded too; `Kelvin` is fine. `Money`'s currencies are not accepted.
+- **Only for constants.** A number that is only known at runtime (user input, a file, a calculation) is not a literal, so
+  `Kilograms.refined[Positive](input)` does not compile. Use `refineEither`, `refineOption` or `refineUnsafe` for those.
+- It needs Iron's `autoRefine` import for the compile-time check. (Iron's `.refine[C]` is not a compile-time check: in
+  Iron 3 it is a deprecated alias of the runtime `refineUnsafe`.)
+
+Limits:
+
+- **Arithmetic drops the refinement.** `m - Kilograms(10)` is a plain `Mass` and must be refined again.
+- **Conversion is `Double` arithmetic.** A value exactly on a boundary in another unit is converted before it is tested,
+  so in principle it can land one ulp on the wrong side of a strict or inclusive bound. The exact-boundary cases tested
+  (kilograms, grams, tonnes, kilometres, hours, degrees Celsius and Fahrenheit) behave correctly, but there is no
+  tolerance. Test against a boundary that is not exactly representable with care. A number small enough to underflow to
+  zero in the SI unit is the extreme case: `refined` trusts the number it is given, so something like
+  `Nanograms.refined[Positive](1e-320)` would be typed positive yet be zero in kilograms.
+- **`Kilograms(5)` is not a constant to Iron.** `val m: Mass :| Positive = Kilograms(5)` does not compile. Use `refined`
+  (above) for constants and `refineEither`, `refineOption` or `refineUnsafe` for everything else.
 
 ### Current Versions
 Current Release: **1.6.0**
@@ -45,6 +159,9 @@ NOTE - This README reflects the feature set in the branch it can be found.
 For more information on feature availability of a specific version see the Release History or the README for a that version
 
 ## Installation
+*The rest of this section is upstream Typelevel Squants' text and does not apply to this fork. For the fork's
+coordinates and repository see "Fork build and requirements" above.*
+
 Repository hosting for Squants is provided by [Sonatype](https://oss.sonatype.org/).
 To use Squants in your SBT project add the following dependency to your build.
 
