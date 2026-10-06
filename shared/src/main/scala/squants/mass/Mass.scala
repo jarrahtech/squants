@@ -65,6 +65,7 @@ final class Mass private (val value: Double, val unit: MassUnit)
   def toTolas = to(Tolas)
   def toCarats = to(Carats)
   def toSolarMasses = to(SolarMasses)
+  def toEarthMasses = to(EarthMasses)
   def toDalton = to(Dalton)
 
   def toeV = to(ElectronVoltMass)
@@ -87,7 +88,7 @@ object Mass extends Dimension[Mass] with BaseDimension {
   def primaryUnit = Grams
   def siUnit = Kilograms
   def units = Set(Nanograms, Micrograms, Milligrams, Grams, Kilograms, Tonnes, Ounces, Pounds, Kilopounds, Megapounds,
-    Stone, TroyGrains, Pennyweights, TroyOunces, TroyPounds, Tolas, Carats, SolarMasses, Dalton,
+    Stone, TroyGrains, Pennyweights, TroyOunces, TroyPounds, Tolas, Carats, SolarMasses, EarthMasses, Dalton,
     ElectronVoltMass, MilliElectronVoltMass, KiloElectronVoltMass, MegaElectronVoltMass,
     GigaElectronVoltMass, TeraElectronVoltMass, PetaElectronVoltMass, ExaElectronVoltMass)
   def dimensionSymbol = "M"
@@ -187,6 +188,11 @@ object Carats extends MassUnit {
 object SolarMasses extends MassUnit {
   val conversionFactor = 1.98855e33
   val symbol = "M☉"
+}
+
+object EarthMasses extends MassUnit {
+  val conversionFactor = 5.972168e24 * Kilograms.conversionFactor
+  val symbol = "M🜨"
 }
 
 object Dalton extends MassUnit {

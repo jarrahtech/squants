@@ -176,6 +176,17 @@ class LengthSpec extends AnyFlatSpec with Matchers {
     ExaElectronVoltLength(1).toString(ExaElectronVoltLength) should be("1.0 Eħc/eV")
   }
 
+  it should "support the Earth-relative unit EarthRadii" in {
+    EarthRadii(10.22).toEarthRadii should be(10.22)
+    Length("10.22 R🜨").get should be(EarthRadii(10.22))
+    EarthRadii(1).toKilometers should be(6371)
+    EarthRadii(1).toMeters should be(6371000)
+    EarthRadii(1).toString(EarthRadii) should be("1.0 R🜨")
+    EarthRadii.conversionFactor should be(6371 * Kilometers.conversionFactor)
+    Length.units should contain(EarthRadii)
+    Length.units.count(_.symbol == "R🜨") should be(1)
+  }
+
   it should "return Area when multiplied by Length" in {
     Meters(1) * Meters(1) should be(SquareMeters(1))
   }

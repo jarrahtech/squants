@@ -144,6 +144,25 @@ Limits:
 - **`Kilograms(5)` is not a constant to Iron.** `val m: Mass :| Positive = Kilograms(5)` does not compile. Use `refined`
   (above) for constants and `refineEither`, `refineOption` or `refineUnsafe` for everything else.
 
+### Earth-relative units
+
+Units for planetary-scale values, defined relative to the Earth (the same way `SolarMasses` and `SolarRadii` are
+defined relative to the Sun). Each is in its dimension's `units`, so it can be parsed by symbol (`Mass("1.5 M🜨")`), and
+each quantity has a matching `toEarth…` accessor:
+
+| Unit | Dimension | Definition | Symbol | Accessor |
+|---|---|---|---|---|
+| `EarthMasses` | `Mass` | 5.972168e24 kg | `M🜨` | `toEarthMasses` |
+| `EarthRadii` | `Length` | 6371 km | `R🜨` | `toEarthRadii` |
+| `EarthDensities` | `Density` | 5513 kg/m³ | `D🜨` | `toEarthDensities` |
+| `EarthEscapeVelocities` | `Velocity` | 11186 m/s | `Vₑ🜨` | `toEarthEscapeVelocities` |
+| `EarthYears` | `Time` | 365.2421897 days | `Y🜨` | `toEarthYears` |
+| `EarthMegaYears` | `Time` | 1e6 `EarthYears` | `MY🜨` | `toEarthMegaYears` |
+| `EarthGigaYears` | `Time` | 1e9 `EarthYears` | `BY🜨` | `toEarthGigaYears` |
+
+Each factor is the table value times the factor of the dimension's reference unit, so a conversion between two
+factor-based units (for example `EarthMegaYears(1).toEarthYears`) is `Double` arithmetic and can be one ulp out.
+
 ### Current Versions
 Current Release: **1.6.0**
 ([API Docs](https://oss.sonatype.org/service/local/repositories/releases/archive/org/typelevel/squants_2.13/1.6.0/squants_2.13-1.6.0-javadoc.jar/!/index.html#squants.package))

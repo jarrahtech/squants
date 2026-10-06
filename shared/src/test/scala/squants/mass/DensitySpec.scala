@@ -102,6 +102,16 @@ class DensitySpec extends AnyFlatSpec with Matchers {
     NanogramsPerNanolitre(1).toString should be("1.0 ng/nl")
   }
 
+  it should "support the Earth-relative unit EarthDensities" in {
+    EarthDensities(10.22).toEarthDensities should be(10.22)
+    Density("10.22 D🜨").get should be(EarthDensities(10.22))
+    EarthDensities(1).toKilogramsPerCubicMeter should be(5513)
+    EarthDensities(1).toString(EarthDensities) should be("1.0 D🜨")
+    EarthDensities.conversionFactor should be(5513 * KilogramsPerCubicMeter.conversionFactor)
+    Density.units should contain(EarthDensities)
+    Density.units.count(_.symbol == "D🜨") should be(1)
+  }
+
   it should "return Mass when multiplied by Volume" in {
     KilogramsPerCubicMeter(1) * CubicMeters(1) should be(Kilograms(1))
     KilogramsPerLitre(1) * Litres(1) should be(Kilograms(1))

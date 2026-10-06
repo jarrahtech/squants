@@ -42,6 +42,7 @@ final class Velocity private (val value: Double, val unit: VelocityUnit)
   def toMillimetersPerSecond = to(MillimetersPerSecond)
   def toMetersPerSecond = to(MetersPerSecond)
   def toKilometersPerSecond = to(KilometersPerSecond)
+  def toEarthEscapeVelocities = to(EarthEscapeVelocities)
   def toKilometersPerHour = to(KilometersPerHour)
   def toUsMilesPerHour = to(UsMilesPerHour)
   def toInternationalMilesPerHour = to(InternationalMilesPerHour)
@@ -55,7 +56,7 @@ object Velocity extends Dimension[Velocity] {
   def name = "Velocity"
   def primaryUnit = MetersPerSecond
   def siUnit = MetersPerSecond
-  def units = Set(MetersPerSecond, FeetPerSecond, MillimetersPerSecond, KilometersPerSecond, KilometersPerHour,
+  def units = Set(MetersPerSecond, EarthEscapeVelocities, FeetPerSecond, MillimetersPerSecond, KilometersPerSecond, KilometersPerHour,
     UsMilesPerHour, InternationalMilesPerHour, Knots)
 }
 
@@ -80,6 +81,11 @@ object MetersPerSecond extends VelocityUnit with PrimaryUnit with SiUnit {
 object KilometersPerSecond extends VelocityUnit with SiUnit {
   val symbol = "km/s"
   val conversionFactor = Kilometers.conversionFactor / Meters.conversionFactor
+}
+
+object EarthEscapeVelocities extends VelocityUnit {
+  val symbol = "Vₑ🜨"
+  val conversionFactor = 11186 * MetersPerSecond.conversionFactor
 }
 
 object KilometersPerHour extends VelocityUnit {

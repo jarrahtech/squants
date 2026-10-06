@@ -7,7 +7,7 @@ import org.scalacheck.{Gen, Properties}
 import squants.iron.given
 import squants.mass.Mass
 import squants.thermal.{Celsius, Fahrenheit, Kelvin, Rankine, Temperature}
-import squants.time.{Days, Hours, Microseconds, Milliseconds, Minutes, Nanoseconds, Seconds, Time}
+import squants.time.{Days, EarthGigaYears, EarthMegaYears, EarthYears, Hours, Microseconds, Milliseconds, Minutes, Nanoseconds, Seconds, Time}
 
 /**
  * Each property compares refinement with an oracle written independently of Squants' conversion code, so a
@@ -32,6 +32,9 @@ object QuantityConstraintChecks extends Properties("QuantityConstraint") {
     case Minutes => v * 60
     case Hours => v * 3600
     case Days => v * 86400
+    case EarthYears => v * 365.2421897 * 86400
+    case EarthMegaYears => v * 1e6 * 365.2421897 * 86400
+    case EarthGigaYears => v * 1e9 * 365.2421897 * 86400
     case other => throw new IllegalStateException(s"unexpected Time unit $other")
   }
 
