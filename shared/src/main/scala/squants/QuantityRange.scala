@@ -58,7 +58,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
     @tailrec
     def accumulate(acc: QuantitySeries[A], start: A): QuantitySeries[A] = {
       if (start >= upper) acc
-      else accumulate(acc :+ (start.to((start + that).min(upper))), start + that)
+      else accumulate(acc :+ (start to (start + that).min(upper)), start + that)
     }
     accumulate(IndexedSeq.empty.asInstanceOf[QuantitySeries[A]], lower)
   }

@@ -14,7 +14,7 @@
 # Needs: bash, curl, tar, a JDK. It does not install a JDK, Node.js or clang; it only reports whether they are present.
 #
 # Settings (environment variables, all optional):
-#   SBT_VERSION      sbt version to install              (default: from project/build.properties, else 1.13.0)
+#   SBT_VERSION      sbt version to install              (default: from project/build.properties, else 2.0.10)
 #   REPO_DIR         repo to read build.properties from  (default: current directory, else first /home/*/* repo)
 #   SBT_PREFIX       where sbt is unpacked               (default: /opt/sbt if writable, else ~/.local/sbt)
 #   BIN_DIR          where the wrapper goes              (default: /usr/local/bin if writable, else ~/.local/bin)
@@ -23,7 +23,7 @@
 #   PREWARM          1 to run `sbt update` in REPO_DIR   (default: 0)
 set -euo pipefail
 
-DEFAULT_SBT_VERSION="1.13.0"
+DEFAULT_SBT_VERSION="2.0.10"
 MAVEN_MIRROR="${MAVEN_MIRROR:-https://maven-central.storage-download.googleapis.com/maven2}"
 CENTRAL="https://repo1.maven.org/maven2"
 OVERRIDE_BUILD_REPOS="${OVERRIDE_BUILD_REPOS:-true}"

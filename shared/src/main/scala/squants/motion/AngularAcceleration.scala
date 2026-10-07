@@ -30,7 +30,7 @@ final class AngularAcceleration private (val value: Double, val unit: AngularAcc
    * @param radius the distance from the center of rotation
    * @return linear acceleration with given angular acceleration and radius
    */
-  def onRadius(radius: Length): Acceleration = toRadiansPerSecondSquared * radius / Seconds(1).squared
+  infix def onRadius(radius: Length): Acceleration = toRadiansPerSecondSquared * radius / Seconds(1).squared
 
   def *(that: MomentOfInertia): Torque = {
     NewtonMeters(this.toRadiansPerSecondSquared * that.toKilogramsMetersSquared)

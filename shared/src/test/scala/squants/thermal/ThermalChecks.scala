@@ -8,7 +8,7 @@
 
 package squants.thermal
 
-import org.scalacheck.Properties
+import org.scalacheck.{ Gen, Properties }
 import squants.QuantityChecks
 import org.scalacheck.Prop._
 import squants.energy.Joules
@@ -58,11 +58,11 @@ object ThermalChecks extends Properties("Thermal") with QuantityChecks {
       JoulesPerKelvin(thermCap) =~ Joules(thermCap * temp) / Kelvin(temp)
   }
 
-  property("Blackbody Temperature -> Irradiance -> Temperature") = forAll(org.scalacheck.Gen.choose(1.0, 1e6)) { kelvin =>
+  property("Blackbody Temperature -> Irradiance -> Temperature") = forAll(Gen.choose(1.0, 1e6)) { kelvin =>
     close(Kelvin(kelvin).blackbodyIrradiance.blackbodyTemperature.toKelvinScale, kelvin)
   }
 
-  property("Blackbody Irradiance -> Temperature -> Irradiance") = forAll(org.scalacheck.Gen.choose(1e-6, 1e12)) { watts =>
+  property("Blackbody Irradiance -> Temperature -> Irradiance") = forAll(Gen.choose(1e-6, 1e12)) { watts =>
     close(WattsPerSquareMeter(watts).blackbodyTemperature.blackbodyIrradiance.toWattsPerSquareMeter, watts)
   }
 }

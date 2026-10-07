@@ -43,7 +43,7 @@ final class Angle private (val value: Double, val unit: AngleUnit)
    * @param radius the distance from the center of rotation
    * @return arc length with given arc measure and radius
    */
-  def onRadius(radius: Length): Length = toRadians * radius
+  infix def onRadius(radius: Length): Length = toRadians * radius
 
   protected def timeDerived: AngularVelocity = RadiansPerSecond(toRadians)
 

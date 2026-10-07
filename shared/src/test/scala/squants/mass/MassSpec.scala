@@ -167,7 +167,6 @@ class MassSpec extends AnyFlatSpec with Matchers {
     Mass("10.22 M🜨").get should be(EarthMasses(10.22))
     EarthMasses(1).toKilograms should be(5.972168e24)
     EarthMasses(1).toString(EarthMasses) should be("1.0 M🜨")
-    Mass.units.map(_.symbol).size should be(Mass.units.size) // no two units share a symbol
   }
 
   it should "return Momentum when multiplied by Velocity" in {

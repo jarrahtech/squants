@@ -45,7 +45,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param that Quantity
    * @return Quantity
    */
-  def plus(that: A): A = unit(this.value + that.to(unit))
+  infix def plus(that: A): A = unit(this.value + that.to(unit))
   def +(that: A): A = plus(that)
 
   /**
@@ -53,7 +53,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param that Quantity
    * @return Quantity
    */
-  def minus(that: A): A = plus(that.negate)
+  infix def minus(that: A): A = plus(that.negate)
   def -(that: A): A = minus(that)
 
   /**
@@ -61,7 +61,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param that Double
    * @return Quantity
    */
-  def times(that: Double): A = unit(this.value * that)
+  infix def times(that: Double): A = unit(this.value * that)
   def *(that: Double): A = times(that)
 
   def *(that: Price[A]): Money = that * this
@@ -71,7 +71,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param that Double
    * @return Quantity
    */
-  def divide(that: Double): A = unit(this.value / that)
+  infix def divide(that: Double): A = unit(this.value / that)
   def /(that: Double): A = divide(that)
 
   /**
@@ -79,7 +79,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param that Quantity
    * @return Double
    */
-  def divide(that: A): Double = this.value / that.to(unit)
+  infix def divide(that: A): Double = this.value / that.to(unit)
   def /(that: A): Double = divide(that)
 
   /**
@@ -87,7 +87,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param that Quantity
    * @return Quantity
    */
-  def remainder(that: Double): A = unit(this.value % that)
+  infix def remainder(that: Double): A = unit(this.value % that)
   def %(that: Double): A = remainder(that)
 
   /**
@@ -95,7 +95,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param that Quantity
    * @return Double
    */
-  def remainder(that: A): Double = this.value % that.to(unit)
+  infix def remainder(that: A): Double = this.value % that.to(unit)
   def %(that: A): Double = remainder(that)
 
   /**
@@ -103,7 +103,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param that Double
    * @return (Quantity, Quantity)
    */
-  def divideAndRemainder(that: Double): (A, A) = BigDecimal(value) /% that match {
+  infix def divideAndRemainder(that: Double): (A, A) = BigDecimal(value) /% that match {
     case (q, r) => (unit(q.toDouble), unit(r.toDouble))
   }
   def /%(that: Double) = divideAndRemainder(that)
@@ -113,7 +113,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param that Quantity
    * @return (Double, Quantity)
    */
-  def divideAndRemainder(that: A): (Double, A) = BigDecimal(value) /% that.to(unit) match {
+  infix def divideAndRemainder(that: A): (Double, A) = BigDecimal(value) /% that.to(unit) match {
     case (q, r) => (q.toDouble, unit(r.toDouble))
   }
   def /%(that: A) = divideAndRemainder(that)
@@ -190,7 +190,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param tolerance Quantity
    * @return
    */
-  def approx(that: A)(implicit tolerance: A) = that.within(this.plusOrMinus(tolerance))
+  infix def approx(that: A)(implicit tolerance: A) = that.within(this.plusOrMinus(tolerance))
   /** approx */
   def =~(that: A)(implicit tolerance: A) = approx(that)
   /** approx */
@@ -210,21 +210,21 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param that Quantity
    * @return Quantity
    */
-  def max(that: A): A = if (this.value >= that.to(unit)) this else that
+  infix def max(that: A): A = if (this.value >= that.to(unit)) this else that
 
   /**
    * Returns the min of this and that Quantity
    * @param that Quantity
    * @return Quantity
    */
-  def min(that: A): A = if (this.value <= that.to(unit)) this else that
+  infix def min(that: A): A = if (this.value <= that.to(unit)) this else that
 
   /**
    * Returns a QuantityRange representing the range for this value +- that
    * @param that Quantity
    * @return QuantityRange
    */
-  def plusOrMinus(that: A): QuantityRange[A] = QuantityRange(this - that, this + that)
+  infix def plusOrMinus(that: A): QuantityRange[A] = QuantityRange(this - that, this + that)
   def +-(that: A) = plusOrMinus(that)
 
   /**
@@ -232,21 +232,21 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param that Quantity
    * @return QuantityRange
    */
-  def to(that: A): QuantityRange[A] = QuantityRange(this / 1, that)
+  infix def to(that: A): QuantityRange[A] = QuantityRange(this / 1, that)
 
   /**
    * Returns true if this value is within (contains) the range
    * @param range QuantityRange
    * @return Boolean
    */
-  def within(range: QuantityRange[A]) = range.contains(self)
+  infix def within(range: QuantityRange[A]) = range.contains(self)
 
   /**
    * Returns true if this value is not within (contains) the range
    * @param range QuantityRange
    * @return Boolean
    */
-  def notWithin(range: QuantityRange[A]) = !range.contains(self)
+  infix def notWithin(range: QuantityRange[A]) = !range.contains(self)
 
   /**
    * Returns a Double representing the quantity in terms of the supplied unit
@@ -257,7 +257,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param uom UnitOfMeasure[A]
    * @return Double
    */
-  def to(uom: UnitOfMeasure[A]): Double = uom match {
+  infix def to(uom: UnitOfMeasure[A]): Double = uom match {
     case u if u == this.unit => value
     case _ => uom.convertTo(this.unit.convertFrom(value))
   }
@@ -267,7 +267,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param uom UnitOfMeasure[A]
    * @return Quantity
    */
-  def in(uom: UnitOfMeasure[A]) = uom match {
+  infix def in(uom: UnitOfMeasure[A]) = uom match {
     case u if u == this.unit => this
     case _ => uom(uom.convertTo(this.unit.convertFrom(value)))
   }

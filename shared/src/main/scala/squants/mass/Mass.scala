@@ -45,7 +45,7 @@ final class Mass private (val value: Double, val unit: MassUnit)
    * @param radius length to center of rotation
    * @return moment of inertia of a point mass with given mass and radius
    */
-  def onRadius(radius: Length): MomentOfInertia = KilogramsMetersSquared(toKilograms * radius.squared.toSquareMeters)
+  infix def onRadius(radius: Length): MomentOfInertia = KilogramsMetersSquared(toKilograms * radius.squared.toSquareMeters)
 
   def toNanograms = to(Nanograms)
   def toMicrograms = to(Micrograms)

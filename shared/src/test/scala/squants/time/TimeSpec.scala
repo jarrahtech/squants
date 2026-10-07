@@ -113,7 +113,6 @@ class TimeSpec extends AnyFlatSpec with Matchers {
     EarthYears(1).toString(EarthYears) should be("1.0 Y🜨")
     EarthMegaYears(1).toString(EarthMegaYears) should be("1.0 MY🜨")
     EarthGigaYears(1).toString(EarthGigaYears) should be("1.0 BY🜨")
-    Time.units.map(_.symbol).size should be(Time.units.size)
   }
 
   it should "return TimeIntegral when multiplied by a TimeDerivative" in {

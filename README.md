@@ -24,7 +24,7 @@ libraryDependencies += "com.jarrahtechnology" %% "squants" % "1.10.0" // %%% in 
   version 61); Scala 3.7's library was Java 8. The CI workflows are configured for Java 17.
 - Toolchain: sbt 2.0.10 (needs Java 17 or later), sbt-scalajs 1.22.0, sbt-scala-native 0.5.12,
   sbt-scalajs-crossproject and sbt-scala-native-crossproject 1.4.0, ScalaTest 3.2.20, ScalaCheck 1.20.0,
-  scalajs-stubs 1.1.0, Iron 3.3.2 (only in `squants-iron`).
+  Iron 3.3.2 (only in `squants-iron`).
 - sbt project ids are `squants` (JVM), `squantsJS` and `squantsNative` for core, and `squantsIron`, `squantsIronJS` and
   `squantsIronNative` for the Iron module.
 - Run the full test suite with `sbt testFull`. In sbt 2 `test` is incremental and its results are cached on disk, so
@@ -189,12 +189,12 @@ import squants.mass.{EarthMasses, SolarMasses}
 import squants.space.{AstronomicalUnits, EarthRadii}
 
 val mu = G * EarthMasses(1)                        // GravitationalParameter
-val g = mu / (EarthRadii(1) * EarthRadii(1))       // Acceleration, about 9.82 m/s²
+val g = mu / EarthRadii(1).squared                 // Acceleration, about 9.82 m/s²
 val escape = ((mu / EarthRadii(1)) * 2).squareRoot // Velocity, about 11.19 km/s
 
 val sun = G * SolarMasses(1)
 val a = AstronomicalUnits(1)
-val period = ((a * a * a) / sun).squareRoot * (2 * math.Pi) // Time, about 365.25 days
+val period = (a.cubed / sun).squareRoot * (2 * math.Pi) // Time, about 365.25 days
 ```
 
 | Operation | Gives |

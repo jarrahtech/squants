@@ -43,13 +43,13 @@ final case class QuantityBounds[A <: Quantity[A]](lower: A, upper: A) {
   def toRange: Option[QuantityRange[A]] = if (isPoint) None else Some(QuantityRange(lower, upper))
 
   lazy val toQuantity = upper - lower
-  lazy val toSeq: Seq[A] = Seq(lower, upper)
-  lazy val toList: List[A] = List(lower, upper)
-  lazy val toTuple: (lower: A, upper: A) = (lower, upper)
+  def toSeq: Seq[A] = Seq(lower, upper)
+  def toList: List[A] = List(lower, upper)
+  def toTuple: (lower: A, upper: A) = (lower, upper)
 
   /** The value `ratio` of the way from `lower` to `upper`; below `lower` or above `upper` it extrapolates. */
   def lerp(ratio: Double) = lower + toQuantity*ratio
-  lazy val mid = lerp(0.5d)
+  def mid = lerp(0.5d)
 
   /**
    * How far `value` is from `lower`, as a fraction of the length: 0 at `lower`, 1 at `upper`, outside [0, 1] when

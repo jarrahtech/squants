@@ -88,7 +88,7 @@ package object squants {
     def *[A](that: SVector[A]): SVector[A] = that * d
     def *[A <: Quantity[A]](that: Price[A]): Price[A] = that * d
     def /(that: Time): Frequency = Each(d) / that
-    def per(that: Time): Frequency = /(that)
+    infix def per(that: Time): Frequency = /(that)
   }
 
   /**
@@ -104,7 +104,7 @@ package object squants {
     def *[A](that: SVector[A]): SVector[A] = that * l.toDouble
     def *[A <: Quantity[A]](that: Price[A]): Price[A] = that * l.toDouble
     def /(that: Time) = Each(l) / that
-    def per(that: Time): Frequency = /(that)
+    infix def per(that: Time): Frequency = /(that)
   }
 
   /**
@@ -120,7 +120,7 @@ package object squants {
     def *[A](that: SVector[A]): SVector[A] = that * l.toDouble
     def *[A <: Quantity[A]](that: Price[A]): Price[A] = that * l.toDouble
     def /(that: Time) = Each(l) / that
-    def per(that: Time): Frequency = /(that)
+    infix def per(that: Time): Frequency = /(that)
   }
 
   /**
@@ -136,6 +136,6 @@ package object squants {
     def *[A](that: SVector[A]): SVector[A] = that * bd.toDouble
     def *[A <: Quantity[A]](that: Price[A]): Price[A] = that * bd.toDouble
     def /(that: Time) = Each(bd) / that
-    def per(that: Time): Frequency = /(that)
+    infix def per(that: Time): Frequency = /(that)
   }
 }

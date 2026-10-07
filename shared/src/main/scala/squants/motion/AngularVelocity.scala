@@ -36,7 +36,7 @@ final class AngularVelocity private (val value: Double, val unit: AngularVelocit
    * @param radius the distance from the center of rotation
    * @return linear velocity with given angular velocity and radius
    */
-  def onRadius(radius: Length): Velocity = toRadiansPerSecond * radius / Seconds(1)
+  infix def onRadius(radius: Length): Velocity = toRadiansPerSecond * radius / Seconds(1)
 
   protected[squants] def timeIntegrated: Angle = Radians(toRadiansPerSecond)
 

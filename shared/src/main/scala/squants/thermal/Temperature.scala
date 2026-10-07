@@ -76,8 +76,8 @@ final class Temperature private (val value: Double, val unit: TemperatureScale)
 
   def dimension = Temperature
 
-  override def plus(that: Temperature): Temperature = Temperature(this.value + that.convert(unit, withOffset = false).value, unit)
-  override def minus(that: Temperature): Temperature = Temperature(this.value - that.convert(unit, withOffset = false).value, unit)
+  override infix def plus(that: Temperature): Temperature = Temperature(this.value + that.convert(unit, withOffset = false).value, unit)
+  override infix def minus(that: Temperature): Temperature = Temperature(this.value - that.convert(unit, withOffset = false).value, unit)
 
   def *(that: ThermalCapacity) = Joules(this.toKelvinScale * that.toJoulesPerKelvin)
 
@@ -121,12 +121,12 @@ final class Temperature private (val value: Double, val unit: TemperatureScale)
     case (Rankine, Kelvin, false) => Kelvin(TemperatureConversions.rankineToKelvinDegrees(value))
   }
 
-  def in(unit: TemperatureScale) = convert(unit, withOffset = true)
+  infix def in(unit: TemperatureScale) = convert(unit, withOffset = true)
   def inFahrenheit: Temperature = convert(Fahrenheit)
   def inCelsius: Temperature = convert(Celsius)
   def inKelvin: Temperature = convert(Kelvin)
 
-  def to(unit: TemperatureScale) = toScale(unit)
+  infix def to(unit: TemperatureScale) = toScale(unit)
   def toScale(unit: TemperatureScale) = convert(unit, withOffset = true).value
   def toFahrenheitScale = toScale(Fahrenheit)
   def toCelsiusScale = toScale(Celsius)
@@ -153,13 +153,10 @@ object Temperature extends Dimension[Temperature] with BaseDimension {
   def apply(s: String): Try[Temperature] = {
     val regex = "([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?) *°? *(f|F|c|C|k|K|r|R)".r
     s match {
-      case regex(value, unit) => unit.nn match {
-        case "f" | "F" => Success(Fahrenheit(value.nn.toDouble))
-        case "c" | "C" => Success(Celsius(value.nn.toDouble))
-        case "k" | "K" => Success(Kelvin(value.nn.toDouble))
-        case "r" | "R" => Success(Rankine(value.nn.toDouble))
-        case _ => Failure(QuantityParseException("Unable to parse Temperature", s))
-      }
+      case regex(value, "f" | "F") => Success(Fahrenheit(value.nn.toDouble))
+      case regex(value, "c" | "C") => Success(Celsius(value.nn.toDouble))
+      case regex(value, "k" | "K") => Success(Kelvin(value.nn.toDouble))
+      case regex(value, "r" | "R") => Success(Rankine(value.nn.toDouble))
       case _ => Failure(QuantityParseException("Unable to parse Temperature", s))
     }
   }

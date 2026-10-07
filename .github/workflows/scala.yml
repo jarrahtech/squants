@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ "master" ]
 
-env:
-  GITHUB_TOKEN: ${{ secrets.TOKEN_WITH_READ_PACKAGES_SCOPE }}
-
 permissions:
   contents: read
 
@@ -24,6 +21,7 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+        cache: 'sbt'
     - name: Setup sbt launcher
       uses: sbt/setup-sbt@v1
     - name: Run tests

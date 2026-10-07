@@ -64,7 +64,7 @@ trait TimeIntegral[A <: Quantity[A] & TimeDerivative[?]] {
    * @return
    */
   def /(that: Time): A = this.timeDerived * (this.time / that)
-  def per(that: Time): A = /(that)
+  infix def per(that: Time): A = /(that)
 
   /**
    * Returns the amount time required to achieve the given change in the Derivative
@@ -86,5 +86,5 @@ trait TimeIntegral[A <: Quantity[A] & TimeDerivative[?]] {
 trait SecondTimeIntegral[A <: SecondTimeDerivative[?]] { self: TimeIntegral[?] =>
   def /(that: A): TimeSquared
   def /(that: TimeSquared): A
-  def per(that: TimeSquared): A = /(that)
+  infix def per(that: TimeSquared): A = /(that)
 }

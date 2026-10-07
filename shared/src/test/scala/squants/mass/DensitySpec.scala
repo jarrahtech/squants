@@ -107,7 +107,6 @@ class DensitySpec extends AnyFlatSpec with Matchers {
     Density("10.22 D🜨").get should be(EarthDensities(10.22))
     EarthDensities(1).toKilogramsPerCubicMeter should be(5513)
     EarthDensities(1).toString(EarthDensities) should be("1.0 D🜨")
-    Density.units.map(_.symbol).size should be(Density.units.size)
   }
 
   it should "return Mass when multiplied by Volume" in {

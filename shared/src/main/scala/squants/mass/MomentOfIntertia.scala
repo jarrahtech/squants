@@ -31,7 +31,7 @@ final class MomentOfInertia private (val value: Double, val unit: MomentOfInerti
    * @param radius distance to axis of rotation
    * @return mass of point mass with given radius and MomentOfInertia
    */
-  def atCenter(radius: Length): Mass = {
+  infix def atCenter(radius: Length): Mass = {
     Kilograms(toKilogramsMetersSquared / radius.squared.toSquareMeters)
   }
 }

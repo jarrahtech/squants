@@ -8,7 +8,6 @@ ThisBuild / version := "1.10.0"
 val githubRepoUrl = "https://github.com/jarrahtech/squants"
 val githubPublishRepo = "https://maven.pkg.github.com/jarrahtech/squants"
 lazy val publishSettings = Seq(
-  publishMavenStyle := true,
   publishTo := Some("GitHub Packages" at githubPublishRepo),
   credentials += Credentials("GitHub Package Registry", "maven.pkg.github.com", "jarrahtech", sys.env.getOrElse("GITHUB_TOKEN", "")),
   // Project metadata that published POMs carry (sbt-github-packages used to supply it).
@@ -21,8 +20,8 @@ lazy val publishSettings = Seq(
 
 lazy val commonSettings = Seq(
   scalacOptions ++= Seq(
-    "-encoding", "utf8", // Option and arguments on same line
-    "-Werror",            // New lines for each options
+    "-encoding", "utf8",
+    "-Werror",
     "-Wunused:all",
     "-deprecation",
     "-feature",
@@ -34,6 +33,7 @@ lazy val commonSettings = Seq(
   //https://www.scalatest.org/
   libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.20" % "test",
   libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.20.0" % "test",
+  Test / parallelExecution := false,
 )
 
 // ScalaTest's Native build is compiled against test-interface 0.5.10 while the plugin brings 0.5.12.
@@ -45,8 +45,7 @@ lazy val nativeCommonSettings = Seq(
 lazy val root = project.in(file(".")).
   aggregate(squants.js, squants.jvm, squants.native, squantsIron.js, squantsIron.jvm, squantsIron.native).
   settings(
-    publish := {},
-    publishLocal := {},
+    publish / skip := true,
   )
 
 lazy val squants = crossProject(JSPlatform, JVMPlatform, NativePlatform).
@@ -56,14 +55,6 @@ lazy val squants = crossProject(JSPlatform, JVMPlatform, NativePlatform).
     name := "squants",
     commonSettings,
     publishSettings,
-  ).
-  jvmSettings(
-    libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.1.0" % "provided",
-    Test / parallelExecution := false,
-  ).
-  jsSettings(
-    Test / parallelExecution := false,
-    Test / excludeFilter := "*Serializer.scala" || "*SerializerSpec.scala",
   ).
   nativeSettings(nativeCommonSettings)
 
@@ -77,7 +68,6 @@ lazy val squantsIron = crossProject(JSPlatform, JVMPlatform, NativePlatform).
     commonSettings,
     publishSettings,
     libraryDependencies += "io.github.iltotore" %% "iron" % "3.3.2",
-    Test / parallelExecution := false,
   ).
   nativeSettings(nativeCommonSettings)
 

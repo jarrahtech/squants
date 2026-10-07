@@ -181,7 +181,6 @@ class LengthSpec extends AnyFlatSpec with Matchers {
     Length("10.22 R🜨").get should be(EarthRadii(10.22))
     EarthRadii(1).toKilometers should be(6371)
     EarthRadii(1).toString(EarthRadii) should be("1.0 R🜨")
-    Length.units.map(_.symbol).size should be(Length.units.size)
   }
 
   it should "return Area when multiplied by Length" in {

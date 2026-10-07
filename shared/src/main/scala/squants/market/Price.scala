@@ -28,25 +28,25 @@ case class Price[A <: Quantity[A]](money: Money, quantity: A) extends Ratio[Mone
   def counter = quantity
 
   // TODO Add verification that money amounts are the same OR convert
-  def plus(that: Price[A]): Price[A] = Price(this.money + that.money, quantity)
+  infix def plus(that: Price[A]): Price[A] = Price(this.money + that.money, quantity)
   def +(that: Price[A]): Price[A] = plus(that)
-  def minus(that: Price[A]): Price[A] = Price(this.money - that.money, quantity)
+  infix def minus(that: Price[A]): Price[A] = Price(this.money - that.money, quantity)
   def -(that: Price[A]): Price[A] = minus(that)
 
-  def times(that: Double): Price[A] = Price(this.money * that, quantity)
+  infix def times(that: Double): Price[A] = Price(this.money * that, quantity)
   def *(that: Double): Price[A] = Price(this.money * that, quantity)
-  def times(that: BigDecimal): Price[A] = Price(this.money * that, quantity)
+  infix def times(that: BigDecimal): Price[A] = Price(this.money * that, quantity)
   def *(that: BigDecimal): Price[A] = Price(this.money * that, quantity)
 
-  def divide(that: Double): Price[A] = Price(this.money / that, quantity)
+  infix def divide(that: Double): Price[A] = Price(this.money / that, quantity)
   def /(that: Double): Price[A] = divide(that)
-  def divide(that: BigDecimal): Price[A] = Price(this.money / that, quantity)
+  infix def divide(that: BigDecimal): Price[A] = Price(this.money / that, quantity)
   def /(that: BigDecimal): Price[A] = divide(that)
-  def divide(that: Price[A]): BigDecimal = this.money.amount / that.money.amount
+  infix def divide(that: Price[A]): BigDecimal = this.money.amount / that.money.amount
   def /(that: Price[A]): BigDecimal = divide(that)
 
-  def in(currency: Currency)(implicit moneyContext: MoneyContext) =
-    (money.in(currency)) / quantity
+  infix def in(currency: Currency)(implicit moneyContext: MoneyContext) =
+    (money in currency) / quantity
 
   /**
    * Returns the Cost (Money) for a quantity `that` of A
@@ -68,6 +68,6 @@ case class Price[A <: Quantity[A]](money: Money, quantity: A) extends Ratio[Mone
   def toString(unit: UnitOfMeasure[A]) = money.toString + "/" + quantity.toString(unit)
 
   def toString(currency: Currency, unit: UnitOfMeasure[A])(implicit moneyContext: MoneyContext) =
-    (money.in(currency)).toString + "/" + quantity.toString(unit)
+    (money in currency).toString + "/" + quantity.toString(unit)
 }
 
