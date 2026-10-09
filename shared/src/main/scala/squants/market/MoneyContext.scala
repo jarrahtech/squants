@@ -34,6 +34,8 @@ case class MoneyContext(
 
   lazy val currencyMap = currencies.map { (c: Currency) => c.code -> c }.toMap
 
+  private[market] lazy val moneyPattern = ("([-+]?[0-9]*\\.?[0-9]+) *(" + currencies.map(_.code).mkString("|") + ")").r
+
   /**
    * Custom implementation using SortedSets to ensure consistent output
    * @return String representation of this instance
@@ -71,22 +73,19 @@ case class MoneyContext(
 
     // TODO Improve this to attempt to use defaultCurrency first
 
-    directRateFor(curA, curB) match {
-      case Some(rate) => Some(rate)
-      case _ =>
-        val ratesWithCurA = rates.filter(r => r.base.currency == curA || r.counter.currency == curA)
-        val ratesWithCurB = rates.filter(r => r.base.currency == curB || r.counter.currency == curB)
+    // The currencies that share a rate with `currency`, and `currency` itself
+    def currenciesWithRateTo(currency: Currency): Set[Currency] =
+      rates.iterator
+        .filter(r => r.base.currency == currency || r.counter.currency == currency)
+        .flatMap(r => Iterator(r.base.currency, r.counter.currency))
+        .toSet
 
-        val curs = for {
-          cur <- currencies
-          if ratesWithCurA.map(_.base.currency).contains(cur) || ratesWithCurA.map(_.counter.currency).contains(cur)
-          if ratesWithCurB.map(_.base.currency).contains(cur) || ratesWithCurB.map(_.counter.currency).contains(cur)
-        } yield cur
+    directRateFor(curA, curB).orElse {
+      val withCurA = currenciesWithRateTo(curA)
+      val withCurB = currenciesWithRateTo(curB)
 
-        curs.headOption match {
-          case Some(cur) => Some(CurrencyExchangeRate(convert(cur(1), curA), convert(cur(1), curB)))
-          case None => None
-        }
+      currencies.find(cur => withCurA(cur) && withCurB(cur))
+        .map(cur => CurrencyExchangeRate(convert(cur(1), curA), convert(cur(1), curB)))
     }
   }
 
@@ -155,10 +154,12 @@ case class MoneyContext(
    * @return
    * @throws NoSuchExchangeRateException when no exchange rate is available
    */
-  def compare(moneyA: Money, moneyB: Money): Int =
-    if (moneyA.amount > convert(moneyB, moneyA.currency).amount) 1
-    else if (moneyA.amount < convert(moneyB, moneyA.currency).amount) -1
+  def compare(moneyA: Money, moneyB: Money): Int = {
+    val amountB = convert(moneyB, moneyA.currency).amount
+    if (moneyA.amount > amountB) 1
+    else if (moneyA.amount < amountB) -1
     else 0
+  }
 
   /**
    * Create a copy of this context with additional currencies added to the existing set

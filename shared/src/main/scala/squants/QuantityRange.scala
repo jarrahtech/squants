@@ -33,7 +33,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * @param multiple Number of ranges to create
    * @return
    */
-  def times(multiple: Double): QuantitySeries[A] = {
+  infix def times(multiple: Double): QuantitySeries[A] = {
     val remainder = multiple % 1
     val count = ((multiple - remainder) / 1).toInt
     val ranges = (0 until count).map(n => QuantityRange(lower + (toQuantity * n.toDouble), upper + (toQuantity * n.toDouble)))
@@ -54,13 +54,13 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * @param that Quantity
    * @return
    */
-  def divide(that: A): QuantitySeries[A] = {
+  infix def divide(that: A): QuantitySeries[A] = {
     @tailrec
     def accumulate(acc: QuantitySeries[A], start: A): QuantitySeries[A] = {
       if (start >= upper) acc
       else accumulate(acc :+ (start to (start + that).min(upper)), start + that)
     }
-    accumulate(IndexedSeq.empty.asInstanceOf[QuantitySeries[A]], lower)
+    accumulate(IndexedSeq.empty[QuantityRange[A]], lower)
   }
   /** divide */
   def /(that: A) = divide(that)
@@ -78,7 +78,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * @param that Double
    * @return
    */
-  def divide(that: Double): QuantitySeries[A] = divide(this.toQuantity / that)
+  infix def divide(that: Double): QuantitySeries[A] = divide(this.toQuantity / that)
   /** divide */
   def /(divisor: Double) = divide(divisor)
 

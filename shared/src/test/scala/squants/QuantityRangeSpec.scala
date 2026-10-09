@@ -41,7 +41,7 @@ class QuantityRangeSpec extends AnyFlatSpec with Matchers {
 
   it should "times a Double and get back a List of ranges" in {
     val r = QuantityRange(Meters(0), Meters(10))
-    val rs = r.times(3)
+    val rs = r times 3
     rs.head should be(QuantityRange(Meters(0), Meters(10)))
     rs.tail.head should be(QuantityRange(Meters(10), Meters(20)))
     rs.tail.tail.head should be(QuantityRange(Meters(20), Meters(30)))
@@ -58,6 +58,7 @@ class QuantityRangeSpec extends AnyFlatSpec with Matchers {
     rs.head should be(QuantityRange(Meters(0), Meters(4)))
     rs.tail.head should be(QuantityRange(Meters(4), Meters(8)))
     rs.tail.tail.head should be(QuantityRange(Meters(8), Meters(10)))
+    (r divide Meters(4)) should be(rs)
   }
 
   it should "divide a Double and get back a List of ranges" in {
@@ -66,6 +67,7 @@ class QuantityRangeSpec extends AnyFlatSpec with Matchers {
     rs.head should be(QuantityRange(Meters(0), Meters(4)))
     rs.tail.head should be(QuantityRange(Meters(4), Meters(8)))
     rs.tail.tail.head should be(QuantityRange(Meters(8), Meters(10)))
+    (r divide 2.5) should be(rs)
   }
 
   it should "foreach a like value and execute an operation on each sub range" in {

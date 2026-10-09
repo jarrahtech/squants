@@ -67,6 +67,7 @@ class MoneySpec extends AnyFlatSpec with Matchers with TryValues {
     Money("10000.0 JPY").get should be(JPY(10000))
     Money("23.45 CAD").get should be(CAD(23.45))
     Money("23.45 ZZZ").failed.get should be(QuantityParseException("Unable to parse Money", "23.45 ZZZ"))
+    Money("23.45 USD")(using MoneyContext(USD, Set.empty, Nil)).failed.get should be(QuantityParseException("Unable to parse Money", "23.45 USD"))
   }
 
   it should "return proper result when comparing like currencies" in {
@@ -146,6 +147,16 @@ class MoneySpec extends AnyFlatSpec with Matchers with TryValues {
     val y = JPY(100)
     x.moneyMax(y) should be(x)
     y.moneyMin(x) should be(y)
+  }
+
+  it should "allow infix use of the operators Money overrides" in {
+    (USD(1) plus USD(2)) should be(USD(3))
+    (USD(5) minus USD(2)) should be(USD(3))
+    (USD(5) times 2) should be(USD(10))
+    (USD(10) divide 2) should be(USD(5))
+    (USD(10) divide USD(2)) should be(5)
+    (USD(10) max USD(2)) should be(USD(10))
+    (USD(10) min USD(2)) should be(USD(2))
   }
 
   it should "return a proper result when adding like currencies with no MoneyContext in scope" in {

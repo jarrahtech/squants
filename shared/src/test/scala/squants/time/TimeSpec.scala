@@ -237,6 +237,16 @@ class TimeSpec extends AnyFlatSpec with Matchers {
     days.unit should be(DAYS)
   }
 
+  it should "convert a Time in a unit Scala Concurrent Duration lacks to an equal Duration" in {
+    import TimeConversions._
+
+    val year: Duration = EarthYears(1)
+    year.toMillis should be(EarthYears(1).toMilliseconds.toLong +- 1L)
+
+    val tenYears: Duration = EarthYears(10)
+    tenYears.toDays should be(EarthYears(10).toDays.toLong)
+  }
+
   it should "convert a Time to a Scala Concurrent Duration in expressions that require it" in {
     import TimeConversions._
 

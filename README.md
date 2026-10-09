@@ -31,7 +31,11 @@ libraryDependencies += "com.jarrahtechnology" %% "squants" % "1.10.0" // %%% in 
   `sbt test` can legitimately report "No tests to run". CI uses `testFull`.
 - Publishing goes to GitHub Packages through plain `build.sbt` settings (`publishSettings`), authenticated by the
   `GITHUB_TOKEN` environment variable. The `sbt-github-packages` plugin has no sbt 2 build and was removed. Published POMs
-  are identical to the ones sbt 1 produced.
+  carry the same project metadata as the ones sbt 1 produced; the JVM POM no longer lists the unused `scalajs-stubs`
+  `provided` dependency.
+- The alphanumeric operators (`plus`, `times`, `max`, `in`, ...) are declared `infix`. Scala does not check that
+  modifier across overrides, so an override in a `Quantity` subclass must repeat `infix`, or infix use on that subtype
+  stops compiling under `-deprecation -Werror`.
 - In sbt 2 a platform-aware dependency is written with `%%` (the project's platform picks the `_sjs1_3` or `_native0.5_3`
   suffix); `%%%` no longer exists.
 - Scala Native's strict version scheme makes sbt 2 reject the ScalaTest/Scala Native `test-interface` version difference
@@ -1731,31 +1735,9 @@ Comments, criticisms, and/or praise are welcome, especially from scientists, eng
 
 # Release procedure
 
-Making a release requires permission to publish to sonatype, and a properly setup [signing key](http://www.scala-sbt.org/sbt-pgp/usage.html):
+1. Set `ThisBuild / version` in `build.sbt` and the version quoted in this README.
+2. Run the **Scala Publish** workflow (`.github/workflows/publish.yml`) from the Actions tab. It runs
+   `sbt 'testFull; publish'` and publishes every module to GitHub Packages.
 
-To make a release do the following:
-
-* Ensure the version is not set to `SNAPSHOT`
-
-* Build the README using tut
-
-```
-  sbt tut
-```
-
-* Publish a cross-version signed package (no cross-version available for Scala Native)
-```
-  sbt +squantsJVM/publishSigned
-  sbt +squantsJS/publishSigned
-  sbt squantsNative/publishSigned
-```
-
-* Repeat for scala.js 1.0.0-RC1
-```
-  SCALAJS_VERSION=1.0.0-RC1 sbt +squantsJS/publishSigned
-```
-
-* Then make a release (Note: after this step the release cannot be replaced)
-```
-  sbt sonatypeRelease
-```
+To publish from a local checkout instead, run the same sbt command with `GITHUB_TOKEN` set to a token that has
+`write:packages`.

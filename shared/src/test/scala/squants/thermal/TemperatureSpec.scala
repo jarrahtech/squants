@@ -199,6 +199,11 @@ class TemperatureSpec extends AnyFlatSpec
     Celsius(50) - Rankine(36) should be(Celsius(30))
   }
 
+  they should "allow infix use of the operators Temperature overrides" in {
+    (Celsius(10) plus Fahrenheit(36)) should be(Celsius(30))
+    (Celsius(50) minus Fahrenheit(36)) should be(Celsius(30))
+  }
+
   they should "properly times Double (Degrees)" in {
     Kelvin(10) * 5 should be(Kelvin(50))
     Fahrenheit(10) * 5 should be(Fahrenheit(50))

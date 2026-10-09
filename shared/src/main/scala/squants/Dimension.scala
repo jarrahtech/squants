@@ -68,7 +68,8 @@ trait Dimension[A <: Quantity[A]] {
 
   def parseString(s: String): Try[A] = {
     s match {
-      case QuantityString(value, symbol) => Success(symbolToUnit(symbol.nn).get(BigDecimal(value.nn)))
+      case QuantityString(value, symbol) =>
+        symbolToUnit(symbol.nn).map(_(BigDecimal(value.nn))).toRight(QuantityParseException(s"Unable to parse $name", s)).toTry
       case _ => Failure(QuantityParseException(s"Unable to parse $name", s))
     }
   }

@@ -15,6 +15,7 @@ import org.scalatest.matchers.should.Matchers
 import scala.math.BigDecimal.RoundingMode
 import scala.util.{Failure, Try}
 import squants.thermal.{Celsius, Fahrenheit}
+import squants.space.{Length, Microns}
 import squants.time.{Hertz, Hours, Minutes}
 
 /**
@@ -403,14 +404,14 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
     val x = Thangs(5)
     val y = Thangs(4.999)
     (x max y) should be(Thangs(5))
-
-    (x max y) should be(Thangs(5))
+    (y max x) should be(Thangs(5))
   }
 
-  it should "min a like value and return the greater of the two" in {
+  it should "min a like value and return the lesser of the two" in {
     val x = Thangs(5)
     val y = Thangs(4.999)
     (x min y) should be(Thangs(4.999))
+    (y min x) should be(Thangs(4.999))
   }
 
   it should "plusOrMinus a like value and return a QuantityRange" in {
@@ -472,6 +473,7 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
   it should "toString a unit and return a string formatted for the unit" in {
     val x = Thangs(1500)
     x.toString(Kilothangs) should be("1.5 kth")
+    (x toString Kilothangs) should be("1.5 kth")
   }
 
   it should "toString a format and unit and return a string using the format and unit" in {
@@ -488,6 +490,7 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
   it should "toTuple a unit and return a tuple including the value in the supplied unit and that unit's symbol" in {
     val x = Kilothangs(10.22)
     x.toTuple(Thangs) should be((10220, "th"))
+    (x toTuple Thangs) should be((10220, "th"))
   }
 
   it should "map over the underlying value and return the resulting value in a Quantity of the same Unit" in {
@@ -681,6 +684,24 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
     timeInMinutes.equals(timeInSeconds) shouldBe true
     timeInMinutes.hashCode() shouldBe timeInSeconds.hashCode()
 
+  }
+
+  it should "have a symmetric equals that agrees with hashCode across units" in {
+    val units = Length.units.toSeq
+    for (from <- units; to <- units; value <- Seq(1d, 3d, 0.1, 7.25, 1e-9, 12345.678)) {
+      val a = from(value)
+      val b = a.in(to)
+      withClue(s"$a and $b: ") {
+        (a == b) should be(b == a)
+        if (a == b) a.hashCode() should be(b.hashCode())
+      }
+    }
+  }
+
+  it should "not equal a different value in the same unit" in {
+    val x = Microns(3)
+    (x == Microns(Math.nextUp(3d))) should be(right = false)
+    (x == Microns(3)) should be(right = true)
   }
 
   it should "provide implicit instance for Dimension" in {

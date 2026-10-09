@@ -4,7 +4,7 @@ ThisBuild / organization := "com.jarrahtechnology"
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / version := "1.10.0"
 
-// Publishing to GitHub Packages. The token comes from the GITHUB_TOKEN environment variable (as CI sets it).
+// Publishing to GitHub Packages. The token comes from the GITHUB_TOKEN environment variable (as the publish workflow sets it).
 val githubRepoUrl = "https://github.com/jarrahtech/squants"
 val githubPublishRepo = "https://maven.pkg.github.com/jarrahtech/squants"
 lazy val publishSettings = Seq(

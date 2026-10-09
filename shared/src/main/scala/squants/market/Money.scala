@@ -10,7 +10,7 @@ package squants.market
 
 import squants._
 
-import scala.util.{ Failure, Success, Try }
+import scala.util.{ Failure, Try }
 import scala.language.implicitConversions
 import scala.math.BigDecimal.RoundingMode
 import scala.math.BigDecimal.RoundingMode.RoundingMode
@@ -234,8 +234,8 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @param that Money
    * @return Int
    */
-  override infix def max(that: Money): Money = (that, that.currency) match {
-    case (m: Money, this.currency) => new Money(amount.max(m.amount))(currency)
+  override infix def max(that: Money): Money = that.currency match {
+    case this.currency => new Money(amount.max(that.amount))(currency)
     case _ => throw new UnsupportedOperationException("max not supported for cross-currency comparison - use moneyMax")
   }
 
@@ -244,8 +244,8 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @param that Quantity
    * @return Int
    */
-  override infix def min(that: Money): Money = (that, that.currency) match {
-    case (m: Money, this.currency) => new Money(amount.min(m.amount))(currency)
+  override infix def min(that: Money): Money = that.currency match {
+    case this.currency => new Money(amount.min(that.amount))(currency)
     case _ => throw new UnsupportedOperationException("min not supported for cross-currency comparison - use moneyMin")
   }
 
@@ -404,12 +404,9 @@ object Money extends Dimension[Money] {
     Currency(currency).map(new Money(BigDecimal(num.toDouble(n)))(_))
   }
 
-  def apply(s: String)(implicit fxContext: MoneyContext): Try[Money] = {
-    val regex = ("([-+]?[0-9]*\\.?[0-9]+) *(" + fxContext.currencies.map(_.code).reduceLeft(_ + "|" + _) + ")").r
-    s match {
-      case regex(value, currency) => Currency(currency.nn).map(Money(BigDecimal(value.nn), _))
-      case _ => Failure(QuantityParseException("Unable to parse Money", s))
-    }
+  def apply(s: String)(implicit fxContext: MoneyContext): Try[Money] = s match {
+    case fxContext.moneyPattern(value, currency) => Currency(currency.nn).map(Money(BigDecimal(value.nn), _))
+    case _ => Failure(QuantityParseException("Unable to parse Money", s))
   }
   def name = "Money"
 
@@ -446,17 +443,12 @@ abstract class Currency(val code: String, val name: String, val symbol: String, 
     case _ => false
   }
 
-  override def hashCode(): Int = {
-    val state = Seq(code, name, symbol, formatDecimals)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
-  }
+  override val hashCode: Int = Objects.hash(code, name, symbol, Int.box(formatDecimals))
 }
 
 object Currency {
-  def apply(currency: String)(implicit fxContext: MoneyContext) = {
-    fxContext.currencyMap.get(currency)
-      .fold(Try[Currency](throw NoSuchCurrencyException(currency, fxContext)))(Success(_))
-  }
+  def apply(currency: String)(implicit fxContext: MoneyContext): Try[Currency] =
+    fxContext.currencyMap.get(currency).toRight(NoSuchCurrencyException(currency, fxContext)).toTry
 }
 
 object USD extends Currency("USD", "US Dollar", "$", 2)

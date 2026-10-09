@@ -178,6 +178,7 @@ object TimeConversions {
     case Minutes => Duration(time.value.toLong, MINUTES)
     case Hours => Duration(time.value.toLong, HOURS)
     case Days => Duration(time.value.toLong, DAYS)
+    case _ => Duration(time.toDays, DAYS) // units Duration has no equivalent for, such as EarthYears
   }
 
   implicit def scalaDurationToTime(duration: Duration): Time = Time(duration)

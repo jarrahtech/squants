@@ -150,15 +150,18 @@ final class Temperature private (val value: Double, val unit: TemperatureScale)
 object Temperature extends Dimension[Temperature] with BaseDimension {
   def apply[A](n: A, scale: TemperatureScale)(implicit num: Numeric[A]) = new Temperature(num.toDouble(n), scale)
 
-  def apply(s: String): Try[Temperature] = {
-    val regex = "([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?) *°? *(f|F|c|C|k|K|r|R)".r
-    s match {
-      case regex(value, "f" | "F") => Success(Fahrenheit(value.nn.toDouble))
-      case regex(value, "c" | "C") => Success(Celsius(value.nn.toDouble))
-      case regex(value, "k" | "K") => Success(Kelvin(value.nn.toDouble))
-      case regex(value, "r" | "R") => Success(Rankine(value.nn.toDouble))
-      case _ => Failure(QuantityParseException("Unable to parse Temperature", s))
-    }
+  private val TemperatureString = "([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?) *°? *(f|F|c|C|k|K|r|R)".r
+
+  def apply(s: String): Try[Temperature] = s match {
+    case TemperatureString(value, scale) =>
+      val unit = scale.nn match {
+        case "f" | "F" => Fahrenheit
+        case "c" | "C" => Celsius
+        case "k" | "K" => Kelvin
+        case _ => Rankine
+      }
+      Success(unit(value.nn.toDouble))
+    case _ => Failure(QuantityParseException("Unable to parse Temperature", s))
   }
 
   def name = "Temperature"

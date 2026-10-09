@@ -167,11 +167,17 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
   /**
    * Override of equals method
    *
-   * @param that must be of matching value and unit
+   * Quantities in the same unit are compared by value. Quantities in different units are both converted
+   * to the primary unit, as hashCode does, so that equals is symmetric and agrees with hashCode.
+   *
+   * @param that must be of matching dimension and equivalent value
    * @return
    */
   override def equals(that: Any) = that match {
-    case x: Quantity[_] if x.dimension == dimension => value == x.asInstanceOf[Quantity[A]].to(unit)
+    case x: Quantity[_] if x.dimension == dimension =>
+      val other = x.asInstanceOf[Quantity[A]]
+      if (other.unit == unit) value == other.value
+      else to(dimension.primaryUnit) == other.to(dimension.primaryUnit)
     case _ => false
   }
 
@@ -203,7 +209,10 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param that Quantity
    * @return Int
    */
-  def compare(that: A) = if (this.value > that.to(unit)) 1 else if (this.value < that.to(unit)) -1 else 0
+  def compare(that: A) = {
+    val other = that.to(unit)
+    if (this.value > other) 1 else if (this.value < other) -1 else 0
+  }
 
   /**
    * Returns the max of this and that Quantity
@@ -283,7 +292,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param uom UnitOfMeasure[A] with UnitConverter
    * @return String
    */
-  def toString(uom: UnitOfMeasure[A]): String = s"${Platform.crossFormat(to(uom))} ${uom.symbol}"
+  infix def toString(uom: UnitOfMeasure[A]): String = s"${Platform.crossFormat(to(uom))} ${uom.symbol}"
 
   /**
    * Returns a string representing the quantity's value in the given `unit` in the given `format`
@@ -304,7 +313,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param uom UnitOfMeasure[A]
    * @return
    */
-  def toTuple(uom: UnitOfMeasure[A]): (Double, String) = (to(uom), uom.symbol)
+  infix def toTuple(uom: UnitOfMeasure[A]): (Double, String) = (to(uom), uom.symbol)
 
   /**
    * Applies a function to the underlying value of the Quantity, returning a new Quantity in the same unit
