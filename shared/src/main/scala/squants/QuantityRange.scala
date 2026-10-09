@@ -109,7 +109,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * @tparam B the result type of the map operation
    * @return
    */
-  def map[B](size: A)(op: QuantityRange[A] => B): Seq[B] = /(size).map(op)
+  def map[B](size: A)(op: QuantityRange[A] => B): IndexedSeq[B] = /(size).map(op)
 
   /**
    * Divides the range into a Seq of `divisor` ranges and applies a map operation to each
@@ -119,7 +119,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * @tparam B the result type of the map operation
    * @return
    */
-  def map[B](divisor: Double)(op: QuantityRange[A] => B): Seq[B] = map(toQuantity / divisor)(op)
+  def map[B](divisor: Double)(op: QuantityRange[A] => B): IndexedSeq[B] = map(toQuantity / divisor)(op)
 
   /**
    * Divides the range into a Seq of ranges of `size` each and applies a foldLeft operation

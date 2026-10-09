@@ -174,7 +174,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @return
    */
   override def equals(that: Any): Boolean = that match {
-    case x: Quantity[_] if x.dimension == dimension =>
+    case x: Quantity[?] if x.dimension == dimension =>
       val other = x.asInstanceOf[Quantity[A]]
       if (other.unit == unit) value == other.value
       else unit.toPrimary(value) == other.unit.toPrimary(other.value)

@@ -22,7 +22,7 @@ final class ChemicalAmount private (val value: Double, val unit: ChemicalAmountU
 
   def dimension = ChemicalAmount
 
-  def /(that: Volume) = ??? // returns SubstanceConcentration
+  // def /(that: Volume) = ??? // returns SubstanceConcentration
 
   def toMoles: Double = to(Moles)
   def toPoundMoles: Double = to(PoundMoles)

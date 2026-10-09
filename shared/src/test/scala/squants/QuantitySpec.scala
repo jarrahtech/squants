@@ -41,7 +41,7 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
     def name = "Thingee"
     def primaryUnit = Thangs
     def siUnit = Thangs
-    def units = Set(Thangs, Kilothangs)
+    def units = Set(Thangs, Kilothangs, DoubleThangs)
   }
 
   trait ThingeeUnit extends UnitOfMeasure[Thingee] with UnitConverter {
@@ -55,6 +55,12 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
   object Kilothangs extends ThingeeUnit {
     val symbol = "kth"
     val conversionFactor = Thangs.conversionFactor * MetricSystem.Kilo
+  }
+
+  // A symbol made of regex metacharacters, to check symbols are matched literally when parsing
+  object DoubleThangs extends ThingeeUnit {
+    val symbol = "th+(2)"
+    val conversionFactor = Thangs.conversionFactor * 2
   }
 
   implicit object ThingeeNumeric extends AbstractQuantityNumeric[Thingee](Thangs)
@@ -83,6 +89,12 @@ class QuantitySpec extends AnyFlatSpec with Matchers with CustomMatchers with Tr
     // Use them to initialize quantity values
     Thangs("10.22").toThangs should be(10.22)
     (Thangs("10") + Thangs("0.22")).toThangs should be(10.22)
+  }
+
+  it should "match a unit symbol literally when it contains regex metacharacters" in {
+    Thingee("3 th+(2)").get should be(DoubleThangs(3))
+    Thingee("3 thh2").failure.exception shouldBe a[QuantityParseException]
+    Thingee("3 th+").failure.exception shouldBe a[QuantityParseException]
   }
 
   it should "create values from properly formatted Strings" in {

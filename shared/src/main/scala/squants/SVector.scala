@@ -255,7 +255,7 @@ case class QuantityVector[A <: Quantity[A]](coordinates: A*) extends SVector[A] 
     valueUnit(coordinates.zipAll(that.coordinates, valueUnit(0), 0d).map(v => v._1.to(valueUnit) * v._2).sum)
 
   def dotProduct[B <: Quantity[B], C <: Quantity[C]](that: SVector[B], quantTimes: (A, B) => C)(using num: Numeric[C]): C =
-    coordinates.zipAll(that.coordinates, valueUnit(0), that.coordinates.head.unit(0)).map(v => quantTimes(v._1, v._2)).sum
+    coordinates.lazyZip(that.coordinates).map(quantTimes).sum
 
   infix def crossProduct(that: DoubleVector): SVectorType = (this.coordinates.length, that.coordinates.length) match {
     case (3, 3) =>

@@ -27,7 +27,7 @@ final class SpecificEnergy private (val value: Double, val unit: SpecificEnergyU
   def *(that: Length): GravitationalParameter = CubicMetersPerSecondSquared(this.toGrays * that.toMeters)
   /** The velocity whose kinetic energy per unit mass is this: `sqrt(e)` in metres per second (NaN if negative). */
   def squareRoot: Velocity = MetersPerSecond(math.sqrt(toGrays))
-  def /(that: Time) = ??? // returns AbsorbedEnergyRate
+  // def /(that: Time) = ??? // returns AbsorbedEnergyRate
 
   def toGrays: Double = to(Grays)
   def toRads: Double = to(Rads)

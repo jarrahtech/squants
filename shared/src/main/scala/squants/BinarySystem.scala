@@ -16,12 +16,12 @@ package squants
  *
  */
 object BinarySystem {
-  lazy val Kilo = 1024d
-  lazy val Mega: Double = 1024d * Kilo
-  lazy val Giga: Double = 1024d * Mega
-  lazy val Tera: Double = 1024d * Giga
-  lazy val Peta: Double = 1024d * Tera
-  lazy val Exa: Double = 1024d * Peta
-  lazy val Zetta: Double = 1024d * Exa
-  lazy val Yotta: Double = 1024d * Zetta
+  val Kilo: Double = 1024d
+  val Mega: Double = 1024d * Kilo
+  val Giga: Double = 1024d * Mega
+  val Tera: Double = 1024d * Giga
+  val Peta: Double = 1024d * Tera
+  val Exa: Double = 1024d * Peta
+  val Zetta: Double = 1024d * Exa
+  val Yotta: Double = 1024d * Zetta
 }

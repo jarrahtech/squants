@@ -74,7 +74,10 @@ trait Dimension[A <: Quantity[A]] {
     }
   }
 
-  private lazy val QuantityString = ("^([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?) *(" + units.map { (u: UnitOfMeasure[A]) => u.symbol }.reduceLeft(_ + "|" + _) + ")$").r
+  private lazy val QuantityString = ("^([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?) *(" + units.iterator.map(u => escapeRegex(u.symbol)).mkString("|") + ")$").r
+
+  // Not Pattern.quote: Scala Native's regex does not match a quoted symbol that has a character outside the BMP (M🜨)
+  private def escapeRegex(symbol: String): String = symbol.replaceAll("""[\\^$.|?*+()\[\]{}]""", """\\$0""").nn
 
   def parseTuple[N](t: (N, String))(using num: Numeric[N]): Try[A] = {
     val value = t._1
@@ -88,7 +91,7 @@ trait Dimension[A <: Quantity[A]] {
   given dimensionImplicit: Dimension[A] = this
 
   override def equals(that: Any): Boolean = that match {
-    case dimension: Dimension[_] => dimension.getClass.getName == this.getClass.getName
+    case dimension: Dimension[?] => dimension.getClass.getName == this.getClass.getName
     case _ => false
   }
 
