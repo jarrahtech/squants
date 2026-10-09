@@ -238,6 +238,38 @@ class TimeSpec extends AnyFlatSpec with Matchers {
     days.unit should be(DAYS)
   }
 
+  it should "keep the fraction when converting a Time to a Scala Concurrent Duration" in {
+    import TimeConversions.given
+
+    val seconds: Duration = Seconds(1.5)
+    seconds should be(Duration(1500, MILLISECONDS))
+
+    val milliseconds: Duration = Milliseconds(0.9)
+    milliseconds should be(Duration(900, MICROSECONDS))
+
+    val days: Duration = Days(0.5)
+    days should be(Duration(12, HOURS))
+
+    val whole: Duration = Seconds(90)
+    whole.length should be(90)
+    whole.unit should be(SECONDS)
+  }
+
+  it should "convert an infinite or NaN Time to the matching Scala Concurrent Duration" in {
+    import TimeConversions.given
+
+    val infinite: Duration = Seconds(Double.PositiveInfinity)
+    infinite should be(Duration.Inf)
+
+    val negative: Duration = Hours(Double.NegativeInfinity)
+    negative should be(Duration.MinusInf)
+
+    val undefined: Duration = Seconds(Double.NaN)
+    (undefined eq Duration.Undefined) should be(right = true)
+
+    an[IllegalArgumentException] should be thrownBy { val tooLong: Duration = EarthYears(1000); tooLong }
+  }
+
   it should "convert a Time in a unit Scala Concurrent Duration lacks to an equal Duration" in {
     import TimeConversions.given
 

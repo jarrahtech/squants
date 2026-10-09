@@ -165,21 +165,24 @@ object TimeConversions {
   /**
    * Converts a Squants Time to Scala Duration
    *
-   * NOTE - Because Scala Durations require a Long, the Squants Time value most be converted / rounded
+   * A whole value keeps its unit (`Seconds(90)` is 90 seconds). A fractional value is kept to the nanosecond
+   * (`Seconds(1.5)` is 1500 milliseconds). An infinite Time gives an infinite Duration and NaN gives Duration.Undefined.
    *
-   * @param time
-   * @return
+   * @throws java.lang.IllegalArgumentException for a finite Time beyond what a Duration can hold (about 292 years)
    */
   given timeToScalaDuration: Conversion[Time, Duration] = time => time.unit match {
-    case Nanoseconds => Duration(time.value.toLong, NANOSECONDS)
-    case Microseconds => Duration(time.value.toLong, MICROSECONDS)
-    case Milliseconds => Duration(time.value.toLong, MILLISECONDS)
-    case Seconds => Duration(time.value.toLong, SECONDS)
-    case Minutes => Duration(time.value.toLong, MINUTES)
-    case Hours => Duration(time.value.toLong, HOURS)
-    case Days => Duration(time.value.toLong, DAYS)
-    case _ => Duration(time.toDays, DAYS) // units Duration has no equivalent for, such as EarthYears
+    case Nanoseconds => toDuration(time.value, NANOSECONDS)
+    case Microseconds => toDuration(time.value, MICROSECONDS)
+    case Milliseconds => toDuration(time.value, MILLISECONDS)
+    case Seconds => toDuration(time.value, SECONDS)
+    case Minutes => toDuration(time.value, MINUTES)
+    case Hours => toDuration(time.value, HOURS)
+    case Days => toDuration(time.value, DAYS)
+    case _ => toDuration(time.toDays, DAYS) // units Duration has no equivalent for, such as EarthYears
   }
+
+  private def toDuration(value: Double, unit: java.util.concurrent.TimeUnit): Duration =
+    if (value.isWhole) Duration(value.toLong, unit) else Duration(value, unit)
 
   given scalaDurationToTime: Conversion[Duration, Time] = Time(_)
 }

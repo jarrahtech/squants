@@ -78,6 +78,8 @@ have explicit result types. It is binary incompatible with 1.10.0, and these sou
 - `QuantityRange`'s `inc`, `dec`, `toQuantity`, `toSeq` and `toList`, and `QuantityBounds.toQuantity`, are `def`s (they were
   `lazy val`s). Source compatible.
 - A `Time` in a unit `Duration` lacks (`EarthYears`) converts to a `Duration` instead of throwing `MatchError`.
+- **`Time` to `Duration` keeps the fraction.** `Seconds(1.5)` converts to 1500 milliseconds; it used to truncate to
+  1 second. Whole values are unchanged. A NaN `Time` now gives `Duration.Undefined` (it used to give zero).
 
 ### Iron refinement (`squants-iron`)
 
