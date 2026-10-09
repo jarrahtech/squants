@@ -10,6 +10,7 @@ package squants.radio
 
 import squants._
 import squants.time.Hours
+import scala.util.Try
 
 /**
  * @author  Hunter Payne
@@ -29,52 +30,46 @@ final class ParticleFlux private (
     Hours(1).toSeconds * that.toWattHours *
       this.toBecquerelsPerSquareMeterSecond)
 
-  def toBecquerelsPerSquareMeterSecond = to(BecquerelsPerSquareMeterSecond)
-  def toBecquerelsPerSquareCentimeterSecond =
+  def toBecquerelsPerSquareMeterSecond: Double = to(BecquerelsPerSquareMeterSecond)
+  def toBecquerelsPerSquareCentimeterSecond: Double =
     to(BecquerelsPerSquareCentimeterSecond)
 }
 
 object ParticleFlux extends Dimension[ParticleFlux] {
-  private[radio] def apply[A](n: A, unit: ParticleFluxUnit)(
-    implicit
-    num: Numeric[A]) =
-    new ParticleFlux(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[radio] def apply[A](n: A, unit: ParticleFluxUnit)(using num: Numeric[A]) = new ParticleFlux(num.toDouble(n), unit)
+  def apply(value: Any): Try[ParticleFlux] = parse(value)
   def name = "ParticleFlux"
   def primaryUnit = BecquerelsPerSquareMeterSecond
   def siUnit = BecquerelsPerSquareMeterSecond
-  def units =
+  def units: Set[UnitOfMeasure[ParticleFlux]] =
     Set(BecquerelsPerSquareMeterSecond, BecquerelsPerSquareCentimeterSecond)
 }
 
 trait ParticleFluxUnit
   extends UnitOfMeasure[ParticleFlux] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = ParticleFlux(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): ParticleFlux = ParticleFlux(n, this)
 }
 
 object BecquerelsPerSquareCentimeterSecond extends ParticleFluxUnit {
   val conversionFactor = 10000.0 //0.0001
-  val symbol = Becquerels.symbol + "/cm²‧s"
+  val symbol: String = Becquerels.symbol + "/cm²‧s"
 }
 
 object BecquerelsPerSquareMeterSecond
   extends ParticleFluxUnit with PrimaryUnit with SiUnit {
-  val symbol = Becquerels.symbol + "/m²‧s"
+  val symbol: String = Becquerels.symbol + "/m²‧s"
 }
 
 object ParticleFluxConversions {
-  lazy val becquerelPerSquareMeterSecond = BecquerelsPerSquareMeterSecond(1)
-  lazy val becquerelPerSquareCentimeterSecond =
+  lazy val becquerelPerSquareMeterSecond: ParticleFlux = BecquerelsPerSquareMeterSecond(1)
+  lazy val becquerelPerSquareCentimeterSecond: ParticleFlux =
     BecquerelsPerSquareCentimeterSecond(1)
 
-  implicit class ParticleFluxConversions[A](n: A)(
-    implicit
-    num: Numeric[A]) {
-    def becquerelsPerSquareMeterSecond = BecquerelsPerSquareMeterSecond(n)
-    def becquerelsPerSquareCentimeterSecond =
+  extension [A](n: A)(using num: Numeric[A]) {
+    def becquerelsPerSquareMeterSecond: ParticleFlux = BecquerelsPerSquareMeterSecond(n)
+    def becquerelsPerSquareCentimeterSecond: ParticleFlux =
       BecquerelsPerSquareCentimeterSecond(n)
   }
 
-  implicit object ParticleFluxNumeric
-    extends AbstractQuantityNumeric[ParticleFlux](ParticleFlux.primaryUnit)
+  given ParticleFluxNumeric: AbstractQuantityNumeric[ParticleFlux](ParticleFlux.primaryUnit) {}
 }

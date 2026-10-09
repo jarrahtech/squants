@@ -70,7 +70,7 @@ class MomentOfInertiaSpec extends AnyFlatSpec with Matchers with CustomMatchers 
   }
 
   it should "provide Numeric support" in {
-    import MomentOfInertiaConversions._
+    import MomentOfInertiaConversions.given
 
     val momentOfInertiaList = List(KilogramsMetersSquared(100), KilogramsMetersSquared(10))
     momentOfInertiaList.sum should be(KilogramsMetersSquared(110))

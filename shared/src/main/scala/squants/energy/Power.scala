@@ -13,6 +13,7 @@ import squants.electro.{ Amperes, ElectricCurrent, ElectricPotential, Volts }
 import squants.radio.{ Irradiance, RadiantIntensity, SpectralPower, WattsPerMeter, WattsPerSquareMeter, WattsPerSteradian }
 import squants.space.{ SolidAngle, SquareMeters, SquaredRadians }
 import squants.time.{ Hours, TimeDerivative, TimeIntegral }
+import scala.util.Try
 
 /**
  * Represents a quantity of power / load, the rate at which energy produced or used
@@ -31,9 +32,9 @@ final class Power private (val value: Double, val unit: PowerUnit)
 
   def dimension = Power
 
-  protected[squants] def timeIntegrated = WattHours(toWatts)
-  protected def timeDerived = WattsPerHour(toWatts)
-  protected[squants] def time = Hours(1)
+  protected[squants] def timeIntegrated: Energy = WattHours(toWatts)
+  protected def timeDerived: PowerRamp = WattsPerHour(toWatts)
+  protected[squants] def time: Time = Hours(1)
 
   def /(that: Length): SpectralPower = WattsPerMeter(this.toWatts / that.toMeters)
   def /(that: SpectralPower): Length = Meters(this.toWatts / that.toWattsPerMeter)
@@ -45,32 +46,32 @@ final class Power private (val value: Double, val unit: PowerUnit)
   def /(that: ElectricCurrent): ElectricPotential = Volts(this.toWatts / that.toAmperes)
   def /(that: Volume): PowerDensity = WattsPerCubicMeter(this.toWatts / that.toCubicMeters)
 
-  def toMilliwatts = to(Milliwatts)
-  def toWatts = to(Watts)
-  def toKilowatts = to(Kilowatts)
-  def toMegawatts = to(Megawatts)
-  def toGigawatts = to(Gigawatts)
-  def toBtusPerHour = to(BtusPerHour)
-  def toErgsPerSecond = to(ErgsPerSecond)
-  def toSolarLuminosities = to(SolarLuminosities)
+  def toMilliwatts: Double = to(Milliwatts)
+  def toWatts: Double = to(Watts)
+  def toKilowatts: Double = to(Kilowatts)
+  def toMegawatts: Double = to(Megawatts)
+  def toGigawatts: Double = to(Gigawatts)
+  def toBtusPerHour: Double = to(BtusPerHour)
+  def toErgsPerSecond: Double = to(ErgsPerSecond)
+  def toSolarLuminosities: Double = to(SolarLuminosities)
 }
 
 /**
  * Companion object for [[squants.energy.Power]]
  */
 object Power extends Dimension[Power] {
-  private[energy] def apply[A](n: A, unit: PowerUnit)(implicit num: Numeric[A]) = new Power(num.toDouble(n), unit)
+  private[energy] def apply[A](n: A, unit: PowerUnit)(using num: Numeric[A]) = new Power(num.toDouble(n), unit)
   def apply(energy: Energy, time: Time): Power = apply(energy.toWattHours / time.toHours, Watts)
-  def apply(value: Any) = parse(value)
+  def apply(value: Any): Try[Power] = parse(value)
 
   def name = "Power"
   def primaryUnit = Watts
   def siUnit = Watts
-  def units = Set(Watts, Milliwatts, Kilowatts, Megawatts, Gigawatts, BtusPerHour, ErgsPerSecond, SolarLuminosities)
+  def units: Set[UnitOfMeasure[Power]] = Set(Watts, Milliwatts, Kilowatts, Megawatts, Gigawatts, BtusPerHour, ErgsPerSecond, SolarLuminosities)
 }
 
 trait PowerUnit extends UnitOfMeasure[Power] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = Power(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): Power = Power(n, this)
 }
 
 object Milliwatts extends PowerUnit with SiUnit {
@@ -104,7 +105,7 @@ object BtusPerHour extends PowerUnit {
 
 object ErgsPerSecond extends PowerUnit {
   val conversionFactor = 1e-7
-  val symbol = Ergs.symbol + "/" + Seconds.symbol
+  val symbol: String = Ergs.symbol + "/" + Seconds.symbol
 }
 
 object SolarLuminosities extends PowerUnit {
@@ -113,37 +114,37 @@ object SolarLuminosities extends PowerUnit {
 }
 
 object PowerConversions {
-  lazy val milliwatt = Milliwatts(1)
+  lazy val milliwatt: Power = Milliwatts(1)
   lazy val mW = milliwatt
-  lazy val watt = Watts(1)
+  lazy val watt: Power = Watts(1)
   lazy val W = watt
-  lazy val kilowatt = Kilowatts(1)
+  lazy val kilowatt: Power = Kilowatts(1)
   lazy val kW = kilowatt
-  lazy val megawatt = Megawatts(1)
+  lazy val megawatt: Power = Megawatts(1)
   lazy val MW = megawatt
-  lazy val gigawatt = Gigawatts(1)
+  lazy val gigawatt: Power = Gigawatts(1)
   lazy val GW = gigawatt
-  lazy val solarLuminosity = SolarLuminosities(1)
+  lazy val solarLuminosity: Power = SolarLuminosities(1)
 
-  implicit class PowerConversions[A](n: A)(implicit num: Numeric[A]) {
-    def mW = Milliwatts(n)
-    def W = Watts(n)
-    def kW = Kilowatts(n)
-    def MW = Megawatts(n)
-    def GW = Gigawatts(n)
-    def milliwatts = Milliwatts(n)
-    def watts = Watts(n)
-    def kilowatts = Kilowatts(n)
-    def megawatts = Megawatts(n)
-    def gigawatts = Gigawatts(n)
-    def BTUph = BtusPerHour(n)
-    def ergsPerSecond = ErgsPerSecond(n)
-    def solarLuminosities = SolarLuminosities(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def mW: Power = Milliwatts(n)
+    def W: Power = Watts(n)
+    def kW: Power = Kilowatts(n)
+    def MW: Power = Megawatts(n)
+    def GW: Power = Gigawatts(n)
+    def milliwatts: Power = Milliwatts(n)
+    def watts: Power = Watts(n)
+    def kilowatts: Power = Kilowatts(n)
+    def megawatts: Power = Megawatts(n)
+    def gigawatts: Power = Gigawatts(n)
+    def BTUph: Power = BtusPerHour(n)
+    def ergsPerSecond: Power = ErgsPerSecond(n)
+    def solarLuminosities: Power = SolarLuminosities(n)
   }
 
-  implicit class PowerStringConversions(s: String) {
-    def toPower = Power(s)
+  extension (s: String) {
+    def toPower: Try[Power] = Power(s)
   }
 
-  implicit object PowerNumeric extends AbstractQuantityNumeric[Power](Power.primaryUnit)
+  given PowerNumeric: AbstractQuantityNumeric[Power](Power.primaryUnit) {}
 }

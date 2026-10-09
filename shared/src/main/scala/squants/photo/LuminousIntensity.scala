@@ -9,6 +9,7 @@ package squants.photo
 
 import squants._
 import squants.space.{ SolidAngle, SquareMeters }
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -25,21 +26,21 @@ final class LuminousIntensity private (val value: Double, val unit: LuminousInte
   def /(that: Area): Luminance = CandelasPerSquareMeter(this.toCandelas / that.toSquareMeters)
   def /(that: Luminance): Area = SquareMeters(this.toCandelas / that.toCandelasPerSquareMeters)
 
-  def toCandelas = to(Candelas)
+  def toCandelas: Double = to(Candelas)
 }
 
 object LuminousIntensity extends Dimension[LuminousIntensity] with BaseDimension {
-  private[photo] def apply[A](n: A, unit: LuminousIntensityUnit)(implicit num: Numeric[A]) = new LuminousIntensity(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[photo] def apply[A](n: A, unit: LuminousIntensityUnit)(using num: Numeric[A]) = new LuminousIntensity(num.toDouble(n), unit)
+  def apply(value: Any): Try[LuminousIntensity] = parse(value)
   def name = "LuminousIntensity"
   def primaryUnit = Candelas
-  def units = Set(Candelas)
+  def units: Set[UnitOfMeasure[LuminousIntensity]] = Set(Candelas)
   def siUnit = Candelas
   def dimensionSymbol = "J"
 }
 
 trait LuminousIntensityUnit extends UnitOfMeasure[LuminousIntensity] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = LuminousIntensity(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): LuminousIntensity = LuminousIntensity(n, this)
 }
 
 object Candelas extends LuminousIntensityUnit with PrimaryUnit with SiBaseUnit {
@@ -47,11 +48,11 @@ object Candelas extends LuminousIntensityUnit with PrimaryUnit with SiBaseUnit {
 }
 
 object LuminousIntensityConversions {
-  lazy val candela = Candelas(1)
+  lazy val candela: LuminousIntensity = Candelas(1)
 
-  implicit class LuminousIntensityConversions[A](n: A)(implicit num: Numeric[A]) {
-    def candelas = Candelas(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def candelas: LuminousIntensity = Candelas(n)
   }
 
-  implicit object LuminousIntensityNumeric extends AbstractQuantityNumeric[LuminousIntensity](LuminousIntensity.primaryUnit)
+  given LuminousIntensityNumeric: AbstractQuantityNumeric[LuminousIntensity](LuminousIntensity.primaryUnit) {}
 }

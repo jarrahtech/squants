@@ -2,6 +2,7 @@ package squants.electro
 
 import squants.space.Meters
 import squants.{ AbstractQuantityNumeric, Area, Dimension, Length, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure }
+import scala.util.Try
 
 /**
  *
@@ -18,32 +19,32 @@ final class AreaElectricChargeDensity private (val value: Double, val unit: Area
   def *(that: Area): ElectricCharge = Coulombs(this.toCoulombsSquareMeters * that.toSquareMeters)
   def *(that: Length): LinearElectricChargeDensity = CoulombsPerMeter(this.toCoulombsSquareMeters * that.toMeters)
 
-  def toCoulombsSquareMeters = to(CoulombsPerSquareMeter)
+  def toCoulombsSquareMeters: Double = to(CoulombsPerSquareMeter)
 }
 
 object AreaElectricChargeDensity extends Dimension[AreaElectricChargeDensity] {
-  private[electro] def apply[A](n: A, unit: AreaElectricChargeDensityUnit)(implicit num: Numeric[A]) = new AreaElectricChargeDensity(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[electro] def apply[A](n: A, unit: AreaElectricChargeDensityUnit)(using num: Numeric[A]) = new AreaElectricChargeDensity(num.toDouble(n), unit)
+  def apply(value: Any): Try[AreaElectricChargeDensity] = parse(value)
   def name = "AreaElectricChargeDensity"
   def primaryUnit = CoulombsPerSquareMeter
   def siUnit = CoulombsPerSquareMeter
-  def units = Set(CoulombsPerSquareMeter)
+  def units: Set[UnitOfMeasure[AreaElectricChargeDensity]] = Set(CoulombsPerSquareMeter)
 }
 
 trait AreaElectricChargeDensityUnit extends UnitOfMeasure[AreaElectricChargeDensity] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = AreaElectricChargeDensity(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): AreaElectricChargeDensity = AreaElectricChargeDensity(n, this)
 }
 
 object CoulombsPerSquareMeter extends AreaElectricChargeDensityUnit with PrimaryUnit with SiUnit {
-  val symbol = Coulombs.symbol + "/" + Meters.symbol + "²"
+  val symbol: String = Coulombs.symbol + "/" + Meters.symbol + "²"
 }
 
 object AreaElectricChargeDensityConversions {
-  lazy val coulombPerSquareMeter = CoulombsPerSquareMeter(1)
+  lazy val coulombPerSquareMeter: AreaElectricChargeDensity = CoulombsPerSquareMeter(1)
 
-  implicit class AreaElectricChargeDensityConversions[A](n: A)(implicit num: Numeric[A]) {
-    def coulombsPerSquareMeter = CoulombsPerSquareMeter(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def coulombsPerSquareMeter: AreaElectricChargeDensity = CoulombsPerSquareMeter(n)
   }
 
-  implicit object AreaElectricChargeDensityNumeric extends AbstractQuantityNumeric[AreaElectricChargeDensity](AreaElectricChargeDensity.primaryUnit)
+  given AreaElectricChargeDensityNumeric: AbstractQuantityNumeric[AreaElectricChargeDensity](AreaElectricChargeDensity.primaryUnit) {}
 }

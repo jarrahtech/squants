@@ -10,6 +10,7 @@ package squants.energy
 
 import squants._
 import squants.space.CubicMeters
+import scala.util.Try
 
 /**
  * Represents a quantity of energy
@@ -26,32 +27,32 @@ final class EnergyDensity private (val value: Double, val unit: EnergyDensityUni
 
   def *(that: Volume): Energy = Joules(this.toJoulesPerCubicMeter * that.toCubicMeters)
 
-  def toJoulesPerCubicMeter = to(JoulesPerCubicMeter)
+  def toJoulesPerCubicMeter: Double = to(JoulesPerCubicMeter)
 }
 
 object EnergyDensity extends Dimension[EnergyDensity] {
-  private[energy] def apply[A](n: A, unit: EnergyDensityUnit)(implicit num: Numeric[A]) = new EnergyDensity(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[energy] def apply[A](n: A, unit: EnergyDensityUnit)(using num: Numeric[A]) = new EnergyDensity(num.toDouble(n), unit)
+  def apply(value: Any): Try[EnergyDensity] = parse(value)
   def name = "EnergyDensity"
   def primaryUnit = JoulesPerCubicMeter
   def siUnit = JoulesPerCubicMeter
-  def units = Set(JoulesPerCubicMeter)
+  def units: Set[UnitOfMeasure[EnergyDensity]] = Set(JoulesPerCubicMeter)
 }
 
 trait EnergyDensityUnit extends UnitOfMeasure[EnergyDensity] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = EnergyDensity(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): EnergyDensity = EnergyDensity(n, this)
 }
 
 object JoulesPerCubicMeter extends EnergyDensityUnit with PrimaryUnit with SiUnit {
-  val symbol = Joules.symbol + "/" + CubicMeters.symbol
+  val symbol: String = Joules.symbol + "/" + CubicMeters.symbol
 }
 
 object EnergyDensityConversions {
-  lazy val joulePerCubicMeter = JoulesPerCubicMeter(1)
+  lazy val joulePerCubicMeter: EnergyDensity = JoulesPerCubicMeter(1)
 
-  implicit class EnergyDensityConversions[A](n: A)(implicit num: Numeric[A]) {
-    def joulesPerCubicMeter = JoulesPerCubicMeter(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def joulesPerCubicMeter: EnergyDensity = JoulesPerCubicMeter(n)
   }
 
-  implicit object EnergyDensityNumeric extends AbstractQuantityNumeric[EnergyDensity](EnergyDensity.primaryUnit)
+  given EnergyDensityNumeric: AbstractQuantityNumeric[EnergyDensity](EnergyDensity.primaryUnit) {}
 }

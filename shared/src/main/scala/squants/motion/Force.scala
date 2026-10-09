@@ -13,6 +13,7 @@ import squants.energy.Joules
 import squants.mass.{ Kilograms, Pounds }
 import squants.space.SquareMeters
 import squants.time.{ Seconds, TimeDerivative, TimeIntegral }
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -26,9 +27,9 @@ final class Force private (val value: Double, val unit: ForceUnit)
 
   def dimension = Force
 
-  protected[squants] def timeIntegrated = NewtonSeconds(toNewtons)
-  protected def timeDerived = NewtonsPerSecond(toNewtons)
-  override def time = Seconds(1)
+  protected[squants] def timeIntegrated: Momentum = NewtonSeconds(toNewtons)
+  protected def timeDerived: Yank = NewtonsPerSecond(toNewtons)
+  override def time: Time = Seconds(1)
 
   /* This could also be Torque, as Energy(Work) and Torque are dimensionally equivalent */
   def *(that: Length): Energy = Joules(this.toNewtons * that.toMeters)
@@ -38,26 +39,26 @@ final class Force private (val value: Double, val unit: ForceUnit)
   def /(that: Area): Pressure = Pascals(this.toNewtons / that.toSquareMeters)
   def /(that: Pressure): Area = SquareMeters(this.toNewtons / that.toPascals)
 
-  def toNewtons = to(Newtons)
-  def toKilogramForce = to(KilogramForce)
-  def toPoundForce = to(PoundForce)
-  def toKiloElectronVoltsPerMicrometer = to(KiloElectronVoltsPerMicrometer)
-  def toMegaElectronVoltsPerCentimeter = to(MegaElectronVoltsPerCentimeter)
+  def toNewtons: Double = to(Newtons)
+  def toKilogramForce: Double = to(KilogramForce)
+  def toPoundForce: Double = to(PoundForce)
+  def toKiloElectronVoltsPerMicrometer: Double = to(KiloElectronVoltsPerMicrometer)
+  def toMegaElectronVoltsPerCentimeter: Double = to(MegaElectronVoltsPerCentimeter)
 }
 
 object Force extends Dimension[Force] {
-  private[motion] def apply[A](n: A, unit: ForceUnit)(implicit num: Numeric[A]) = new Force(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[motion] def apply[A](n: A, unit: ForceUnit)(using num: Numeric[A]) = new Force(num.toDouble(n), unit)
+  def apply(value: Any): Try[Force] = parse(value)
   def name = "Force"
   def primaryUnit = Newtons
   def siUnit = Newtons
-  def units = Set(
+  def units: Set[UnitOfMeasure[Force]] = Set(
     Newtons, KilogramForce, PoundForce,
     KiloElectronVoltsPerMicrometer, MegaElectronVoltsPerCentimeter)
 }
 
 trait ForceUnit extends UnitOfMeasure[Force] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = Force(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): Force = Force(n, this)
 }
 
 object Newtons extends ForceUnit with PrimaryUnit with SiUnit {
@@ -66,40 +67,40 @@ object Newtons extends ForceUnit with PrimaryUnit with SiUnit {
 
 object KilogramForce extends ForceUnit {
   val symbol = "kgf"
-  val conversionFactor = MetersPerSecondSquared.conversionFactor * EarthGravities.conversionFactor
+  val conversionFactor: Double = MetersPerSecondSquared.conversionFactor * EarthGravities.conversionFactor
 }
 
 object PoundForce extends ForceUnit {
   val symbol = "lbf"
-  val conversionFactor = Pounds.conversionFactor * KilogramForce.conversionFactor / Kilograms.conversionFactor
+  val conversionFactor: Double = Pounds.conversionFactor * KilogramForce.conversionFactor / Kilograms.conversionFactor
 }
 
 object KiloElectronVoltsPerMicrometer extends ForceUnit {
   val symbol = "keV/μm"
-  val conversionFactor = 1.602176565e-16 / MetricSystem.Micro
+  val conversionFactor: Double = 1.602176565e-16 / MetricSystem.Micro
 }
 
 object MegaElectronVoltsPerCentimeter extends ForceUnit {
   val symbol = "MeV/cm"
-  val conversionFactor = 1.602176565e-13 / MetricSystem.Centi
+  val conversionFactor: Double = 1.602176565e-13 / MetricSystem.Centi
 }
 
 object ForceConversions {
-  lazy val newton = Newtons(1)
-  lazy val kilogramForce = KilogramForce(1)
-  lazy val poundForce = PoundForce(1)
-  lazy val kiloElectronVoltsPerMicrometer = KiloElectronVoltsPerMicrometer(1)
-  lazy val megaElectronVoltsPerCentimeter = MegaElectronVoltsPerCentimeter(1)
+  lazy val newton: Force = Newtons(1)
+  lazy val kilogramForce: Force = KilogramForce(1)
+  lazy val poundForce: Force = PoundForce(1)
+  lazy val kiloElectronVoltsPerMicrometer: Force = KiloElectronVoltsPerMicrometer(1)
+  lazy val megaElectronVoltsPerCentimeter: Force = MegaElectronVoltsPerCentimeter(1)
 
-  implicit class ForceConversions[A](n: A)(implicit num: Numeric[A]) {
-    def newtons = Newtons(n)
-    def kilogramForce = KilogramForce(n)
-    def poundForce = PoundForce(n)
-    def lbf = PoundForce(n)
-    def kiloElectronVoltsPerMicrometer = KiloElectronVoltsPerMicrometer(n)
-    def megaElectronVoltsPerCentimeter = MegaElectronVoltsPerCentimeter(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def newtons: Force = Newtons(n)
+    def kilogramForce: Force = KilogramForce(n)
+    def poundForce: Force = PoundForce(n)
+    def lbf: Force = PoundForce(n)
+    def kiloElectronVoltsPerMicrometer: Force = KiloElectronVoltsPerMicrometer(n)
+    def megaElectronVoltsPerCentimeter: Force = MegaElectronVoltsPerCentimeter(n)
   }
 
-  implicit object ForceNumeric extends AbstractQuantityNumeric[Force](Force.primaryUnit)
+  given ForceNumeric: AbstractQuantityNumeric[Force](Force.primaryUnit) {}
 }
 

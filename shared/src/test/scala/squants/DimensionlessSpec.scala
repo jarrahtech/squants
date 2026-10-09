@@ -10,6 +10,7 @@ package squants
 
 import squants.time.Hertz
 import org.scalatest.flatspec.AnyFlatSpec
+import scala.language.implicitConversions
 import org.scalatest.matchers.should.Matchers
 
 /**
@@ -106,7 +107,7 @@ class DimensionlessSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "provide an implicit conversion to Double" in {
-    import DimensionlessConversions._
+    import DimensionlessConversions.{*, given}
 
     10 + 5.each should be(15d)
     100 - 1.dozen should be(88d)

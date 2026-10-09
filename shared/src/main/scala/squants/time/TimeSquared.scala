@@ -31,7 +31,7 @@ package squants.time
  * @since 0.5.1
  */
 case class TimeSquared(time1: Time, time2: Time) {
-  def squareRoot = time1.unit(math.sqrt(time1.value * time2.to(time1.unit)))
+  def squareRoot: Time = time1.unit(math.sqrt(time1.value * time2.to(time1.unit)))
   def *(that: SecondTimeDerivative[?]) = that * (this.time1 * this.time2)
 }
 

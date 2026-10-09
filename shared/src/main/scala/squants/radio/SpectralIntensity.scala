@@ -11,6 +11,7 @@ package squants.radio
 import squants._
 import squants.energy.Watts
 import squants.space.{ Meters, SquaredRadians }
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -26,33 +27,33 @@ final class SpectralIntensity private (val value: Double, val unit: SpectralInte
   def *(that: Length): RadiantIntensity = WattsPerSteradian(this.toWattsPerSteradianPerMeter * that.toMeters)
   def /(that: RadiantIntensity): Length = Meters(this.toWattsPerSteradianPerMeter / that.toWattsPerSteradian)
 
-  def toWattsPerSteradianPerMeter = to(WattsPerSteradianPerMeter)
+  def toWattsPerSteradianPerMeter: Double = to(WattsPerSteradianPerMeter)
 }
 
 object SpectralIntensity extends Dimension[SpectralIntensity] {
-  private[radio] def apply[A](n: A, unit: SpectralIntensityUnit)(implicit num: Numeric[A]) = new SpectralIntensity(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[radio] def apply[A](n: A, unit: SpectralIntensityUnit)(using num: Numeric[A]) = new SpectralIntensity(num.toDouble(n), unit)
+  def apply(value: Any): Try[SpectralIntensity] = parse(value)
   def name = "SpectralIntensity"
   def primaryUnit = WattsPerSteradianPerMeter
   def siUnit = WattsPerSteradianPerMeter
-  def units = Set(WattsPerSteradianPerMeter)
+  def units: Set[UnitOfMeasure[SpectralIntensity]] = Set(WattsPerSteradianPerMeter)
 }
 
 trait SpectralIntensityUnit extends UnitOfMeasure[SpectralIntensity] {
-  def apply[A](n: A)(implicit num: Numeric[A]) = SpectralIntensity(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): SpectralIntensity = SpectralIntensity(n, this)
 }
 
 object WattsPerSteradianPerMeter extends SpectralIntensityUnit with PrimaryUnit with SiUnit {
-  val symbol = Watts.symbol + "/" + SquaredRadians.symbol + "/" + Meters.symbol
+  val symbol: String = Watts.symbol + "/" + SquaredRadians.symbol + "/" + Meters.symbol
 }
 
 object SpectralIntensityConversions {
-  lazy val wattPerSteradianPerMeter = WattsPerSteradianPerMeter(1)
+  lazy val wattPerSteradianPerMeter: SpectralIntensity = WattsPerSteradianPerMeter(1)
 
-  implicit class SpectralIntensityConversions[A](n: A)(implicit num: Numeric[A]) {
-    def wattsPerSteradianPerMeter = WattsPerSteradianPerMeter(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def wattsPerSteradianPerMeter: SpectralIntensity = WattsPerSteradianPerMeter(n)
   }
 
-  implicit object SpectralIntensityNumeric extends AbstractQuantityNumeric[SpectralIntensity](SpectralIntensity.primaryUnit)
+  given SpectralIntensityNumeric: AbstractQuantityNumeric[SpectralIntensity](SpectralIntensity.primaryUnit) {}
 }
 

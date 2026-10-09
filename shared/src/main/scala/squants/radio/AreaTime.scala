@@ -10,6 +10,7 @@ package squants.radio
 
 import squants._
 import squants.space.SquareMeters
+import scala.util.Try
 
 /**
  * @author  Hunter Payne
@@ -26,29 +27,26 @@ final class AreaTime private (val value: Double, val unit: AreaTimeUnit)
   def /(that: Time): Area =
     SquareMeters(this.toSquareMeterSeconds / that.toSeconds)
 
-  def toSquareMeterSeconds = to(SquareMeterSeconds)
-  def toSquareCentimeterSeconds = to(SquareCentimeterSeconds)
+  def toSquareMeterSeconds: Double = to(SquareMeterSeconds)
+  def toSquareCentimeterSeconds: Double = to(SquareCentimeterSeconds)
 }
 
 /**
  * Factory singleton for [[squants.radio.AreaTime]] values
  */
 object AreaTime extends Dimension[AreaTime] {
-  private[radio] def apply[A](n: A, unit: AreaTimeUnit)(
-    implicit
-    num: Numeric[A]) =
-    new AreaTime(num.toDouble(n), unit)
+  private[radio] def apply[A](n: A, unit: AreaTimeUnit)(using num: Numeric[A]) = new AreaTime(num.toDouble(n), unit)
   def apply(area: Area, time: Time): AreaTime =
     SquareMeterSeconds(area.toSquareMeters * time.toSeconds)
-  def apply(value: Any) = parse(value)
+  def apply(value: Any): Try[AreaTime] = parse(value)
   def name = "AreaTime"
   def primaryUnit = SquareMeterSeconds
   def siUnit = SquareMeterSeconds
-  def units = Set(SquareMeterSeconds, SquareCentimeterSeconds)
+  def units: Set[UnitOfMeasure[AreaTime]] = Set(SquareMeterSeconds, SquareCentimeterSeconds)
 }
 
 trait AreaTimeUnit extends UnitOfMeasure[AreaTime] {
-  def apply[A](n: A)(implicit num: Numeric[A]) = AreaTime(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): AreaTime = AreaTime(n, this)
 }
 
 object SquareMeterSeconds extends AreaTimeUnit with PrimaryUnit with SiUnit {
@@ -61,13 +59,13 @@ object SquareCentimeterSeconds extends AreaTimeUnit with UnitConverter {
 }
 
 object AreaTimeConversions {
-  lazy val squareMeterSeconds = SquareMeterSeconds(1)
-  lazy val squareCentimeterSeconds = SquareCentimeterSeconds(1)
+  lazy val squareMeterSeconds: AreaTime = SquareMeterSeconds(1)
+  lazy val squareCentimeterSeconds: AreaTime = SquareCentimeterSeconds(1)
 
-  implicit class AreaTimeConversions[A](n: A)(implicit num: Numeric[A]) {
-    def squareMeterSeconds = SquareMeterSeconds(n)
-    def squareCentimeterSeconds = SquareCentimeterSeconds(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def squareMeterSeconds: AreaTime = SquareMeterSeconds(n)
+    def squareCentimeterSeconds: AreaTime = SquareCentimeterSeconds(n)
   }
 
-  implicit object AreaTimeNumeric extends AbstractQuantityNumeric[AreaTime](AreaTime.primaryUnit)
+  given AreaTimeNumeric: AbstractQuantityNumeric[AreaTime](AreaTime.primaryUnit) {}
 }

@@ -11,6 +11,7 @@ package squants.electro
 import squants._
 import squants.space.SquareMeters
 import squants.time.TimeIntegral
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -24,28 +25,28 @@ final class MagneticFlux private (val value: Double, val unit: MagneticFluxUnit)
 
   def dimension = MagneticFlux
 
-  protected def timeDerived = Volts(toWebers)
-  protected def time = Seconds(1)
+  protected def timeDerived: ElectricPotential = Volts(toWebers)
+  protected def time: Time = Seconds(1)
 
   def /(that: Area): MagneticFluxDensity = Teslas(this.toWebers / that.toSquareMeters)
   def /(that: MagneticFluxDensity): Area = SquareMeters(this.toWebers / that.toTeslas)
   def /(that: ElectricCurrent): Inductance = Henry(this.toWebers / that.toAmperes)
   def /(that: Inductance): ElectricCurrent = Amperes(this.toWebers / that.toHenry)
 
-  def toWebers = to(Webers)
+  def toWebers: Double = to(Webers)
 }
 
 object MagneticFlux extends Dimension[MagneticFlux] {
-  private[electro] def apply[A](n: A, unit: MagneticFluxUnit)(implicit num: Numeric[A]) = new MagneticFlux(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[electro] def apply[A](n: A, unit: MagneticFluxUnit)(using num: Numeric[A]) = new MagneticFlux(num.toDouble(n), unit)
+  def apply(value: Any): Try[MagneticFlux] = parse(value)
   def name = "MagneticFlux"
   def primaryUnit = Webers
   def siUnit = Webers
-  def units = Set(Webers)
+  def units: Set[UnitOfMeasure[MagneticFlux]] = Set(Webers)
 }
 
 trait MagneticFluxUnit extends UnitOfMeasure[MagneticFlux] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = MagneticFlux(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): MagneticFlux = MagneticFlux(n, this)
 }
 
 object Webers extends MagneticFluxUnit with PrimaryUnit with SiUnit {
@@ -53,11 +54,11 @@ object Webers extends MagneticFluxUnit with PrimaryUnit with SiUnit {
 }
 
 object MagneticFluxConversions {
-  lazy val weber = Webers(1)
+  lazy val weber: MagneticFlux = Webers(1)
 
-  implicit class MagneticFluxConversions[A](n: A)(implicit num: Numeric[A]) {
-    def webers = Webers(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def webers: MagneticFlux = Webers(n)
   }
 
-  implicit object MagneticFluxNumeric extends AbstractQuantityNumeric[MagneticFlux](MagneticFlux.primaryUnit)
+  given MagneticFluxNumeric: AbstractQuantityNumeric[MagneticFlux](MagneticFlux.primaryUnit) {}
 }

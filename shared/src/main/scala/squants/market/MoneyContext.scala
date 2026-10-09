@@ -32,7 +32,7 @@ case class MoneyContext(
   rates: Seq[CurrencyExchangeRate],
   allowIndirectConversions: Boolean = true) {
 
-  lazy val currencyMap = currencies.map { (c: Currency) => c.code -> c }.toMap
+  lazy val currencyMap: Map[String, Currency] = currencies.map { (c: Currency) => c.code -> c }.toMap
 
   private[market] lazy val moneyPattern = ("([-+]?[0-9]*\\.?[0-9]+) *(" + currencies.map(_.code).mkString("|") + ")").r
 
@@ -166,12 +166,12 @@ case class MoneyContext(
    * @param additionalCurrencies Set[Currency]
    * @return
    */
-  def withAdditionalCurrencies(additionalCurrencies: Set[Currency]) = copy(currencies = currencies ++ additionalCurrencies)
+  def withAdditionalCurrencies(additionalCurrencies: Set[Currency]): MoneyContext = copy(currencies = currencies ++ additionalCurrencies)
 
   /**
    * Create a copy of this context with a new list of rates
    * @param rates List[CurrencyExchangeRate]
    * @return
    */
-  def withExchangeRates(rates: List[CurrencyExchangeRate]) = copy(rates = rates)
+  def withExchangeRates(rates: List[CurrencyExchangeRate]): MoneyContext = copy(rates = rates)
 }

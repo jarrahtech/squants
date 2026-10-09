@@ -2,6 +2,7 @@ package squants.electro
 
 import squants.mass.Kilograms
 import squants.{ AbstractQuantityNumeric, Dimension, Mass, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure }
+import scala.util.Try
 
 /**
  *
@@ -17,32 +18,32 @@ final class ElectricChargeMassRatio private (val value: Double, val unit: Electr
 
   def *(that: Mass): ElectricCharge = Coulombs(this.toCoulombsKilograms * that.toKilograms)
 
-  def toCoulombsKilograms = to(CoulombsPerKilogram)
+  def toCoulombsKilograms: Double = to(CoulombsPerKilogram)
 }
 
 object ElectricChargeMassRatio extends Dimension[ElectricChargeMassRatio] {
-  private[electro] def apply[A](n: A, unit: ElectricChargeMassRatioUnit)(implicit num: Numeric[A]) = new ElectricChargeMassRatio(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[electro] def apply[A](n: A, unit: ElectricChargeMassRatioUnit)(using num: Numeric[A]) = new ElectricChargeMassRatio(num.toDouble(n), unit)
+  def apply(value: Any): Try[ElectricChargeMassRatio] = parse(value)
   def name = "ElectricChargeMassRatio"
   def primaryUnit = CoulombsPerKilogram
   def siUnit = CoulombsPerKilogram
-  def units = Set(CoulombsPerKilogram)
+  def units: Set[UnitOfMeasure[ElectricChargeMassRatio]] = Set(CoulombsPerKilogram)
 }
 
 trait ElectricChargeMassRatioUnit extends UnitOfMeasure[ElectricChargeMassRatio] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = ElectricChargeMassRatio(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): ElectricChargeMassRatio = ElectricChargeMassRatio(n, this)
 }
 
 object CoulombsPerKilogram extends ElectricChargeMassRatioUnit with PrimaryUnit with SiUnit {
-  val symbol = Coulombs.symbol + "/" + Kilograms.symbol
+  val symbol: String = Coulombs.symbol + "/" + Kilograms.symbol
 }
 
 object ElectricChargeMassRatioConversions {
-  lazy val coulombPerKilogram = CoulombsPerKilogram(1)
+  lazy val coulombPerKilogram: ElectricChargeMassRatio = CoulombsPerKilogram(1)
 
-  implicit class ElectricChargeMassRatioConversions[A](n: A)(implicit num: Numeric[A]) {
-    def coulombsPerKilogram = CoulombsPerKilogram(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def coulombsPerKilogram: ElectricChargeMassRatio = CoulombsPerKilogram(n)
   }
 
-  implicit object ElectricChargeMassRatioNumeric extends AbstractQuantityNumeric[ElectricChargeMassRatio](ElectricChargeMassRatio.primaryUnit)
+  given ElectricChargeMassRatioNumeric: AbstractQuantityNumeric[ElectricChargeMassRatio](ElectricChargeMassRatio.primaryUnit) {}
 }

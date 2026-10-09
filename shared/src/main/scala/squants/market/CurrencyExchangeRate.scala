@@ -34,14 +34,14 @@ case class CurrencyExchangeRate(base: Money, counter: Money) extends Ratio[Money
    * @param money Money
    * @return
    */
-  def convert(money: Money) = money.currency match {
+  def convert(money: Money): Money = money.currency match {
     case base.currency => convertToCounter(money)
     case counter.currency => convertToBase(money)
     case _ => throw new IllegalArgumentException("The currency of money must match the currency of base or counter")
   }
 
   /** convert  */
-  def *(money: Money) = convert(money)
+  def *(money: Money): Money = convert(money)
 
   /**
    * Override methods from Ratio to ensure BigDecimal precision math is applied
@@ -56,5 +56,5 @@ case class CurrencyExchangeRate(base: Money, counter: Money) extends Ratio[Money
    * Returns the rate formatted in as standard FX Quote"
    * @return
    */
-  override def toString = s"${base.currency.code}/${counter.currency.code} ${crossFormat(rate)}"
+  override def toString: String = s"${base.currency.code}/${counter.currency.code} ${crossFormat(rate)}"
 }

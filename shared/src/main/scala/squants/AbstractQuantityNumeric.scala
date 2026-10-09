@@ -16,8 +16,8 @@ package squants
  * @tparam A Quantity type
  */
 abstract class AbstractQuantityNumeric[A <: Quantity[A]](val unit: UnitOfMeasure[A] & PrimaryUnit) extends Numeric[A] {
-  def plus(x: A, y: A) = x + y
-  def minus(x: A, y: A) = x - y
+  def plus(x: A, y: A): A = x + y
+  def minus(x: A, y: A): A = x - y
 
   /**
    * `times` is not a supported Numeric operation for Quantities.
@@ -30,13 +30,13 @@ abstract class AbstractQuantityNumeric[A <: Quantity[A]](val unit: UnitOfMeasure
    * @throws scala.UnsupportedOperationException for most types
    */
   def times(x: A, y: A): A = throw new UnsupportedOperationException("Numeric.times not supported for Quantities")
-  def negate(x: A) = -x
-  def fromInt(x: Int) = unit(x)
-  def toInt(x: A) = x.to(unit).toInt
-  def toLong(x: A) = x.to(unit).toLong
-  def toFloat(x: A) = x.to(unit).toFloat
-  def toDouble(x: A) = x.to(unit)
-  def compare(x: A, y: A) = {
+  def negate(x: A): A = -x
+  def fromInt(x: Int): A = unit(x)
+  def toInt(x: A): Int = x.to(unit).toInt
+  def toLong(x: A): Long = x.to(unit).toLong
+  def toFloat(x: A): Float = x.to(unit).toFloat
+  def toDouble(x: A): Double = x.to(unit)
+  def compare(x: A, y: A): Int = {
     val a = x.to(unit)
     val b = y.to(unit)
     if (a > b) 1 else if (a < b) -1 else 0

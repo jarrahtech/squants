@@ -76,7 +76,7 @@ trait Dimension[A <: Quantity[A]] {
 
   private lazy val QuantityString = ("^([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?) *(" + units.map { (u: UnitOfMeasure[A]) => u.symbol }.reduceLeft(_ + "|" + _) + ")$").r
 
-  def parseTuple[N](t: (N, String))(implicit num: Numeric[N]): Try[A] = {
+  def parseTuple[N](t: (N, String))(using num: Numeric[N]): Try[A] = {
     val value = t._1
     val symbol = t._2
     symbolToUnit(symbol) match {
@@ -85,7 +85,7 @@ trait Dimension[A <: Quantity[A]] {
     }
   }
 
-  implicit val dimensionImplicit: Dimension[A] = this
+  given dimensionImplicit: Dimension[A] = this
 
   override def equals(that: Any): Boolean = that match {
     case dimension: Dimension[_] => dimension.getClass.getName == this.getClass.getName

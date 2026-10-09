@@ -11,6 +11,7 @@ package squants.motion
 import squants._
 import squants.space.{ Degrees, Gradians, Turns }
 import squants.time.{ TimeDerivative, TimeIntegral }
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -23,12 +24,12 @@ final class AngularVelocity private (val value: Double, val unit: AngularVelocit
   extends Quantity[AngularVelocity] with TimeDerivative[Angle] with TimeIntegral[AngularAcceleration] {
   def dimension = AngularVelocity
 
-  def toRadiansPerSecond = to(RadiansPerSecond)
-  def toDegreesPerSecond = to(DegreesPerSecond)
+  def toRadiansPerSecond: Double = to(RadiansPerSecond)
+  def toDegreesPerSecond: Double = to(DegreesPerSecond)
   @deprecated(message = "Potentially confusing naming. Use toGradiansPerSecond instead.", since = "Squants 1.3")
-  def toGradsPerSecond = to(GradiansPerSecond)
-  def toGradiansPerSecond = to(GradiansPerSecond)
-  def toTurnsPerSecond = to(TurnsPerSecond)
+  def toGradsPerSecond: Double = to(GradiansPerSecond)
+  def toGradiansPerSecond: Double = to(GradiansPerSecond)
+  def toTurnsPerSecond: Double = to(TurnsPerSecond)
 
   /**
    * linear velocity of an object rotating with this angular velocity
@@ -46,16 +47,16 @@ final class AngularVelocity private (val value: Double, val unit: AngularVelocit
 }
 
 object AngularVelocity extends Dimension[AngularVelocity] {
-  private[motion] def apply[A](n: A, unit: AngularVelocityUnit)(implicit num: Numeric[A]) = new AngularVelocity(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[motion] def apply[A](n: A, unit: AngularVelocityUnit)(using num: Numeric[A]) = new AngularVelocity(num.toDouble(n), unit)
+  def apply(value: Any): Try[AngularVelocity] = parse(value)
   def name = "AngularVelocity"
   def primaryUnit = RadiansPerSecond
   def siUnit = RadiansPerSecond
-  def units = Set(RadiansPerSecond, DegreesPerSecond, GradiansPerSecond, TurnsPerSecond)
+  def units: Set[UnitOfMeasure[AngularVelocity]] = Set(RadiansPerSecond, DegreesPerSecond, GradiansPerSecond, TurnsPerSecond)
 }
 
 trait AngularVelocityUnit extends UnitOfMeasure[AngularVelocity] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = AngularVelocity(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): AngularVelocity = AngularVelocity(n, this)
 }
 
 object RadiansPerSecond extends AngularVelocityUnit with PrimaryUnit with SiUnit {
@@ -64,40 +65,40 @@ object RadiansPerSecond extends AngularVelocityUnit with PrimaryUnit with SiUnit
 
 object DegreesPerSecond extends AngularVelocityUnit {
   val symbol = "°/s"
-  val conversionFactor = Degrees.conversionFactor / Radians.conversionFactor
+  val conversionFactor: Double = Degrees.conversionFactor / Radians.conversionFactor
 }
 
 object GradiansPerSecond extends AngularVelocityUnit {
   val symbol = "grad/s"
-  val conversionFactor = Gradians.conversionFactor / Radians.conversionFactor
+  val conversionFactor: Double = Gradians.conversionFactor / Radians.conversionFactor
 }
 
 @deprecated(message = "Potentially confusing naming. Use GradiansPerSecond instead.", since = "Squants 1.3")
 object GradsPerSecond extends AngularVelocityUnit {
   val symbol = "grad/s"
-  val conversionFactor = Gradians.conversionFactor / Radians.conversionFactor
+  val conversionFactor: Double = Gradians.conversionFactor / Radians.conversionFactor
 }
 
 object TurnsPerSecond extends AngularVelocityUnit {
   val symbol = "turns/s"
-  val conversionFactor = Turns.conversionFactor / Radians.conversionFactor
+  val conversionFactor: Double = Turns.conversionFactor / Radians.conversionFactor
 }
 
 object AngularVelocityConversions {
-  lazy val radianPerSecond = RadiansPerSecond(1)
-  lazy val degreePerSecond = DegreesPerSecond(1)
-  lazy val gradPerSecond = GradiansPerSecond(1)
-  lazy val gradiansPerSecond = GradiansPerSecond(1)
-  lazy val turnPerSecond = TurnsPerSecond(1)
+  lazy val radianPerSecond: AngularVelocity = RadiansPerSecond(1)
+  lazy val degreePerSecond: AngularVelocity = DegreesPerSecond(1)
+  lazy val gradPerSecond: AngularVelocity = GradiansPerSecond(1)
+  lazy val gradiansPerSecond: AngularVelocity = GradiansPerSecond(1)
+  lazy val turnPerSecond: AngularVelocity = TurnsPerSecond(1)
 
-  implicit class AngularVelocityConversions[A](n: A)(implicit num: Numeric[A]) {
-    def radiansPerSecond = RadiansPerSecond(n)
-    def degreesPerSecond = DegreesPerSecond(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def radiansPerSecond: AngularVelocity = RadiansPerSecond(n)
+    def degreesPerSecond: AngularVelocity = DegreesPerSecond(n)
     @deprecated(message = "Potentially confusing naming. Use gradiansPerSecond instead.", since = "Squants 1.3")
-    def gradsPerSecond = GradiansPerSecond(n)
-    def gradiansPerSecond = GradiansPerSecond(n)
-    def turnsPerSecond = TurnsPerSecond(n)
+    def gradsPerSecond: AngularVelocity = GradiansPerSecond(n)
+    def gradiansPerSecond: AngularVelocity = GradiansPerSecond(n)
+    def turnsPerSecond: AngularVelocity = TurnsPerSecond(n)
   }
 
-  implicit object AngularVelocityNumeric extends AbstractQuantityNumeric[AngularVelocity](AngularVelocity.primaryUnit)
+  given AngularVelocityNumeric: AbstractQuantityNumeric[AngularVelocity](AngularVelocity.primaryUnit) {}
 }

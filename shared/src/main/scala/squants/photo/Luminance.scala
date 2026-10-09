@@ -8,6 +8,7 @@
 package squants.photo
 
 import squants._
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -22,21 +23,21 @@ final class Luminance private (val value: Double, val unit: LuminanceUnit)
 
   def *(that: Area): LuminousIntensity = Candelas(this.value * that.toSquareMeters)
 
-  def toCandelasPerSquareMeters = to(CandelasPerSquareMeter)
+  def toCandelasPerSquareMeters: Double = to(CandelasPerSquareMeter)
 }
 
 object Luminance extends Dimension[Luminance] {
-  private[photo] def apply[A](n: A, unit: LuminanceUnit)(implicit num: Numeric[A]) = new Luminance(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[photo] def apply[A](n: A, unit: LuminanceUnit)(using num: Numeric[A]) = new Luminance(num.toDouble(n), unit)
+  def apply(value: Any): Try[Luminance] = parse(value)
 
   def name = "Luminance"
   def primaryUnit = CandelasPerSquareMeter
   def siUnit = CandelasPerSquareMeter
-  def units = Set(CandelasPerSquareMeter)
+  def units: Set[UnitOfMeasure[Luminance]] = Set(CandelasPerSquareMeter)
 }
 
 trait LuminanceUnit extends UnitOfMeasure[Luminance] {
-  def apply[A](n: A)(implicit num: Numeric[A]) = Luminance(num.toDouble(n), this)
+  def apply[A](n: A)(using num: Numeric[A]): Luminance = Luminance(num.toDouble(n), this)
 }
 
 object CandelasPerSquareMeter extends LuminanceUnit with PrimaryUnit with SiUnit {
@@ -44,12 +45,12 @@ object CandelasPerSquareMeter extends LuminanceUnit with PrimaryUnit with SiUnit
 }
 
 object LuminanceConversions {
-  lazy val candelaPerSquareMeter = CandelasPerSquareMeter(1)
+  lazy val candelaPerSquareMeter: Luminance = CandelasPerSquareMeter(1)
 
-  implicit class LuminanceConversions[A](n: A)(implicit num: Numeric[A]) {
-    def candelasPerSquareMeter = CandelasPerSquareMeter(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def candelasPerSquareMeter: Luminance = CandelasPerSquareMeter(n)
   }
 
-  implicit object LuminanceNumeric extends AbstractQuantityNumeric[Luminance](Luminance.primaryUnit)
+  given LuminanceNumeric: AbstractQuantityNumeric[Luminance](Luminance.primaryUnit) {}
 }
 

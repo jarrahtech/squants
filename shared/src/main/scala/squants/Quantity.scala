@@ -106,7 +106,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
   infix def divideAndRemainder(that: Double): (A, A) = BigDecimal(value) /% that match {
     case (q, r) => (unit(q.toDouble), unit(r.toDouble))
   }
-  def /%(that: Double) = divideAndRemainder(that)
+  def /%(that: Double): (A, A) = divideAndRemainder(that)
 
   /**
    * Returns a Pair that includes the result of divideToInteger and remainder
@@ -116,7 +116,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
   infix def divideAndRemainder(that: A): (Double, A) = BigDecimal(value) /% that.to(unit) match {
     case (q, r) => (q.toDouble, unit(r.toDouble))
   }
-  def /%(that: A) = divideAndRemainder(that)
+  def /%(that: A): (Double, A) = divideAndRemainder(that)
 
   /**
    * Returns the negative value of this Quantity
@@ -173,7 +173,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param that must be of matching dimension and equivalent value
    * @return
    */
-  override def equals(that: Any) = that match {
+  override def equals(that: Any): Boolean = that match {
     case x: Quantity[_] if x.dimension == dimension =>
       val other = x.asInstanceOf[Quantity[A]]
       if (other.unit == unit) value == other.value
@@ -186,7 +186,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    *
    * @return
    */
-  override def hashCode() = {
+  override def hashCode(): Int = {
     Objects.hash(dimension, Double.box(to(dimension.primaryUnit)))
   }
 
@@ -196,20 +196,20 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param tolerance Quantity
    * @return
    */
-  infix def approx(that: A)(implicit tolerance: A) = that.within(this.plusOrMinus(tolerance))
+  infix def approx(that: A)(using tolerance: A): Boolean = that.within(this.plusOrMinus(tolerance))
   /** approx */
-  def =~(that: A)(implicit tolerance: A) = approx(that)
+  def =~(that: A)(using tolerance: A): Boolean = approx(that)
   /** approx */
-  def ≈(that: A)(implicit tolerance: A) = approx(that)
+  def ≈(that: A)(using tolerance: A): Boolean = approx(that)
   /** approx */
-  def ~=(that: A)(implicit tolerance: A) = approx(that)
+  def ~=(that: A)(using tolerance: A): Boolean = approx(that)
 
   /**
    * Implements Ordered.compare
    * @param that Quantity
    * @return Int
    */
-  def compare(that: A) = {
+  def compare(that: A): Int = {
     val other = that.to(unit)
     if (this.value > other) 1 else if (this.value < other) -1 else 0
   }
@@ -234,7 +234,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @return QuantityRange
    */
   infix def plusOrMinus(that: A): QuantityRange[A] = QuantityRange(this - that, this + that)
-  def +-(that: A) = plusOrMinus(that)
+  def +-(that: A): QuantityRange[A] = plusOrMinus(that)
 
   /**
    * Returns a QuantityRange that goes from this to that
@@ -248,14 +248,14 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param range QuantityRange
    * @return Boolean
    */
-  infix def within(range: QuantityRange[A]) = range.contains(self)
+  infix def within(range: QuantityRange[A]): Boolean = range.contains(self)
 
   /**
    * Returns true if this value is not within (contains) the range
    * @param range QuantityRange
    * @return Boolean
    */
-  infix def notWithin(range: QuantityRange[A]) = !range.contains(self)
+  infix def notWithin(range: QuantityRange[A]): Boolean = !range.contains(self)
 
   /**
    * Returns a Double representing the quantity in terms of the supplied unit
@@ -276,7 +276,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    * @param uom UnitOfMeasure[A]
    * @return Quantity
    */
-  infix def in(uom: UnitOfMeasure[A]) = uom match {
+  infix def in(uom: UnitOfMeasure[A]): A = uom match {
     case u if u == this.unit => this
     case _ => uom(uom.convertTo(this.unit.convertFrom(value)))
   }

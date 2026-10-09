@@ -9,6 +9,7 @@
 package squants.electro
 
 import squants._
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -24,21 +25,21 @@ final class Resistivity private (val value: Double, val unit: ResistivityUnit)
   def /(that: Length): ElectricalResistance = Ohms(this.toOhmMeters / that.toMeters)
   def /(that: ElectricalResistance): Length = Meters(this.toOhmMeters / that.toOhms)
 
-  def toOhmMeters = to(OhmMeters)
-  def inSiemensPerMeter = SiemensPerMeter(1d / toOhmMeters)
+  def toOhmMeters: Double = to(OhmMeters)
+  def inSiemensPerMeter: Conductivity = SiemensPerMeter(1d / toOhmMeters)
 }
 
 object Resistivity extends Dimension[Resistivity] {
-  private[electro] def apply[A](n: A, unit: ResistivityUnit)(implicit num: Numeric[A]) = new Resistivity(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[electro] def apply[A](n: A, unit: ResistivityUnit)(using num: Numeric[A]) = new Resistivity(num.toDouble(n), unit)
+  def apply(value: Any): Try[Resistivity] = parse(value)
   def name = "Resistivity"
   def primaryUnit = OhmMeters
   def siUnit = OhmMeters
-  def units = Set(OhmMeters)
+  def units: Set[UnitOfMeasure[Resistivity]] = Set(OhmMeters)
 }
 
 trait ResistivityUnit extends UnitOfMeasure[Resistivity] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = Resistivity(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): Resistivity = Resistivity(n, this)
 }
 
 object OhmMeters extends ResistivityUnit with PrimaryUnit with SiUnit {
@@ -46,11 +47,11 @@ object OhmMeters extends ResistivityUnit with PrimaryUnit with SiUnit {
 }
 
 object ResistivityConversions {
-  lazy val ohmMeter = OhmMeters(1)
+  lazy val ohmMeter: Resistivity = OhmMeters(1)
 
-  implicit class ResistivityConversions[A](n: A)(implicit num: Numeric[A]) {
-    def ohmMeters = OhmMeters(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def ohmMeters: Resistivity = OhmMeters(n)
   }
 
-  implicit object ResistivityNumeric extends AbstractQuantityNumeric[Resistivity](Resistivity.primaryUnit)
+  given ResistivityNumeric: AbstractQuantityNumeric[Resistivity](Resistivity.primaryUnit) {}
 }

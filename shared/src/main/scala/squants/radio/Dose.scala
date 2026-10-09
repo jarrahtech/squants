@@ -12,6 +12,7 @@ import squants._
 import squants.mass.Mass
 import squants.energy.{ Energy, Joules }
 import squants.time.Time
+import scala.util.Try
 
 /**
  * Its important to note that while Dose and SpecificEnergy are simliar
@@ -33,21 +34,21 @@ final class Dose private (val value: Double, val unit: DoseUnit) extends Quantit
   def *(that: Mass): Energy = Joules(this.toSieverts * that.toKilograms)
   def /(that: Time) = ??? // returns AbsorbedEnergyRate
 
-  def toSieverts = to(Sieverts)
-  def toRems = to(Rems)
+  def toSieverts: Double = to(Sieverts)
+  def toRems: Double = to(Rems)
 }
 
 object Dose extends Dimension[Dose] {
-  private[radio] def apply[A](n: A, unit: DoseUnit)(implicit num: Numeric[A]) = new Dose(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[radio] def apply[A](n: A, unit: DoseUnit)(using num: Numeric[A]) = new Dose(num.toDouble(n), unit)
+  def apply(value: Any): Try[Dose] = parse(value)
   def name = "Dose"
   def primaryUnit = Sieverts
   def siUnit = Sieverts
-  def units = Set(Sieverts, Rems)
+  def units: Set[UnitOfMeasure[Dose]] = Set(Sieverts, Rems)
 }
 
 trait DoseUnit extends UnitOfMeasure[Dose] {
-  def apply[A](n: A)(implicit num: Numeric[A]) = Dose(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): Dose = Dose(n, this)
 }
 
 object Rems extends DoseUnit with UnitConverter {
@@ -60,13 +61,13 @@ object Sieverts extends DoseUnit with PrimaryUnit with SiUnit {
 }
 
 object DoseConversions {
-  lazy val sievert = Sieverts(1)
-  lazy val rem = Rems(1)
+  lazy val sievert: Dose = Sieverts(1)
+  lazy val rem: Dose = Rems(1)
 
-  implicit class DoseConversions[A](n: A)(implicit num: Numeric[A]) {
-    def sieverts = Sieverts(n)
-    def rems = Rems(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def sieverts: Dose = Sieverts(n)
+    def rems: Dose = Rems(n)
   }
 
-  implicit object DoseNumeric extends AbstractQuantityNumeric[Dose](Dose.primaryUnit)
+  given DoseNumeric: AbstractQuantityNumeric[Dose](Dose.primaryUnit) {}
 }

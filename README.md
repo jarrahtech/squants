@@ -6,7 +6,7 @@ This is a fork of [Typelevel's Squants](https://github.com/typelevel/squants) pa
 
 ### Fork build and requirements
 
-Fork version **1.10.0**, built for JVM, Scala.js and Scala Native. Two artifacts are published: `com.jarrahtechnology:squants`
+Fork version **2.0.0**, built for JVM, Scala.js and Scala Native. Two artifacts are published: `com.jarrahtechnology:squants`
 (core, no runtime dependencies) and `com.jarrahtechnology:squants-iron` (Iron refinement support, see below).
 
 Both are published to GitHub Packages only, so a project that uses them needs the repository and a GitHub token with
@@ -15,7 +15,7 @@ Both are published to GitHub Packages only, so a project that uses them needs th
 ```scala
 resolvers += "GitHub Packages" at "https://maven.pkg.github.com/jarrahtech/squants"
 credentials += Credentials("GitHub Package Registry", "maven.pkg.github.com", "<your GitHub user name>", sys.env("GITHUB_TOKEN"))
-libraryDependencies += "com.jarrahtechnology" %% "squants" % "1.10.0" // %%% in an sbt 1 cross-platform build
+libraryDependencies += "com.jarrahtechnology" %% "squants" % "2.0.0" // %%% in an sbt 1 cross-platform build
 ```
 
 - **Scala 3.8.4.** An artifact built with Scala 3.8 cannot be read by a 3.7 compiler, so consumers must use Scala 3.8
@@ -46,6 +46,30 @@ Not moved to the latest release:
 - **Scala 3.9 and 3.10** exist; the fork targets the 3.8 line.
 - **Iron 3.4.0-RC3** exists; the module uses the latest stable release, 3.3.2.
 
+### Breaking changes in 2.0.0
+
+The main module now uses Scala 3 `given`, `using` and `extension` in place of Scala 2 implicits, and public members
+have explicit result types. It is binary incompatible with 1.10.0, and these source changes are needed:
+
+- **Numeric instances are givens**, which a wildcard import does not bring in. Use
+  `import squants.energy.PowerConversions.given`, or `{*, given}` to get the DSL as well, or import the instance by name
+  (`import squants.energy.PowerConversions.PowerNumeric`).
+- **Conversions are `Conversion` givens** (`Time` to and from `scala.concurrent.duration.Duration`, `Dimensionless` to
+  `Double`). Import them with `.given` and add `import scala.language.implicitConversions` where they are used.
+- **The Money DSL** (`10.USD`, `5.dollars`) needs `import squants.market.MoneyConversions.given`.
+  `MoneyConversions.fromLong` and `fromDouble` were removed; nothing replaces them because nothing needs them.
+- **The DSL wrapper classes are gone.** `5.kW`, `"5 kW".toPower` and `2 * Meters(3)` are extension methods now, so code
+  that named the classes (`new PowerConversions(5)`, `import squants.SquantifiedDouble`) must call the methods instead.
+- **An explicit context argument needs `using`**: `Money("1 USD")(using context)`, `a.approx(b)(using tolerance)`. An
+  `implicit val` in your own code still satisfies these parameters.
+- **`SVector`'s `+`, `-` and `#*`** are ordinary methods; they used to return a function.
+- **Package objects became top-level definitions.** Source names are unchanged (`squants.Length`,
+  `squants.market.defaultMoneyContext`, `squants.energy.KineticEnergy`).
+- **`Quantity.equals`** compares quantities in different units in the primary unit, as `hashCode` does, so it is
+  symmetric. A few cross-unit pairs that differed only by rounding change result; use `approx` for those.
+- **`Currency.hashCode`** values changed.
+- A `Time` in a unit `Duration` lacks (`EarthYears`) converts to a `Duration` instead of throwing `MatchError`.
+
 ### Iron refinement (`squants-iron`)
 
 The optional `squants-iron` module lets a quantity carry an [Iron](https://github.com/Iltotore/iron) constraint, for example
@@ -54,8 +78,8 @@ core itself does not depend on Iron. Add the dependency (`%%%` in an sbt 1 cross
 JVM-only build; the sbt 2 project's platform picks the suffix) and import the given where you refine quantities:
 
 ```scala
-libraryDependencies += "com.jarrahtechnology" %%% "squants-iron" % "1.10.0" // sbt 1, cross-platform
-libraryDependencies += "com.jarrahtechnology" %%  "squants-iron" % "1.10.0" // sbt 2, or JVM only
+libraryDependencies += "com.jarrahtechnology" %%% "squants-iron" % "2.0.0" // sbt 1, cross-platform
+libraryDependencies += "com.jarrahtechnology" %%  "squants-iron" % "2.0.0" // sbt 2, or JVM only
 ```
 
 ```scala
@@ -1007,7 +1031,7 @@ import scala.language.postfixOps
 import squants.energy.EnergyConversions._
 import squants.energy.PowerConversions._
 import squants.information.InformationConversions._
-import squants.market.MoneyConversions._
+import squants.market.MoneyConversions.{*, given}
 import squants.space.LengthConversions._
 import squants.time.TimeConversions._
 ```
@@ -1092,8 +1116,9 @@ val range2 = 5000.kW +- 1000.kW              // 4000.kW to 6000.kW
 ```
 
 ### Numeric Support
-Most Quantities that support implicit conversions also include an implicit Numeric object that can be imported
-to your code where Numeric support is required.  These follow the following pattern:
+Most Quantities that have a DSL also include a given Numeric instance that can be imported
+to your code where Numeric support is required. A wildcard import does not bring givens in: import the instance by name,
+as below, or use `import squants.mass.MassConversions.given`.  These follow the following pattern:
 
 ```scala
 scala> import squants.mass.{Grams, Kilograms}
@@ -1120,7 +1145,7 @@ The following code provides a basic example for creating a MoneyNumeric:
 
 ```scala
 import squants.market.defaultMoneyContext
-import squants.market.MoneyConversions._
+import squants.market.MoneyConversions.{*, given}
 import squants.market.USD
 implicit val moneyContext = defaultMoneyContext
 ```
@@ -1510,7 +1535,7 @@ import squants.energy.Energy
 import squants.energy.EnergyConversions._
 import squants.energy.PowerConversions._
 import squants.market.{Money, Price}
-import squants.market.MoneyConversions._
+import squants.market.MoneyConversions.{*, given}
 import squants.market.defaultMoneyContext
 import squants.mass.{Density, Mass}
 import squants.mass.MassConversions._
@@ -1569,7 +1594,7 @@ import squants.energy.EnergyConversions._
 import squants.energy.PowerConversions._
 import squants.energy.PowerRampConversions._
 import squants.market.Price
-import squants.market.MoneyConversions._
+import squants.market.MoneyConversions.{*, given}
 import squants.time.Time
 import squants.time.TimeConversions._
 ```

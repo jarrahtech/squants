@@ -64,7 +64,7 @@ trait SVector[A] {
    * @return
    */
   infix def plus(that: SVectorType): SVectorType
-  def + = plus
+  def +(that: SVectorType): SVectorType = plus(that)
 
   /**
    * Subtract two Vectors
@@ -72,7 +72,7 @@ trait SVector[A] {
    * @return
    */
   infix def minus(that: SVectorType): SVectorType
-  def - = minus
+  def -(that: SVectorType): SVectorType = minus(that)
 
   /**
    * Scale a Vector
@@ -80,7 +80,7 @@ trait SVector[A] {
    * @return
    */
   infix def times(that: Double): SVectorType
-  def *(that: Double) = times(that)
+  def *(that: Double): SVectorType = times(that)
 
   /**
    * Reduce a Vector
@@ -89,7 +89,7 @@ trait SVector[A] {
    * @return
    */
   infix def divide(that: Double): SVectorType
-  def /(that: Double) = divide(that)
+  def /(that: Double): SVectorType = divide(that)
 
   /**
    * Create the Dot Product of two Vectors
@@ -97,7 +97,7 @@ trait SVector[A] {
    * @return
    */
   infix def dotProduct(that: DoubleVector): A
-  def *(that: DoubleVector) = dotProduct(that)
+  def *(that: DoubleVector): A = dotProduct(that)
 
   /**
    * Create the Cross Product of two Vectors
@@ -105,7 +105,7 @@ trait SVector[A] {
    * @return
    */
   infix def crossProduct(that: DoubleVector): SVector[A]
-  def #* = crossProduct
+  def #*(that: DoubleVector): SVector[A] = crossProduct(that)
 
 }
 
@@ -179,9 +179,9 @@ case class DoubleVector(coordinates: Double*) extends SVector[Double] {
   infix def dotProduct(that: SVectorType): Double =
     coordinates.toSeq.zipAll(that.coordinates, 0d, 0d).map(v => v._1 * v._2).sum
 
-  infix def dotProduct[B <: Quantity[B]](that: QuantityVector[B]) = that.dotProduct(this)
+  infix def dotProduct[B <: Quantity[B]](that: QuantityVector[B]): B = that.dotProduct(this)
 
-  infix def crossProduct(that: SVectorType) = (this.coordinates.length, that.coordinates.length) match {
+  infix def crossProduct(that: SVectorType): SVector[Double] = (this.coordinates.length, that.coordinates.length) match {
     case (3, 3) =>
       DoubleVector(
         this.coordinates(1) * that.coordinates(2) - this.coordinates(2) * that.coordinates(1),
@@ -191,7 +191,7 @@ case class DoubleVector(coordinates: Double*) extends SVector[Double] {
     case _ => throw new UnsupportedOperationException("Cross product is not supported on vectors with an arbitrary number of dimensions")
   }
 
-  infix def crossProduct[B <: Quantity[B]](that: QuantityVector[B]) = that.crossProduct(this)
+  infix def crossProduct[B <: Quantity[B]](that: QuantityVector[B]): QuantityVector[B] = that.crossProduct(this)
 
 }
 
@@ -207,7 +207,7 @@ case class DoubleVector(coordinates: Double*) extends SVector[Double] {
 case class QuantityVector[A <: Quantity[A]](coordinates: A*) extends SVector[A] {
   type SVectorType = QuantityVector[A]
 
-  def valueUnit = coordinates(0).unit
+  def valueUnit: UnitOfMeasure[A] = coordinates(0).unit
   def magnitude: A = valueUnit(math.sqrt(coordinates.map(v => v.to(valueUnit) * v.to(valueUnit)).sum))
   def angle(coordinateX: Int = 0, coordinateY: Int = 1, unit: AngleUnit = Radians): Angle =
     Radians(math.atan(coordinates(coordinateY) / coordinates(coordinateX))).in(unit)
@@ -247,14 +247,14 @@ case class QuantityVector[A <: Quantity[A]](coordinates: A*) extends SVector[A] 
   infix def divide(that: Double): SVectorType = map(_ / that)
 
   infix def divide(that: A): DoubleVector = map(_ / that)
-  def /(that: A) = divide(that)
+  def /(that: A): DoubleVector = divide(that)
 
   infix def divide[B <: Quantity[B], C <: Quantity[C]](quantDiv: A => C): QuantityVector[C] = map(quantDiv(_))
 
   infix def dotProduct(that: DoubleVector): A =
     valueUnit(coordinates.zipAll(that.coordinates, valueUnit(0), 0d).map(v => v._1.to(valueUnit) * v._2).sum)
 
-  def dotProduct[B <: Quantity[B], C <: Quantity[C]](that: SVector[B], quantTimes: (A, B) => C)(implicit num: Numeric[C]): C =
+  def dotProduct[B <: Quantity[B], C <: Quantity[C]](that: SVector[B], quantTimes: (A, B) => C)(using num: Numeric[C]): C =
     coordinates.zipAll(that.coordinates, valueUnit(0), that.coordinates.head.unit(0)).map(v => quantTimes(v._1, v._2)).sum
 
   infix def crossProduct(that: DoubleVector): SVectorType = (this.coordinates.length, that.coordinates.length) match {

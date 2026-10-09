@@ -13,6 +13,7 @@ import squants.energy.{ ErgsPerSecond, Watts, WattHours }
 import squants.space.{ SquareCentimeters, SquareMeters }
 import squants.thermal.Kelvin
 import squants.time.Hours
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -38,40 +39,40 @@ final class Irradiance private (val value: Double, val unit: IrradianceUnit)
     (toWattsPerSquareMeter / that.toBecquerelsPerSquareMeterSecond) /
       Hours(1).toSeconds)
 
-  def toWattsPerSquareMeter = to(WattsPerSquareMeter)
-  def toErgsPerSecondPerSquareCentimeter = to(ErgsPerSecondPerSquareCentimeter)
+  def toWattsPerSquareMeter: Double = to(WattsPerSquareMeter)
+  def toErgsPerSecondPerSquareCentimeter: Double = to(ErgsPerSecondPerSquareCentimeter)
 }
 
 object Irradiance extends Dimension[Irradiance] {
-  private[radio] def apply[A](n: A, unit: IrradianceUnit)(implicit num: Numeric[A]) = new Irradiance(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[radio] def apply[A](n: A, unit: IrradianceUnit)(using num: Numeric[A]) = new Irradiance(num.toDouble(n), unit)
+  def apply(value: Any): Try[Irradiance] = parse(value)
   def name = "Irradiance"
   def primaryUnit = WattsPerSquareMeter
   def siUnit = WattsPerSquareMeter
-  def units = Set(WattsPerSquareMeter, ErgsPerSecondPerSquareCentimeter)
+  def units: Set[UnitOfMeasure[Irradiance]] = Set(WattsPerSquareMeter, ErgsPerSecondPerSquareCentimeter)
 }
 
 trait IrradianceUnit extends UnitOfMeasure[Irradiance] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = Irradiance(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): Irradiance = Irradiance(n, this)
 }
 
 object WattsPerSquareMeter extends IrradianceUnit with PrimaryUnit with SiUnit {
-  val symbol = Watts.symbol + "/" + SquareMeters.symbol
+  val symbol: String = Watts.symbol + "/" + SquareMeters.symbol
 }
 
 object ErgsPerSecondPerSquareCentimeter extends IrradianceUnit {
-  val conversionFactor = ErgsPerSecond.conversionFactor / SquareCentimeters.conversionFactor
-  val symbol = ErgsPerSecond.symbol + "/" + SquareCentimeters.symbol
+  val conversionFactor: Double = ErgsPerSecond.conversionFactor / SquareCentimeters.conversionFactor
+  val symbol: String = ErgsPerSecond.symbol + "/" + SquareCentimeters.symbol
 }
 
 object IrradianceConversions {
-  lazy val wattPerSquareMeter = WattsPerSquareMeter(1)
-  lazy val ergsPerSecondPerSquareCentimeter = ErgsPerSecondPerSquareCentimeter(1)
+  lazy val wattPerSquareMeter: Irradiance = WattsPerSquareMeter(1)
+  lazy val ergsPerSecondPerSquareCentimeter: Irradiance = ErgsPerSecondPerSquareCentimeter(1)
 
-  implicit class IrradianceConversions[A](n: A)(implicit num: Numeric[A]) {
-    def wattsPerSquareMeter = WattsPerSquareMeter(n)
-    def ergsPerSecondPerSquareCentimeter = ErgsPerSecondPerSquareCentimeter(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def wattsPerSquareMeter: Irradiance = WattsPerSquareMeter(n)
+    def ergsPerSecondPerSquareCentimeter: Irradiance = ErgsPerSecondPerSquareCentimeter(n)
   }
 
-  implicit object IrradianceNumeric extends AbstractQuantityNumeric[Irradiance](Irradiance.primaryUnit)
+  given IrradianceNumeric: AbstractQuantityNumeric[Irradiance](Irradiance.primaryUnit) {}
 }

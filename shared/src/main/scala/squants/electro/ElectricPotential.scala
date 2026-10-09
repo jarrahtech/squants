@@ -11,6 +11,7 @@ package squants.electro
 import squants._
 import squants.energy.{ Joules, Watts }
 import squants.time.{ Seconds, TimeDerivative }
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -24,8 +25,8 @@ final class ElectricPotential private (val value: Double, val unit: ElectricPote
 
   def dimension = ElectricPotential
 
-  protected[squants] def timeIntegrated = Webers(toVolts)
-  protected[squants] def time = Seconds(1)
+  protected[squants] def timeIntegrated: MagneticFlux = Webers(toVolts)
+  protected[squants] def time: Time = Seconds(1)
 
   def *(that: ElectricCurrent): Power = Watts(toVolts * that.toAmperes)
   def *(that: Capacitance): ElectricCharge = Coulombs(toVolts * that.toFarads)
@@ -35,24 +36,24 @@ final class ElectricPotential private (val value: Double, val unit: ElectricPote
   def /(that: ElectricalResistance): ElectricCurrent = Amperes(this.toVolts / that.toOhms)
   def /(that: Length): ElectricFieldStrength = VoltsPerMeter(this.toVolts / that.toMeters)
 
-  def toVolts = to(Volts)
-  def toMicrovolts = to(Microvolts)
-  def toMillivolts = to(Millivolts)
-  def toKilovolts = to(Kilovolts)
-  def toMegavolts = to(Megavolts)
+  def toVolts: Double = to(Volts)
+  def toMicrovolts: Double = to(Microvolts)
+  def toMillivolts: Double = to(Millivolts)
+  def toKilovolts: Double = to(Kilovolts)
+  def toMegavolts: Double = to(Megavolts)
 }
 
 object ElectricPotential extends Dimension[ElectricPotential] {
-  private[electro] def apply[A](n: A, unit: ElectricPotentialUnit)(implicit num: Numeric[A]) = new ElectricPotential(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[electro] def apply[A](n: A, unit: ElectricPotentialUnit)(using num: Numeric[A]) = new ElectricPotential(num.toDouble(n), unit)
+  def apply(value: Any): Try[ElectricPotential] = parse(value)
   def name = "ElectricPotential"
   def primaryUnit = Volts
   def siUnit = Volts
-  def units = Set(Volts, Microvolts, Millivolts, Kilovolts, Megavolts)
+  def units: Set[UnitOfMeasure[ElectricPotential]] = Set(Volts, Microvolts, Millivolts, Kilovolts, Megavolts)
 }
 
 trait ElectricPotentialUnit extends UnitOfMeasure[ElectricPotential] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = ElectricPotential(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): ElectricPotential = ElectricPotential(n, this)
 }
 
 object Volts extends ElectricPotentialUnit with PrimaryUnit with SiUnit {
@@ -80,21 +81,21 @@ object Megavolts extends ElectricPotentialUnit with SiUnit {
 }
 
 object ElectricPotentialConversions {
-  lazy val volt = Volts(1)
-  lazy val microvolt = Microvolts(1)
-  lazy val millivolt = Millivolts(1)
-  lazy val kilovolt = Kilovolts(1)
-  lazy val megavolt = Megavolts(1)
+  lazy val volt: ElectricPotential = Volts(1)
+  lazy val microvolt: ElectricPotential = Microvolts(1)
+  lazy val millivolt: ElectricPotential = Millivolts(1)
+  lazy val kilovolt: ElectricPotential = Kilovolts(1)
+  lazy val megavolt: ElectricPotential = Megavolts(1)
 
-  implicit class ElectricPotentialConversions[A](n: A)(implicit num: Numeric[A]) {
-    def V = Volts(n)
-    def volts = Volts(n)
-    def microvolts = Microvolts(n)
-    def millivolts = Millivolts(n)
-    def kilovolts = Kilovolts(n)
-    def megavolts = Megavolts(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def V: ElectricPotential = Volts(n)
+    def volts: ElectricPotential = Volts(n)
+    def microvolts: ElectricPotential = Microvolts(n)
+    def millivolts: ElectricPotential = Millivolts(n)
+    def kilovolts: ElectricPotential = Kilovolts(n)
+    def megavolts: ElectricPotential = Megavolts(n)
   }
 
-  implicit object ElectricPotentialNumeric extends AbstractQuantityNumeric[ElectricPotential](ElectricPotential.primaryUnit)
+  given ElectricPotentialNumeric: AbstractQuantityNumeric[ElectricPotential](ElectricPotential.primaryUnit) {}
 }
 

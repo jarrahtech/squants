@@ -9,6 +9,7 @@
 package squants.electro
 
 import squants._
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -24,28 +25,28 @@ final class ElectricalResistance private (val value: Double, val unit: Electrica
   def *(that: ElectricCurrent): ElectricPotential = Volts(this.toOhms * that.toAmperes)
   def *(that: Length): Resistivity = OhmMeters(this.toOhms * that.toMeters)
 
-  def toOhms = to(Ohms)
-  def toNanohms = to(Nanohms)
-  def toMicrohms = to(Microohms)
-  def toMillohms = to(Milliohms)
-  def toKilohms = to(Kilohms)
-  def toMegohms = to(Megohms)
-  def toGigohms = to(Gigohms)
+  def toOhms: Double = to(Ohms)
+  def toNanohms: Double = to(Nanohms)
+  def toMicrohms: Double = to(Microohms)
+  def toMillohms: Double = to(Milliohms)
+  def toKilohms: Double = to(Kilohms)
+  def toMegohms: Double = to(Megohms)
+  def toGigohms: Double = to(Gigohms)
 
-  def inSiemens = Siemens(1.0 / to(Ohms))
+  def inSiemens: ElectricalConductance = Siemens(1.0 / to(Ohms))
 }
 
 object ElectricalResistance extends Dimension[ElectricalResistance] {
-  private[electro] def apply[A](n: A, unit: ElectricalResistanceUnit)(implicit num: Numeric[A]) = new ElectricalResistance(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[electro] def apply[A](n: A, unit: ElectricalResistanceUnit)(using num: Numeric[A]) = new ElectricalResistance(num.toDouble(n), unit)
+  def apply(value: Any): Try[ElectricalResistance] = parse(value)
   def name = "ElectricalResistance"
   def primaryUnit = Ohms
   def siUnit = Ohms
-  def units = Set(Ohms, Nanohms, Microohms, Milliohms, Kilohms, Megohms, Gigohms)
+  def units: Set[UnitOfMeasure[ElectricalResistance]] = Set(Ohms, Nanohms, Microohms, Milliohms, Kilohms, Megohms, Gigohms)
 }
 
 trait ElectricalResistanceUnit extends UnitOfMeasure[ElectricalResistance] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = ElectricalResistance(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): ElectricalResistance = ElectricalResistance(n, this)
 }
 
 object Ohms extends ElectricalResistanceUnit with PrimaryUnit with SiUnit {
@@ -83,24 +84,23 @@ object Gigohms extends ElectricalResistanceUnit with SiUnit {
 }
 
 object ElectricalResistanceConversions {
-  lazy val ohm = Ohms(1)
-  lazy val nanohm = Nanohms(1)
-  lazy val microohm = Microohms(1)
-  lazy val milliohm = Milliohms(1)
-  lazy val kilohm = Kilohms(1)
-  lazy val megohm = Megohms(1)
-  lazy val gigohm = Gigohms(1)
+  lazy val ohm: ElectricalResistance = Ohms(1)
+  lazy val nanohm: ElectricalResistance = Nanohms(1)
+  lazy val microohm: ElectricalResistance = Microohms(1)
+  lazy val milliohm: ElectricalResistance = Milliohms(1)
+  lazy val kilohm: ElectricalResistance = Kilohms(1)
+  lazy val megohm: ElectricalResistance = Megohms(1)
+  lazy val gigohm: ElectricalResistance = Gigohms(1)
 
-  implicit class ElectricalResistanceConversions[A](n: A)(implicit num: Numeric[A]) {
-    def ohms = Ohms(n)
-    def nanohms = Nanohms(n)
-    def microohms = Microohms(n)
-    def milliohms = Milliohms(n)
-    def kilohms = Kilohms(n)
-    def megohms = Megohms(n)
-    def gigohms = Gigohms(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def ohms: ElectricalResistance = Ohms(n)
+    def nanohms: ElectricalResistance = Nanohms(n)
+    def microohms: ElectricalResistance = Microohms(n)
+    def milliohms: ElectricalResistance = Milliohms(n)
+    def kilohms: ElectricalResistance = Kilohms(n)
+    def megohms: ElectricalResistance = Megohms(n)
+    def gigohms: ElectricalResistance = Gigohms(n)
   }
 
-  implicit object ElectricalResistanceNumeric
-    extends AbstractQuantityNumeric[ElectricalResistance](ElectricalResistance.primaryUnit)
+  given ElectricalResistanceNumeric: AbstractQuantityNumeric[ElectricalResistance](ElectricalResistance.primaryUnit) {}
 }

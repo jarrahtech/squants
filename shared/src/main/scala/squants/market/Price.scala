@@ -45,7 +45,7 @@ case class Price[A <: Quantity[A]](money: Money, quantity: A) extends Ratio[Mone
   infix def divide(that: Price[A]): BigDecimal = this.money.amount / that.money.amount
   def /(that: Price[A]): BigDecimal = divide(that)
 
-  infix def in(currency: Currency)(implicit moneyContext: MoneyContext) =
+  infix def in(currency: Currency)(using moneyContext: MoneyContext): Price[A] =
     (money in currency) / quantity
 
   /**
@@ -63,11 +63,11 @@ case class Price[A <: Quantity[A]](money: Money, quantity: A) extends Ratio[Mone
   @deprecated("Use `money / price` instead", "0.6.3")
   def *(that: Money): A = that / this
 
-  override def toString = money.toString + "/" + quantity.toString
+  override def toString: String = money.toString + "/" + quantity.toString
 
-  def toString(unit: UnitOfMeasure[A]) = money.toString + "/" + quantity.toString(unit)
+  def toString(unit: UnitOfMeasure[A]): String = money.toString + "/" + quantity.toString(unit)
 
-  def toString(currency: Currency, unit: UnitOfMeasure[A])(implicit moneyContext: MoneyContext) =
+  def toString(currency: Currency, unit: UnitOfMeasure[A])(using moneyContext: MoneyContext): String =
     (money in currency).toString + "/" + quantity.toString(unit)
 }
 

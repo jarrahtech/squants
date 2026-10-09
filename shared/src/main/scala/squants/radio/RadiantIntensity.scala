@@ -11,6 +11,7 @@ package squants.radio
 import squants._
 import squants.energy.Watts
 import squants.space.{ SquareMeters, SquaredRadians }
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -30,33 +31,33 @@ final class RadiantIntensity private (val value: Double, val unit: RadiantIntens
   def /(that: Area): Radiance = WattsPerSteradianPerSquareMeter(this.toWattsPerSteradian / that.toSquareMeters)
   def /(that: Radiance): Area = SquareMeters(this.toWattsPerSteradian / that.toWattsPerSteradianPerSquareMeter)
 
-  def toWattsPerSteradian = to(WattsPerSteradian)
+  def toWattsPerSteradian: Double = to(WattsPerSteradian)
 }
 
 object RadiantIntensity extends Dimension[RadiantIntensity] {
-  private[radio] def apply[A](n: A, unit: RadiantIntensityUnit)(implicit num: Numeric[A]) = new RadiantIntensity(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[radio] def apply[A](n: A, unit: RadiantIntensityUnit)(using num: Numeric[A]) = new RadiantIntensity(num.toDouble(n), unit)
+  def apply(value: Any): Try[RadiantIntensity] = parse(value)
   def name = "RadiantIntensity"
   def primaryUnit = WattsPerSteradian
   def siUnit = WattsPerSteradian
-  def units = Set(WattsPerSteradian)
+  def units: Set[UnitOfMeasure[RadiantIntensity]] = Set(WattsPerSteradian)
 }
 
 trait RadiantIntensityUnit extends UnitOfMeasure[RadiantIntensity] {
-  def apply[A](n: A)(implicit num: Numeric[A]) = RadiantIntensity(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): RadiantIntensity = RadiantIntensity(n, this)
 }
 
 object WattsPerSteradian extends RadiantIntensityUnit with PrimaryUnit with SiUnit {
-  val symbol = Watts.symbol + "/" + SquaredRadians.symbol
+  val symbol: String = Watts.symbol + "/" + SquaredRadians.symbol
 }
 
 object RadiantIntensityConversions {
-  lazy val wattPerSteradian = WattsPerSteradian(1)
+  lazy val wattPerSteradian: RadiantIntensity = WattsPerSteradian(1)
 
-  implicit class RadiantIntensityConversions[A](n: A)(implicit num: Numeric[A]) {
-    def wattsPerSteradian = WattsPerSteradian(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def wattsPerSteradian: RadiantIntensity = WattsPerSteradian(n)
   }
 
-  implicit object RadiantIntensityNumeric extends AbstractQuantityNumeric[RadiantIntensity](RadiantIntensity.primaryUnit)
+  given RadiantIntensityNumeric: AbstractQuantityNumeric[RadiantIntensity](RadiantIntensity.primaryUnit) {}
 }
 

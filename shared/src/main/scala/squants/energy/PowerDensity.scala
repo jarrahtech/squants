@@ -9,6 +9,7 @@
 package squants.energy
 
 import squants._
+import scala.util.Try
 
 /**
  * Represents a quantity of power density
@@ -25,20 +26,20 @@ final class PowerDensity private (val value: Double, val unit: PowerDensityUnit)
 
   def *(that: Volume): Power = Watts(this.toWattsPerCubicMeter * that.toCubicMeters)
 
-  def toWattsPerCubicMeter = to(WattsPerCubicMeter)
+  def toWattsPerCubicMeter: Double = to(WattsPerCubicMeter)
 }
 
 object PowerDensity extends Dimension[PowerDensity] {
-  private[energy] def apply[A](n: A, unit: PowerDensityUnit)(implicit num: Numeric[A]) = new PowerDensity(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[energy] def apply[A](n: A, unit: PowerDensityUnit)(using num: Numeric[A]) = new PowerDensity(num.toDouble(n), unit)
+  def apply(value: Any): Try[PowerDensity] = parse(value)
   def name = "PowerDensity"
   def primaryUnit = WattsPerCubicMeter
   def siUnit = WattsPerCubicMeter
-  def units = Set(WattsPerCubicMeter)
+  def units: Set[UnitOfMeasure[PowerDensity]] = Set(WattsPerCubicMeter)
 }
 
 trait PowerDensityUnit extends UnitOfMeasure[PowerDensity] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = PowerDensity(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): PowerDensity = PowerDensity(n, this)
 }
 
 object WattsPerCubicMeter extends PowerDensityUnit with PrimaryUnit with SiUnit {
@@ -46,11 +47,11 @@ object WattsPerCubicMeter extends PowerDensityUnit with PrimaryUnit with SiUnit 
 }
 
 object PowerDensityConversions {
-  lazy val wattPerCubicMeter = WattsPerCubicMeter(1)
+  lazy val wattPerCubicMeter: PowerDensity = WattsPerCubicMeter(1)
 
-  implicit class PowerDensityConversions[A](n: A)(implicit num: Numeric[A]) {
-    def wattsPerCubicMeter = WattsPerCubicMeter(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def wattsPerCubicMeter: PowerDensity = WattsPerCubicMeter(n)
   }
 
-  implicit object PowerDensityNumeric extends AbstractQuantityNumeric[PowerDensity](PowerDensity.primaryUnit)
+  given PowerDensityNumeric: AbstractQuantityNumeric[PowerDensity](PowerDensity.primaryUnit) {}
 }

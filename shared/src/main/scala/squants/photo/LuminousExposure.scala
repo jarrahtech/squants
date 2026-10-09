@@ -10,6 +10,7 @@ package squants.photo
 
 import squants._
 import squants.time.TimeIntegral
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -23,23 +24,23 @@ final class LuminousExposure private (val value: Double, val unit: LuminousExpos
 
   def dimension = LuminousExposure
 
-  protected def timeDerived = Lux(toLuxSeconds)
-  protected[squants] def time = Seconds(1)
+  protected def timeDerived: Illuminance = Lux(toLuxSeconds)
+  protected[squants] def time: Time = Seconds(1)
 
-  def toLuxSeconds = to(LuxSeconds)
+  def toLuxSeconds: Double = to(LuxSeconds)
 }
 
 object LuminousExposure extends Dimension[LuminousExposure] {
-  private[photo] def apply[A](n: A, unit: LuminousExposureUnit)(implicit num: Numeric[A]) = new LuminousExposure(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[photo] def apply[A](n: A, unit: LuminousExposureUnit)(using num: Numeric[A]) = new LuminousExposure(num.toDouble(n), unit)
+  def apply(value: Any): Try[LuminousExposure] = parse(value)
   def name = "LuminousExposure"
   def primaryUnit = LuxSeconds
   def siUnit = LuxSeconds
-  def units = Set(LuxSeconds)
+  def units: Set[UnitOfMeasure[LuminousExposure]] = Set(LuxSeconds)
 }
 
 trait LuminousExposureUnit extends UnitOfMeasure[LuminousExposure] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = LuminousExposure(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): LuminousExposure = LuminousExposure(n, this)
 }
 
 object LuxSeconds extends LuminousExposureUnit with PrimaryUnit with SiUnit {
@@ -47,11 +48,11 @@ object LuxSeconds extends LuminousExposureUnit with PrimaryUnit with SiUnit {
 }
 
 object LuminousExposureConversions {
-  lazy val luxSecond = LuxSeconds(1)
+  lazy val luxSecond: LuminousExposure = LuxSeconds(1)
 
-  implicit class LuminousExposureConversions[A](n: A)(implicit num: Numeric[A]) {
-    def luxSeconds = LuxSeconds(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def luxSeconds: LuminousExposure = LuxSeconds(n)
   }
 
-  implicit object LuminousExposureNumeric extends AbstractQuantityNumeric[LuminousExposure](LuminousExposure.primaryUnit)
+  given LuminousExposureNumeric: AbstractQuantityNumeric[LuminousExposure](LuminousExposure.primaryUnit) {}
 }

@@ -41,7 +41,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
     else ranges
   }
   /** times */
-  def *(multiple: Double) = times(multiple)
+  def *(multiple: Double): QuantitySeries[A] = times(multiple)
 
   /**
    * Divides the range into a Series of ranges each with a range of size `that`
@@ -63,7 +63,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
     accumulate(IndexedSeq.empty[QuantityRange[A]], lower)
   }
   /** divide */
-  def /(that: A) = divide(that)
+  def /(that: A): QuantitySeries[A] = divide(that)
 
   /**
    * Divides the range into a Seq of `divisor` ranges
@@ -80,7 +80,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    */
   infix def divide(that: Double): QuantitySeries[A] = divide(this.toQuantity / that)
   /** divide */
-  def /(divisor: Double) = divide(divisor)
+  def /(divisor: Double): QuantitySeries[A] = divide(divisor)
 
   /**
    * Divides the range into a Seq of ranges of `size` each and applies a f to each element
@@ -89,7 +89,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * @param op the side affecting operation
    * @return
    */
-  def foreach[U](size: A)(op: QuantityRange[A] => U) = /(size).foreach(op)
+  def foreach[U](size: A)(op: QuantityRange[A] => U): Unit = /(size).foreach(op)
 
   /**
    * Divides the range into a Seq of `divisor` ranges and applies a f to each element
@@ -98,7 +98,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * @param op the side affecting operation
    * @return
    */
-  def foreach[U](divisor: Double)(op: QuantityRange[A] => U) = /(divisor).foreach(op)
+  def foreach[U](divisor: Double)(op: QuantityRange[A] => U): Unit = /(divisor).foreach(op)
 
   /**
    * Divides the range into a Seq of ranges of `size` each and applies a map operation to each
@@ -131,7 +131,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    */
   def foldLeft[B](size: A, z: B)(op: (B, QuantityRange[A]) => B): B = /(size).foldLeft[B](z)(op)
   /** foldLeft */
-  def /:[B](size: A, z: B)(op: (B, QuantityRange[A]) => B) = foldLeft(size, z)(op)
+  def /:[B](size: A, z: B)(op: (B, QuantityRange[A]) => B): B = foldLeft(size, z)(op)
 
   /**
    * Divides the range into a Seq of ranges of `size` each and applies a foldLeft operation
@@ -144,7 +144,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    */
   def foldLeft[B](divisor: Double, z: B)(op: (B, QuantityRange[A]) => B): B = /(divisor).foldLeft[B](z)(op)
   /** foldLeft */
-  def /:[B](divisor: Double, z: B)(op: (B, QuantityRange[A]) => B) = foldLeft(divisor, z)(op)
+  def /:[B](divisor: Double, z: B)(op: (B, QuantityRange[A]) => B): B = foldLeft(divisor, z)(op)
 
   /**
    * Divides the range into a Seq of ranges of `size` each and applies a foldRight operation
@@ -157,7 +157,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    */
   def foldRight[B](size: A, z: B)(op: (QuantityRange[A], B) => B): B = /(size).foldRight[B](z)(op)
   /** foldRight */
-  def :\[B](size: A, z: B)(op: (QuantityRange[A], B) => B) = foldRight(size, z)(op)
+  def :\[B](size: A, z: B)(op: (QuantityRange[A], B) => B): B = foldRight(size, z)(op)
 
   /**
    * Divides the range into a Seq of ranges of `size` each and applies a foldRight operation
@@ -170,13 +170,13 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    */
   def foldRight[B](divisor: Double, z: B)(op: (QuantityRange[A], B) => B): B = /(divisor).foldRight[B](z)(op)
   /** foldRight */
-  def :\[B](divisor: Double, z: B)(op: (QuantityRange[A], B) => B) = foldRight(divisor, z)(op)
+  def :\[B](divisor: Double, z: B)(op: (QuantityRange[A], B) => B): B = foldRight(divisor, z)(op)
 
   /**
    * Increments the range's from and to values by an amount equal to the Quantity value of the range
    * @return
    */
-  lazy val inc = QuantityRange(lower + toQuantity, upper + toQuantity)
+  lazy val inc: QuantityRange[A] = QuantityRange(lower + toQuantity, upper + toQuantity)
   /** inc */
   def ++() = inc
 
@@ -185,15 +185,15 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * @param that Quantity
    * @return
    */
-  def inc(that: A) = QuantityRange(this.lower + that, this.upper + that)
+  def inc(that: A): QuantityRange[A] = QuantityRange(this.lower + that, this.upper + that)
   /** int */
-  def ++(that: A) = inc(that)
+  def ++(that: A): QuantityRange[A] = inc(that)
 
   /**
    * Decrements the range's from and to value by an amount equal to the Quantity value of the range
    * @return
    */
-  lazy val dec = QuantityRange(lower - toQuantity, upper - toQuantity)
+  lazy val dec: QuantityRange[A] = QuantityRange(lower - toQuantity, upper - toQuantity)
   /** dec */
   def --() = dec
 
@@ -202,58 +202,58 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * @param that Quantity
    * @return
    */
-  def dec(that: A) = QuantityRange(this.lower - that, this.upper - that)
+  def dec(that: A): QuantityRange[A] = QuantityRange(this.lower - that, this.upper - that)
   /** dec */
-  def --(that: A) = dec(that)
+  def --(that: A): QuantityRange[A] = dec(that)
 
   /**
    * Increments the `to` value by an amount equal to the value of `that`
    * @param that Quantity
    * @return
    */
-  def incTo(that: A) = QuantityRange(this.lower, this.upper + that)
+  def incTo(that: A): QuantityRange[A] = QuantityRange(this.lower, this.upper + that)
   /** incTo */
-  def =+(that: A) = incTo(that)
+  def =+(that: A): QuantityRange[A] = incTo(that)
 
-  def decTo(that: A) = QuantityRange(this.lower, this.upper - that)
+  def decTo(that: A): QuantityRange[A] = QuantityRange(this.lower, this.upper - that)
   /** decTo */
-  def =-(that: A) = decTo(that)
+  def =-(that: A): QuantityRange[A] = decTo(that)
 
   /**
    * Increments the `from` value by an amount equal to the value of `that`
    * @param that Quantity
    * @return
    */
-  def incFrom(that: A) = QuantityRange(this.lower + that, this.upper)
+  def incFrom(that: A): QuantityRange[A] = QuantityRange(this.lower + that, this.upper)
   /** incFrom */
-  def +=(that: A) = incFrom(that)
+  def +=(that: A): QuantityRange[A] = incFrom(that)
 
   /**
    * Decrements the `from` value by an amount equal to the value of `that`
    * @param that Quantity
    * @return
    */
-  def decFrom(that: A) = QuantityRange(this.lower - that, this.upper)
+  def decFrom(that: A): QuantityRange[A] = QuantityRange(this.lower - that, this.upper)
   /** decFrom */
-  def -=(that: A) = decFrom(that)
+  def -=(that: A): QuantityRange[A] = decFrom(that)
 
   /**
    * Decrements the `from` value and increments the `to` by an amount equal to the value of `that`
    * @param that Quantity
    * @return
    */
-  def decFromIncTo(that: A) = QuantityRange(this.lower - that, this.upper + that)
+  def decFromIncTo(that: A): QuantityRange[A] = QuantityRange(this.lower - that, this.upper + that)
   /** decFromIncTo */
-  def -+(that: A) = decFromIncTo(that)
+  def -+(that: A): QuantityRange[A] = decFromIncTo(that)
 
   /**
    * Increments the `from` value and decrements the `to` by an amount equal to the value of `that`
    * @param that Quantity
    * @return
    */
-  def incFromDecTo(that: A) = QuantityRange(this.lower + that, this.upper - that)
+  def incFromDecTo(that: A): QuantityRange[A] = QuantityRange(this.lower + that, this.upper - that)
   /** incFromDecTo */
-  def +-(that: A) = incFromDecTo(that)
+  def +-(that: A): QuantityRange[A] = incFromDecTo(that)
 
   /**
    * Returns true if the quantity is contained within this range, otherwise false.
@@ -261,14 +261,14 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * @param q Quantity
    * @return
    */
-  def contains(q: A) = q >= lower && q < upper
+  def contains(q: A): Boolean = q >= lower && q < upper
 
   /**
    * Return true if `that` range is completely contained with `this` range, otherwise false
    * @param that Quantity
    * @return
    */
-  def contains(that: QuantityRange[A]) =
+  def contains(that: QuantityRange[A]): Boolean =
     that.lower >= this.lower &&
       that.lower < this.upper &&
       that.upper >= this.lower &&
@@ -279,7 +279,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * @param range QuantityRange[A]
    * @return
    */
-  def partiallyContains(range: QuantityRange[A]) = range.lower < upper && range.upper > lower
+  def partiallyContains(range: QuantityRange[A]): Boolean = range.lower < upper && range.upper > lower
 
   /**
    * Returns true if `that` quantity is included within `this` range.
@@ -294,7 +294,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * @param that QuantityRange[A]
    * @return
    */
-  def includes(that: QuantityRange[A]) =
+  def includes(that: QuantityRange[A]): Boolean =
     that.lower >= this.lower &&
       that.lower <= this.upper &&
       that.upper >= this.lower &&
@@ -305,13 +305,13 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * @param range QuantityRange[A]
    * @return
    */
-  def partiallyIncludes(range: QuantityRange[A]) = range.lower <= upper && range.upper >= lower
+  def partiallyIncludes(range: QuantityRange[A]): Boolean = range.lower <= upper && range.upper >= lower
 
   /**
    * Returns a quantity that is equal to the difference between the `from` and `to`
    * @return
    */
-  lazy val toQuantity = upper - lower
+  lazy val toQuantity: A = upper - lower
 
   /**
    * Returns this Range's boundary values as a Seq[A] of the two

@@ -7,15 +7,13 @@
 \*                                                                      */
 
 package squants
+package electro
 
-/**
+/*
  * @author  garyKeorkunian
  * @since   0.1
  *
  */
-package object electro {
 
-  /* Known Quantities */
-  lazy val ElementaryConstant = Coulombs(BigDecimal("1.602176565E-19"))
-
-}
+/* Known Quantities */
+lazy val ElementaryConstant: ElectricCharge = Coulombs(BigDecimal("1.602176565E-19"))

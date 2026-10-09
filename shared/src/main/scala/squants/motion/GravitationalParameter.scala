@@ -4,6 +4,7 @@ import squants._
 import squants.energy.{Grays, SpecificEnergy}
 import squants.space.{CubicMeters, SquareMeters}
 import squants.time.TimeSquared
+import scala.util.Try
 
 /**
  * The gravitational parameter of a body, mu = G * M, in cubic metres per second squared.
@@ -27,21 +28,21 @@ final class GravitationalParameter private (val value: Double, val unit: Gravita
   /** The volume (a cubed distance) whose period squared is `that`: `mu * T²`. */
   def *(that: TimeSquared): Volume = CubicMeters(toCubicMetersPerSecondSquared * that.time1.toSeconds * that.time2.toSeconds)
 
-  def toCubicMetersPerSecondSquared = to(CubicMetersPerSecondSquared)
-  def toCubicKilometersPerSecondSquared = to(CubicKilometersPerSecondSquared)
+  def toCubicMetersPerSecondSquared: Double = to(CubicMetersPerSecondSquared)
+  def toCubicKilometersPerSecondSquared: Double = to(CubicKilometersPerSecondSquared)
 }
 
 object GravitationalParameter extends Dimension[GravitationalParameter] {
-  private[motion] def apply[A](n: A, unit: GravitationalParameterUnit)(implicit num: Numeric[A]) = new GravitationalParameter(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[motion] def apply[A](n: A, unit: GravitationalParameterUnit)(using num: Numeric[A]) = new GravitationalParameter(num.toDouble(n), unit)
+  def apply(value: Any): Try[GravitationalParameter] = parse(value)
   def name = "GravitationalParameter"
   def primaryUnit = CubicMetersPerSecondSquared
   def siUnit = CubicMetersPerSecondSquared
-  def units = Set(CubicMetersPerSecondSquared, CubicKilometersPerSecondSquared)
+  def units: Set[UnitOfMeasure[GravitationalParameter]] = Set(CubicMetersPerSecondSquared, CubicKilometersPerSecondSquared)
 }
 
 trait GravitationalParameterUnit extends UnitOfMeasure[GravitationalParameter] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = GravitationalParameter(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): GravitationalParameter = GravitationalParameter(n, this)
 }
 
 object CubicMetersPerSecondSquared extends GravitationalParameterUnit with PrimaryUnit with SiUnit {
@@ -54,13 +55,13 @@ object CubicKilometersPerSecondSquared extends GravitationalParameterUnit {
 }
 
 object GravitationalParameterConversions {
-  lazy val cubicMeterPerSecondSquared = CubicMetersPerSecondSquared(1)
-  lazy val cubicKilometerPerSecondSquared = CubicKilometersPerSecondSquared(1)
+  lazy val cubicMeterPerSecondSquared: GravitationalParameter = CubicMetersPerSecondSquared(1)
+  lazy val cubicKilometerPerSecondSquared: GravitationalParameter = CubicKilometersPerSecondSquared(1)
 
-  implicit class GravitationalParameterConversions[A](n: A)(implicit num: Numeric[A]) {
-    def cubicMetersPerSecondSquared = CubicMetersPerSecondSquared(n)
-    def cubicKilometersPerSecondSquared = CubicKilometersPerSecondSquared(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def cubicMetersPerSecondSquared: GravitationalParameter = CubicMetersPerSecondSquared(n)
+    def cubicKilometersPerSecondSquared: GravitationalParameter = CubicKilometersPerSecondSquared(n)
   }
 
-  implicit object GravitationalParameterNumeric extends AbstractQuantityNumeric[GravitationalParameter](GravitationalParameter.primaryUnit)
+  given GravitationalParameterNumeric: AbstractQuantityNumeric[GravitationalParameter](GravitationalParameter.primaryUnit) {}
 }

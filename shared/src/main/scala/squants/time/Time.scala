@@ -13,7 +13,7 @@ import squants.space.Area
 import squants.radio.{ AreaTime, SquareMeterSeconds }
 
 import scala.concurrent.duration.{ DAYS, Duration, HOURS, MICROSECONDS, MILLISECONDS, MINUTES, NANOSECONDS, SECONDS }
-import scala.language.implicitConversions
+import scala.util.Try
 
 /**
  * Represents a quantity of Time
@@ -32,20 +32,20 @@ final class Time private (val value: Double, val unit: TimeUnit)
 
   def *[A <: squants.Quantity[A] & squants.time.TimeIntegral[?]](that: TimeDerivative[A]): A = that * this
 
-  def *(that: Time) = TimeSquared(this, that)
-  def squared = TimeSquared(this)
+  def *(that: Time): TimeSquared = TimeSquared(this, that)
+  def squared: TimeSquared = TimeSquared(this)
   def *(that: Area): AreaTime = SquareMeterSeconds(this.toSeconds * that.toSquareMeters)
 
-  def toNanoseconds = to(Nanoseconds)
-  def toMicroseconds = to(Microseconds)
-  def toMilliseconds = to(Milliseconds)
-  def toSeconds = to(Seconds)
-  def toMinutes = to(Minutes)
-  def toHours = to(Hours)
-  def toDays = to(Days)
-  def toEarthYears = to(EarthYears)
-  def toEarthMegaYears = to(EarthMegaYears)
-  def toEarthGigaYears = to(EarthGigaYears)
+  def toNanoseconds: Double = to(Nanoseconds)
+  def toMicroseconds: Double = to(Microseconds)
+  def toMilliseconds: Double = to(Milliseconds)
+  def toSeconds: Double = to(Seconds)
+  def toMinutes: Double = to(Minutes)
+  def toHours: Double = to(Hours)
+  def toDays: Double = to(Days)
+  def toEarthYears: Double = to(EarthYears)
+  def toEarthMegaYears: Double = to(EarthMegaYears)
+  def toEarthGigaYears: Double = to(EarthGigaYears)
 }
 
 object Time extends Dimension[Time] with BaseDimension {
@@ -54,17 +54,17 @@ object Time extends Dimension[Time] with BaseDimension {
   val MillisecondsPerNanosecond = 1.0e-6
   val MillisecondsPerMicrosecond = 1.0e-3
   val MillisecondsPerSecond = 1e3
-  val MillisecondsPerMinute = MillisecondsPerSecond * 60d
-  val MillisecondsPerHour = MillisecondsPerMinute * 60d
-  val MillisecondsPerDay = MillisecondsPerHour * 24d
+  val MillisecondsPerMinute: Double = MillisecondsPerSecond * 60d
+  val MillisecondsPerHour: Double = MillisecondsPerMinute * 60d
+  val MillisecondsPerDay: Double = MillisecondsPerHour * 24d
   val SecondsPerMinute = 60d
-  val SecondsPerHour = SecondsPerMinute * 60d
-  val SecondsPerDay = SecondsPerHour * 24
+  val SecondsPerHour: Double = SecondsPerMinute * 60d
+  val SecondsPerDay: Double = SecondsPerHour * 24
   val MinutesPerHour = 60d
   val HoursPerDay = 24d
 
-  private[time] def apply[A](n: A, unit: TimeUnit)(implicit num: Numeric[A]) = new Time(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[time] def apply[A](n: A, unit: TimeUnit)(using num: Numeric[A]) = new Time(num.toDouble(n), unit)
+  def apply(value: Any): Try[Time] = parse(value)
   def apply(duration: Duration): Time = duration.unit match {
     case NANOSECONDS => Nanoseconds(duration.length)
     case MICROSECONDS => Microseconds(duration.length)
@@ -78,22 +78,22 @@ object Time extends Dimension[Time] with BaseDimension {
   def name = "Time"
   def primaryUnit = Milliseconds
   def siUnit = Seconds
-  def units = Set(Nanoseconds, Microseconds, Milliseconds, Seconds, Minutes, Hours, Days,
+  def units: Set[UnitOfMeasure[Time]] = Set(Nanoseconds, Microseconds, Milliseconds, Seconds, Minutes, Hours, Days,
     EarthYears, EarthMegaYears, EarthGigaYears)
   def dimensionSymbol = "T"
 }
 
 trait TimeUnit extends UnitOfMeasure[Time] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = Time(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): Time = Time(n, this)
 }
 
 object Nanoseconds extends TimeUnit with SiUnit {
-  val conversionFactor = Milliseconds.conversionFactor / Time.MicrosecondsPerSecond
+  val conversionFactor: Double = Milliseconds.conversionFactor / Time.MicrosecondsPerSecond
   val symbol = "ns"
 }
 
 object Microseconds extends TimeUnit with SiUnit {
-  val conversionFactor = Milliseconds.conversionFactor / Time.MillisecondsPerSecond
+  val conversionFactor: Double = Milliseconds.conversionFactor / Time.MillisecondsPerSecond
   val symbol = "µs"
 }
 
@@ -102,65 +102,65 @@ object Milliseconds extends TimeUnit with PrimaryUnit with SiUnit {
 }
 
 object Seconds extends TimeUnit with SiBaseUnit {
-  val conversionFactor = Milliseconds.conversionFactor * Time.MillisecondsPerSecond
+  val conversionFactor: Double = Milliseconds.conversionFactor * Time.MillisecondsPerSecond
   val symbol = "s"
 }
 
 object Minutes extends TimeUnit {
-  val conversionFactor = Seconds.conversionFactor * Time.SecondsPerMinute
+  val conversionFactor: Double = Seconds.conversionFactor * Time.SecondsPerMinute
   val symbol = "min"
 }
 
 object Hours extends TimeUnit {
-  val conversionFactor = Minutes.conversionFactor * Time.MinutesPerHour
+  val conversionFactor: Double = Minutes.conversionFactor * Time.MinutesPerHour
   val symbol = "h"
 }
 
 object Days extends TimeUnit {
-  val conversionFactor = Hours.conversionFactor * Time.HoursPerDay
+  val conversionFactor: Double = Hours.conversionFactor * Time.HoursPerDay
   val symbol = "d"
 }
 
 object EarthYears extends TimeUnit {
-  val conversionFactor = Days.conversionFactor * 365.2421897
+  val conversionFactor: Double = Days.conversionFactor * 365.2421897
   val symbol = "Y🜨"
 }
 
 object EarthMegaYears extends TimeUnit {
-  val conversionFactor = EarthYears.conversionFactor * MetricSystem.Mega
+  val conversionFactor: Double = EarthYears.conversionFactor * MetricSystem.Mega
   val symbol = "MY🜨"
 }
 
 object EarthGigaYears extends TimeUnit {
-  val conversionFactor = EarthYears.conversionFactor * MetricSystem.Giga
+  val conversionFactor: Double = EarthYears.conversionFactor * MetricSystem.Giga
   val symbol = "BY🜨"
 }
 
 object TimeConversions {
-  lazy val nanosecond = Nanoseconds(1)
-  lazy val microsecond = Microseconds(1)
-  lazy val millisecond = Milliseconds(1)
-  lazy val second = Seconds(1)
-  lazy val minute = Minutes(1)
-  lazy val halfHour = Minutes(30)
-  lazy val hour = Hours(1)
-  lazy val day = Days(1)
+  lazy val nanosecond: Time = Nanoseconds(1)
+  lazy val microsecond: Time = Microseconds(1)
+  lazy val millisecond: Time = Milliseconds(1)
+  lazy val second: Time = Seconds(1)
+  lazy val minute: Time = Minutes(1)
+  lazy val halfHour: Time = Minutes(30)
+  lazy val hour: Time = Hours(1)
+  lazy val day: Time = Days(1)
 
-  implicit class TimeConversions[A](n: A)(implicit num: Numeric[A]) {
-    def nanoseconds = Nanoseconds(n)
-    def microseconds = Microseconds(n)
-    def milliseconds = Milliseconds(n)
-    def seconds = Seconds(n)
-    def minutes = Minutes(n)
-    def hours = Hours(n)
-    def days = Days(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def nanoseconds: Time = Nanoseconds(n)
+    def microseconds: Time = Microseconds(n)
+    def milliseconds: Time = Milliseconds(n)
+    def seconds: Time = Seconds(n)
+    def minutes: Time = Minutes(n)
+    def hours: Time = Hours(n)
+    def days: Time = Days(n)
   }
 
-  implicit class TimeStringConversions(s: String) {
-    def toTime = Time(s)
+  extension (s: String) {
+    def toTime: Try[Time] = Time(s)
   }
 
-  implicit object TimeNumeric extends AbstractQuantityNumeric[Time](Time.primaryUnit)
+  given TimeNumeric: AbstractQuantityNumeric[Time](Time.primaryUnit) {}
 
   /**
    * Converts a Squants Time to Scala Duration
@@ -170,7 +170,7 @@ object TimeConversions {
    * @param time
    * @return
    */
-  implicit def timeToScalaDuration(time: Time): Duration = time.unit match {
+  given timeToScalaDuration: Conversion[Time, Duration] = time => time.unit match {
     case Nanoseconds => Duration(time.value.toLong, NANOSECONDS)
     case Microseconds => Duration(time.value.toLong, MICROSECONDS)
     case Milliseconds => Duration(time.value.toLong, MILLISECONDS)
@@ -181,5 +181,5 @@ object TimeConversions {
     case _ => Duration(time.toDays, DAYS) // units Duration has no equivalent for, such as EarthYears
   }
 
-  implicit def scalaDurationToTime(duration: Duration): Time = Time(duration)
+  given scalaDurationToTime: Conversion[Duration, Time] = Time(_)
 }

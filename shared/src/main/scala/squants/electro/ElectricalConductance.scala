@@ -9,6 +9,7 @@
 package squants.electro
 
 import squants._
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -24,22 +25,22 @@ final class ElectricalConductance private (val value: Double, val unit: Electric
   def /(that: Length): Conductivity = SiemensPerMeter(this.toSiemens / that.toMeters)
   def /(that: Conductivity): Length = Meters(this.toSiemens / that.toSiemensPerMeter)
 
-  def toSiemens = to(Siemens)
+  def toSiemens: Double = to(Siemens)
 
-  def inOhms = Ohms(1.0 / value)
+  def inOhms: ElectricalResistance = Ohms(1.0 / value)
 }
 
 object ElectricalConductance extends Dimension[ElectricalConductance] {
-  private[electro] def apply[A](n: A, unit: ElectricalConductanceUnit)(implicit num: Numeric[A]) = new ElectricalConductance(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[electro] def apply[A](n: A, unit: ElectricalConductanceUnit)(using num: Numeric[A]) = new ElectricalConductance(num.toDouble(n), unit)
+  def apply(value: Any): Try[ElectricalConductance] = parse(value)
   def name = "ElectricalConductance"
   def primaryUnit = Siemens
   def siUnit = Siemens
-  def units = Set(Siemens)
+  def units: Set[UnitOfMeasure[ElectricalConductance]] = Set(Siemens)
 }
 
 trait ElectricalConductanceUnit extends UnitOfMeasure[ElectricalConductance] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = ElectricalConductance(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): ElectricalConductance = ElectricalConductance(n, this)
 }
 
 object Siemens extends ElectricalConductanceUnit with PrimaryUnit with SiUnit {
@@ -47,11 +48,11 @@ object Siemens extends ElectricalConductanceUnit with PrimaryUnit with SiUnit {
 }
 
 object ElectricalConductanceConversions {
-  lazy val siemen = Siemens(1)
+  lazy val siemen: ElectricalConductance = Siemens(1)
 
-  implicit class ElectricalConductanceConversions[A](n: A)(implicit num: Numeric[A]) {
-    def siemens = Siemens(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def siemens: ElectricalConductance = Siemens(n)
   }
 
-  implicit object ElectricalConductanceNumeric extends AbstractQuantityNumeric[ElectricalConductance](ElectricalConductance.primaryUnit)
+  given ElectricalConductanceNumeric: AbstractQuantityNumeric[ElectricalConductance](ElectricalConductance.primaryUnit) {}
 }

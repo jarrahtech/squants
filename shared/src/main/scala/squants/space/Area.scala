@@ -16,6 +16,7 @@ import squants.motion.{ Newtons, Pressure }
 import squants.photo.{ Candelas, _ }
 import squants.radio._
 import squants.time.Time
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -53,33 +54,33 @@ final class Area private (val value: Double, val unit: AreaUnit)
     case _ => Meters(this.toSquareMeters / that.toMeters)
   }
 
-  def squareRoot = Meters(math.sqrt(toSquareMeters))
+  def squareRoot: Length = Meters(math.sqrt(toSquareMeters))
 
-  def toSquareMeters = to(SquareMeters)
-  def toSquareCentimeters = to(SquareCentimeters)
-  def toSquareKilometers = to(SquareKilometers)
-  def toSquareUsMiles = to(SquareUsMiles)
-  def toSquareYards = to(SquareYards)
-  def toSquareFeet = to(SquareFeet)
-  def toSquareInches = to(SquareInches)
-  def toHectares = to(Hectares)
-  def toAcres = to(Acres)
-  def toBarnes = to(Barnes)
+  def toSquareMeters: Double = to(SquareMeters)
+  def toSquareCentimeters: Double = to(SquareCentimeters)
+  def toSquareKilometers: Double = to(SquareKilometers)
+  def toSquareUsMiles: Double = to(SquareUsMiles)
+  def toSquareYards: Double = to(SquareYards)
+  def toSquareFeet: Double = to(SquareFeet)
+  def toSquareInches: Double = to(SquareInches)
+  def toHectares: Double = to(Hectares)
+  def toAcres: Double = to(Acres)
+  def toBarnes: Double = to(Barnes)
 }
 
 object Area extends Dimension[Area] {
-  private[space] def apply[A](n: A, unit: AreaUnit)(implicit num: Numeric[A]) = new Area(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[space] def apply[A](n: A, unit: AreaUnit)(using num: Numeric[A]) = new Area(num.toDouble(n), unit)
+  def apply(value: Any): Try[Area] = parse(value)
   def name = "Area"
   def primaryUnit = SquareMeters
   def siUnit = SquareMeters
-  def units = Set(SquareMeters, SquareCentimeters, SquareKilometers,
+  def units: Set[UnitOfMeasure[Area]] = Set(SquareMeters, SquareCentimeters, SquareKilometers,
     SquareUsMiles, SquareYards, SquareFeet, SquareInches,
     Hectares, Acres, Barnes)
 }
 
 trait AreaUnit extends UnitOfMeasure[Area] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = Area(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): Area = Area(n, this)
 }
 
 object SquareMeters extends AreaUnit with PrimaryUnit with SiUnit {
@@ -88,17 +89,17 @@ object SquareMeters extends AreaUnit with PrimaryUnit with SiUnit {
 
 object SquareCentimeters extends AreaUnit with SiUnit {
   val symbol = "cm²"
-  val conversionFactor = MetricSystem.Centi * MetricSystem.Centi
+  val conversionFactor: Double = MetricSystem.Centi * MetricSystem.Centi
 }
 
 object SquareKilometers extends AreaUnit with SiUnit {
   val symbol = "km²"
-  val conversionFactor = MetricSystem.Kilo * MetricSystem.Kilo
+  val conversionFactor: Double = MetricSystem.Kilo * MetricSystem.Kilo
 }
 
 object SquareUsMiles extends AreaUnit {
   val symbol = "mi²"
-  val conversionFactor = 2.589988110336 * SquareKilometers.conversionFactor
+  val conversionFactor: Double = 2.589988110336 * SquareKilometers.conversionFactor
 }
 
 object SquareYards extends AreaUnit {
@@ -113,7 +114,7 @@ object SquareFeet extends AreaUnit {
 
 object SquareInches extends AreaUnit {
   val symbol = "in²"
-  val conversionFactor = 6.4516 * SquareCentimeters.conversionFactor
+  val conversionFactor: Double = 6.4516 * SquareCentimeters.conversionFactor
 }
 
 object Hectares extends AreaUnit {
@@ -123,38 +124,38 @@ object Hectares extends AreaUnit {
 
 object Acres extends AreaUnit {
   val symbol = "acre"
-  val conversionFactor = 43560d * SquareFeet.conversionFactor
+  val conversionFactor: Double = 43560d * SquareFeet.conversionFactor
 }
 
 object Barnes extends AreaUnit {
   val symbol = "b"
-  val conversionFactor = scala.math.pow(10, -28)
+  val conversionFactor: Double = scala.math.pow(10, -28)
 }
 
 object AreaConversions {
-  lazy val squareMeter = SquareMeters(1)
-  lazy val squareCentimeter = SquareCentimeters(1)
-  lazy val squareKilometer = SquareKilometers(1)
-  lazy val squareMile = SquareUsMiles(1)
-  lazy val squareYard = SquareYards(1)
-  lazy val squareFoot = SquareFeet(1)
-  lazy val squareInch = SquareInches(1)
-  lazy val hectare = Hectares(1)
-  lazy val acre = Acres(1)
-  lazy val barne = Barnes(1)
+  lazy val squareMeter: Area = SquareMeters(1)
+  lazy val squareCentimeter: Area = SquareCentimeters(1)
+  lazy val squareKilometer: Area = SquareKilometers(1)
+  lazy val squareMile: Area = SquareUsMiles(1)
+  lazy val squareYard: Area = SquareYards(1)
+  lazy val squareFoot: Area = SquareFeet(1)
+  lazy val squareInch: Area = SquareInches(1)
+  lazy val hectare: Area = Hectares(1)
+  lazy val acre: Area = Acres(1)
+  lazy val barne: Area = Barnes(1)
 
-  implicit class AreaConversions[A](n: A)(implicit num: Numeric[A]) {
-    def squareMeters = SquareMeters(n)
-    def squareCentimeters = SquareCentimeters(n)
-    def squareKilometers = SquareKilometers(n)
-    def squareMiles = SquareUsMiles(n)
-    def squareYards = SquareYards(n)
-    def squareFeet = SquareFeet(n)
-    def squareInches = SquareInches(n)
-    def hectares = Hectares(n)
-    def acres = Acres(n)
-    def barnes = Barnes(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def squareMeters: Area = SquareMeters(n)
+    def squareCentimeters: Area = SquareCentimeters(n)
+    def squareKilometers: Area = SquareKilometers(n)
+    def squareMiles: Area = SquareUsMiles(n)
+    def squareYards: Area = SquareYards(n)
+    def squareFeet: Area = SquareFeet(n)
+    def squareInches: Area = SquareInches(n)
+    def hectares: Area = Hectares(n)
+    def acres: Area = Acres(n)
+    def barnes: Area = Barnes(n)
   }
 
-  implicit object AreaNumeric extends AbstractQuantityNumeric[Area](Area.primaryUnit)
+  given AreaNumeric: AbstractQuantityNumeric[Area](Area.primaryUnit) {}
 }

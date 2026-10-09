@@ -11,6 +11,7 @@ package squants.radio
 import squants._
 import squants.energy.{ ErgsPerSecond, Watts }
 import squants.space._
+import scala.util.Try
 
 /**
  * @author  florianNussberger
@@ -23,56 +24,56 @@ final class SpectralIrradiance private (val value: Double, val unit: SpectralIrr
 
   def dimension = SpectralIrradiance
 
-  def toWattsPerCubicMeter = to(WattsPerCubicMeter)
-  def toWattsPerSquareMeterPerNanometer = to(WattsPerSquareMeterPerNanometer)
-  def toWattsPerSquareMeterPerMicron = to(WattsPerSquareMeterPerMicron)
-  def toErgsPerSecondPerSquareCentimeterPerAngstrom = to(ErgsPerSecondPerSquareCentimeterPerAngstrom)
+  def toWattsPerCubicMeter: Double = to(WattsPerCubicMeter)
+  def toWattsPerSquareMeterPerNanometer: Double = to(WattsPerSquareMeterPerNanometer)
+  def toWattsPerSquareMeterPerMicron: Double = to(WattsPerSquareMeterPerMicron)
+  def toErgsPerSecondPerSquareCentimeterPerAngstrom: Double = to(ErgsPerSecondPerSquareCentimeterPerAngstrom)
 }
 
 object SpectralIrradiance extends Dimension[SpectralIrradiance] {
-  private[radio] def apply[A](n: A, unit: SpectralIrradianceUnit)(implicit num: Numeric[A]) = new SpectralIrradiance(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[radio] def apply[A](n: A, unit: SpectralIrradianceUnit)(using num: Numeric[A]) = new SpectralIrradiance(num.toDouble(n), unit)
+  def apply(value: Any): Try[SpectralIrradiance] = parse(value)
   def name = "SpectralIrradiance"
   def primaryUnit = WattsPerCubicMeter
   def siUnit = WattsPerCubicMeter
-  def units = Set(WattsPerCubicMeter, WattsPerSquareMeterPerMicron, WattsPerSquareMeterPerNanometer, ErgsPerSecondPerSquareCentimeterPerAngstrom)
+  def units: Set[UnitOfMeasure[SpectralIrradiance]] = Set(WattsPerCubicMeter, WattsPerSquareMeterPerMicron, WattsPerSquareMeterPerNanometer, ErgsPerSecondPerSquareCentimeterPerAngstrom)
 }
 
 trait SpectralIrradianceUnit extends UnitOfMeasure[SpectralIrradiance] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = SpectralIrradiance(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): SpectralIrradiance = SpectralIrradiance(n, this)
 }
 
 object WattsPerCubicMeter extends SpectralIrradianceUnit with PrimaryUnit with SiUnit {
-  val symbol = Watts.symbol + "/" + CubicMeters.symbol
+  val symbol: String = Watts.symbol + "/" + CubicMeters.symbol
 }
 
 object WattsPerSquareMeterPerNanometer extends SpectralIrradianceUnit with SiUnit {
-  val conversionFactor = 1 / MetricSystem.Nano
-  val symbol = Watts.symbol + "/" + SquareMeters.symbol + "/" + Nanometers.symbol
+  val conversionFactor: Double = 1 / MetricSystem.Nano
+  val symbol: String = Watts.symbol + "/" + SquareMeters.symbol + "/" + Nanometers.symbol
 }
 
 object WattsPerSquareMeterPerMicron extends SpectralIrradianceUnit with SiUnit {
-  val conversionFactor = 1 / MetricSystem.Micro
-  val symbol = Watts.symbol + "/" + SquareMeters.symbol + "/" + Microns.symbol
+  val conversionFactor: Double = 1 / MetricSystem.Micro
+  val symbol: String = Watts.symbol + "/" + SquareMeters.symbol + "/" + Microns.symbol
 }
 
 object ErgsPerSecondPerSquareCentimeterPerAngstrom extends SpectralIrradianceUnit {
-  val conversionFactor = ErgsPerSecond.conversionFactor / SquareCentimeters.conversionFactor / Angstroms.conversionFactor
-  val symbol = ErgsPerSecond.symbol + "/" + SquareCentimeters.symbol + "/" + Angstroms.symbol
+  val conversionFactor: Double = ErgsPerSecond.conversionFactor / SquareCentimeters.conversionFactor / Angstroms.conversionFactor
+  val symbol: String = ErgsPerSecond.symbol + "/" + SquareCentimeters.symbol + "/" + Angstroms.symbol
 }
 
 object SpectralIrradianceConversions {
-  lazy val wattPerCubicMeter = WattsPerCubicMeter(1)
-  lazy val wattPerSquareMeterPerNanometer = WattsPerSquareMeterPerNanometer(1)
-  lazy val wattPerSquareMeterPerMicron = WattsPerSquareMeterPerMicron(1)
-  lazy val ergPerSecondPerSquareCentimeterPerAngstrom = ErgsPerSecondPerSquareCentimeterPerAngstrom(1)
+  lazy val wattPerCubicMeter: SpectralIrradiance = WattsPerCubicMeter(1)
+  lazy val wattPerSquareMeterPerNanometer: SpectralIrradiance = WattsPerSquareMeterPerNanometer(1)
+  lazy val wattPerSquareMeterPerMicron: SpectralIrradiance = WattsPerSquareMeterPerMicron(1)
+  lazy val ergPerSecondPerSquareCentimeterPerAngstrom: SpectralIrradiance = ErgsPerSecondPerSquareCentimeterPerAngstrom(1)
 
-  implicit class SpectralIrradianceConversions[A](n: A)(implicit num: Numeric[A]) {
-    def wattsPerCubicMeter = WattsPerCubicMeter(n)
-    def wattsPerSquareMeterPerNanometer = WattsPerSquareMeterPerNanometer(n)
-    def wattsPerSquareMeterPerMicron = WattsPerSquareMeterPerMicron(n)
-    def ergsPerSecondPerSquareCentimeterPerAngstrom = ErgsPerSecondPerSquareCentimeterPerAngstrom(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def wattsPerCubicMeter: SpectralIrradiance = WattsPerCubicMeter(n)
+    def wattsPerSquareMeterPerNanometer: SpectralIrradiance = WattsPerSquareMeterPerNanometer(n)
+    def wattsPerSquareMeterPerMicron: SpectralIrradiance = WattsPerSquareMeterPerMicron(n)
+    def ergsPerSecondPerSquareCentimeterPerAngstrom: SpectralIrradiance = ErgsPerSecondPerSquareCentimeterPerAngstrom(n)
   }
 
-  implicit object SpectralIrradianceNumeric extends AbstractQuantityNumeric[SpectralIrradiance](SpectralIrradiance.primaryUnit)
+  given SpectralIrradianceNumeric: AbstractQuantityNumeric[SpectralIrradiance](SpectralIrradiance.primaryUnit) {}
 }

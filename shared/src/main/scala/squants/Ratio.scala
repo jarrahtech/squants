@@ -25,6 +25,6 @@ trait Ratio[A <: Quantity[A], B <: Quantity[B]] {
 }
 
 trait LikeRatio[A <: Quantity[A]] extends Ratio[A, A] {
-  def ratio = base / counter
-  def inverseRatio = counter / base
+  def ratio: Double = base / counter
+  def inverseRatio: Double = counter / base
 }

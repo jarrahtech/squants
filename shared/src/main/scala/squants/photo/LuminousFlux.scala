@@ -11,6 +11,7 @@ package squants.photo
 import squants._
 import squants.space.{ SquareMeters, SquaredRadians }
 import squants.time.{ Seconds, TimeDerivative }
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -24,28 +25,28 @@ final class LuminousFlux private (val value: Double, val unit: LuminousFluxUnit)
 
   def dimension = LuminousFlux
 
-  protected[squants] def timeIntegrated = LumenSeconds(toLumens)
-  protected[squants] def time = Seconds(1)
+  protected[squants] def timeIntegrated: LuminousEnergy = LumenSeconds(toLumens)
+  protected[squants] def time: Time = Seconds(1)
 
   def /(that: Area): Illuminance = Lux(this.toLumens / that.toSquareMeters)
   def /(that: Illuminance): Area = SquareMeters(this.toLumens / that.toLux)
   def /(that: SolidAngle): LuminousIntensity = Candelas(this.toLumens / that.toSquaredRadians)
   def /(that: LuminousIntensity): SolidAngle = SquaredRadians(this.toLumens / that.toCandelas)
 
-  def toLumens = to(Lumens)
+  def toLumens: Double = to(Lumens)
 }
 
 object LuminousFlux extends Dimension[LuminousFlux] {
-  private[photo] def apply[A](n: A, unit: LuminousFluxUnit)(implicit num: Numeric[A]) = new LuminousFlux(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[photo] def apply[A](n: A, unit: LuminousFluxUnit)(using num: Numeric[A]) = new LuminousFlux(num.toDouble(n), unit)
+  def apply(value: Any): Try[LuminousFlux] = parse(value)
   def name = "LuminousFlux"
   def primaryUnit = Lumens
   def siUnit = Lumens
-  def units = Set(Lumens)
+  def units: Set[UnitOfMeasure[LuminousFlux]] = Set(Lumens)
 }
 
 trait LuminousFluxUnit extends UnitOfMeasure[LuminousFlux] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = LuminousFlux(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): LuminousFlux = LuminousFlux(n, this)
 }
 
 object Lumens extends LuminousFluxUnit with PrimaryUnit with SiUnit {
@@ -53,11 +54,11 @@ object Lumens extends LuminousFluxUnit with PrimaryUnit with SiUnit {
 }
 
 object LuminousFluxConversions {
-  lazy val lumen = Lumens(1)
+  lazy val lumen: LuminousFlux = Lumens(1)
 
-  implicit class LuminousFluxConversions[A](n: A)(implicit num: Numeric[A]) {
-    def lumens = Lumens(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def lumens: LuminousFlux = Lumens(n)
   }
 
-  implicit object LuminousFluxNumeric extends AbstractQuantityNumeric[LuminousFlux](LuminousFlux.primaryUnit)
+  given LuminousFluxNumeric: AbstractQuantityNumeric[LuminousFlux](LuminousFlux.primaryUnit) {}
 }

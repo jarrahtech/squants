@@ -10,6 +10,7 @@ package squants.motion
 
 import squants._
 import squants.time.{ Seconds, TimeDerivative }
+import scala.util.Try
 
 /**
  * @author  stevebarham
@@ -23,26 +24,26 @@ final class PressureChange private (val value: Double, val unit: PressureChangeU
 
   def dimension = PressureChange
 
-  protected[squants] def timeIntegrated = Pascals(toPascalsPerSecond)
-  protected[squants] def time = Seconds(1)
+  protected[squants] def timeIntegrated: Pressure = Pascals(toPascalsPerSecond)
+  protected[squants] def time: Time = Seconds(1)
 
-  def toPascalsPerSecond = to(PascalsPerSecond)
-  def toBarsPerSecond = to(BarsPerSecond)
-  def toPoundsPerSquareInchPerSecond = to(PoundsPerSquareInchPerSecond)
-  def toStandardAtmospheresPerSecond = to(StandardAtmospheresPerSecond)
+  def toPascalsPerSecond: Double = to(PascalsPerSecond)
+  def toBarsPerSecond: Double = to(BarsPerSecond)
+  def toPoundsPerSquareInchPerSecond: Double = to(PoundsPerSquareInchPerSecond)
+  def toStandardAtmospheresPerSecond: Double = to(StandardAtmospheresPerSecond)
 }
 
 object PressureChange extends Dimension[PressureChange] {
-  private[motion] def apply[A](n: A, unit: PressureChangeUnit)(implicit num: Numeric[A]) = new PressureChange(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[motion] def apply[A](n: A, unit: PressureChangeUnit)(using num: Numeric[A]) = new PressureChange(num.toDouble(n), unit)
+  def apply(value: Any): Try[PressureChange] = parse(value)
   def name = "PressureChange"
   def primaryUnit = PascalsPerSecond
   def siUnit = PascalsPerSecond
-  def units = Set(PascalsPerSecond, BarsPerSecond, PoundsPerSquareInchPerSecond, StandardAtmospheresPerSecond)
+  def units: Set[UnitOfMeasure[PressureChange]] = Set(PascalsPerSecond, BarsPerSecond, PoundsPerSquareInchPerSecond, StandardAtmospheresPerSecond)
 }
 
 trait PressureChangeUnit extends UnitOfMeasure[PressureChange] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = PressureChange(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): PressureChange = PressureChange(n, this)
 }
 
 object PascalsPerSecond extends PressureChangeUnit with PrimaryUnit with SiUnit {
@@ -51,7 +52,7 @@ object PascalsPerSecond extends PressureChangeUnit with PrimaryUnit with SiUnit 
 
 object BarsPerSecond extends PressureChangeUnit {
   val symbol = "bar/s"
-  val conversionFactor = Bars.conversionFactor / Pascals.conversionFactor
+  val conversionFactor: Double = Bars.conversionFactor / Pascals.conversionFactor
 }
 
 object PoundsPerSquareInchPerSecond extends PressureChangeUnit {
@@ -65,17 +66,17 @@ object StandardAtmospheresPerSecond extends PressureChangeUnit {
 }
 
 object PressureChangeConversions {
-  lazy val pascalsPerSecond = PascalsPerSecond(1)
-  lazy val barsPerSecond = BarsPerSecond(1)
-  lazy val poundsPerSquareInchPerSecond = PoundsPerSquareInchPerSecond(1)
-  lazy val standardAtmospheresPerSecond = StandardAtmospheresPerSecond(1)
+  lazy val pascalsPerSecond: PressureChange = PascalsPerSecond(1)
+  lazy val barsPerSecond: PressureChange = BarsPerSecond(1)
+  lazy val poundsPerSquareInchPerSecond: PressureChange = PoundsPerSquareInchPerSecond(1)
+  lazy val standardAtmospheresPerSecond: PressureChange = StandardAtmospheresPerSecond(1)
 
-  implicit class PressureChangeConversions[A](n: A)(implicit num: Numeric[A]) {
-    def pascalsPerSecond = PascalsPerSecond(n)
-    def barsPerSecond = BarsPerSecond(n)
-    def poundsPerSquareInchPerSecond = PoundsPerSquareInchPerSecond(n)
-    def standardAtmospheresPerSecond = StandardAtmospheresPerSecond(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def pascalsPerSecond: PressureChange = PascalsPerSecond(n)
+    def barsPerSecond: PressureChange = BarsPerSecond(n)
+    def poundsPerSquareInchPerSecond: PressureChange = PoundsPerSquareInchPerSecond(n)
+    def standardAtmospheresPerSecond: PressureChange = StandardAtmospheresPerSecond(n)
   }
 
-  implicit object PressureChangeNumeric extends AbstractQuantityNumeric[PressureChange](PressureChange.primaryUnit)
+  given PressureChangeNumeric: AbstractQuantityNumeric[PressureChange](PressureChange.primaryUnit) {}
 }

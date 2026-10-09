@@ -11,7 +11,6 @@ package squants.market
 import squants._
 
 import scala.util.{ Failure, Try }
-import scala.language.implicitConversions
 import scala.math.BigDecimal.RoundingMode
 import scala.math.BigDecimal.RoundingMode.RoundingMode
 import java.util.Objects
@@ -66,7 +65,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @param context MoneyContext required for conversion
    * @return
    */
-  def toString(c: Currency)(implicit context: MoneyContext): String = in(c).toString
+  def toString(c: Currency)(using context: MoneyContext): String = in(c).toString
 
   /**
    * Returns a string formatted with the amount, rounded based on the Currency rules, and the currency symbol
@@ -77,7 +76,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    */
   def toFormattedString: String = currency.symbol + amount.setScale(currency.formatDecimals, BigDecimal.RoundingMode.HALF_EVEN).toString
 
-  def toFormattedString(c: Currency)(implicit context: MoneyContext): String = in(c).toFormattedString
+  def toFormattedString(c: Currency)(using context: MoneyContext): String = in(c).toFormattedString
 
   /**
    * Adds this Money to that Money converted to this.currency via context
@@ -87,9 +86,9 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @return Money
    * @throws NoSuchExchangeRateException when no exchange rate is available
    */
-  infix def moneyPlus(that: Money)(implicit context: MoneyContext = defaultMoneyContext) = context.add(this, that)
+  infix def moneyPlus(that: Money)(using context: MoneyContext = defaultMoneyContext): Money = context.add(this, that)
   /** moneyPlus **/
-  def +(that: Money)(implicit context: MoneyContext = defaultMoneyContext) = context.add(this, that)
+  def +(that: Money)(using context: MoneyContext = defaultMoneyContext): Money = context.add(this, that)
 
   /**
    * Overrides Quantity.plus to only work on like currencies.
@@ -112,9 +111,9 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @return Money
    * @throws NoSuchExchangeRateException when no exchange rate is available
    */
-  infix def moneyMinus(that: Money)(implicit context: MoneyContext = defaultMoneyContext) = context.subtract(this, that)
+  infix def moneyMinus(that: Money)(using context: MoneyContext = defaultMoneyContext): Money = context.subtract(this, that)
   /** moneyMinus **/
-  def -(that: Money)(implicit context: MoneyContext = defaultMoneyContext) = context.subtract(this, that)
+  def -(that: Money)(using context: MoneyContext = defaultMoneyContext): Money = context.subtract(this, that)
 
   /**
    * Override Quantity.minus to only work on like currencies
@@ -198,8 +197,8 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @param context MoneyContext
    * @return
    */
-  infix def moneyDivide(that: Money)(implicit context: MoneyContext): BigDecimal = context.divide(this, that)
-  def /(that: Money)(implicit context: MoneyContext = defaultMoneyContext): BigDecimal = moneyDivide(that)
+  infix def moneyDivide(that: Money)(using context: MoneyContext): BigDecimal = context.divide(this, that)
+  def /(that: Money)(using context: MoneyContext = defaultMoneyContext): BigDecimal = moneyDivide(that)
 
   /**
    * Divide this money by another (non-money) Quantity and return a Price
@@ -281,7 +280,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @param moneyContext MoneyContext
    * @return
    */
-  infix def moneyMax(that: Money)(implicit moneyContext: MoneyContext) = moneyContext.compare(this, that) match {
+  infix def moneyMax(that: Money)(using moneyContext: MoneyContext): Money = moneyContext.compare(this, that) match {
     case -1 => that
     case _ => this
   }
@@ -292,7 +291,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @param moneyContext MoneyContext
    * @return
    */
-  infix def moneyMin(that: Money)(implicit moneyContext: MoneyContext) = moneyContext.compare(this, that) match {
+  infix def moneyMin(that: Money)(using moneyContext: MoneyContext): Money = moneyContext.compare(this, that) match {
     case 1 => that
     case _ => this
   }
@@ -303,7 +302,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @param moneyContext MoneyContext
    * @return
    */
-  infix def moneyEquals(that: Money)(implicit moneyContext: MoneyContext) = moneyCompare(that) == 0
+  infix def moneyEquals(that: Money)(using moneyContext: MoneyContext): Boolean = moneyCompare(that) == 0
 
   /**
    * Supports non-equality comparisons on Moneys of dislike Currency
@@ -311,7 +310,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @param moneyContext MoneyContext
    * @return
    */
-  infix def moneyNotEquals(that: Money)(implicit moneyContext: MoneyContext) = moneyCompare(that) != 0
+  infix def moneyNotEquals(that: Money)(using moneyContext: MoneyContext): Boolean = moneyCompare(that) != 0
 
   /**
    * Supports compare operation on Moneys of dislike Currency
@@ -319,14 +318,14 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @param moneyContext MoneyContext
    * @return
    */
-  infix def moneyCompare(that: Money)(implicit moneyContext: MoneyContext) = moneyContext.compare(this, that)
+  infix def moneyCompare(that: Money)(using moneyContext: MoneyContext): Int = moneyContext.compare(this, that)
 
-  def ==#(that: Money)(implicit moneyContext: MoneyContext) = moneyCompare(that) == 0
-  def !=#(that: Money)(implicit moneyContext: MoneyContext) = moneyCompare(that) != 0
-  def >#(that: Money)(implicit moneyContext: MoneyContext) = moneyCompare(that) > 0
-  def >=#(that: Money)(implicit moneyContext: MoneyContext) = moneyCompare(that) >= 0
-  def <#(that: Money)(implicit moneyContext: MoneyContext) = moneyCompare(that) < 0
-  def <=#(that: Money)(implicit moneyContext: MoneyContext) = moneyCompare(that) <= 0
+  def ==#(that: Money)(using moneyContext: MoneyContext): Boolean = moneyCompare(that) == 0
+  def !=#(that: Money)(using moneyContext: MoneyContext): Boolean = moneyCompare(that) != 0
+  def >#(that: Money)(using moneyContext: MoneyContext): Boolean = moneyCompare(that) > 0
+  def >=#(that: Money)(using moneyContext: MoneyContext): Boolean = moneyCompare(that) >= 0
+  def <#(that: Money)(using moneyContext: MoneyContext): Boolean = moneyCompare(that) < 0
+  def <=#(that: Money)(using moneyContext: MoneyContext): Boolean = moneyCompare(that) <= 0
 
   /**
    * Combines with that Money to create an [[squants.market.CurrencyExchangeRate]]
@@ -339,7 +338,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @return
    * @throws scala.IllegalArgumentException if the that.currency matches this.currency
    */
-  infix def toThe(that: Money) = that.currency match {
+  infix def toThe(that: Money): CurrencyExchangeRate = that.currency match {
     case this.currency => throw new IllegalArgumentException("Can not create Exchange Rate on matching currencies")
     case _ => CurrencyExchangeRate(that, this)
   }
@@ -357,7 +356,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @return Double
    * @throws NoSuchExchangeRateException when no exchange rate is available
    */
-  infix def to(unit: Currency)(implicit context: MoneyContext) = context.convert(this, unit).amount
+  infix def to(unit: Currency)(using context: MoneyContext): BigDecimal = context.convert(this, unit).amount
 
   /**
    * Reboxes this Money value in a Money in the given Currency
@@ -367,7 +366,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @return Money
    * @throws NoSuchExchangeRateException when no exchange rate is available
    */
-  infix def in(unit: Currency)(implicit context: MoneyContext) = context.convert(this, unit)
+  infix def in(unit: Currency)(using context: MoneyContext): Money = context.convert(this, unit)
 
   /**
    * Returns a Money rounded using scale and mode.
@@ -376,7 +375,7 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @param mode RoundingMode - defaults to HALF_EVEN
    * @return Quantity
    */
-  override def rounded(scale: Int, mode: RoundingMode = RoundingMode.HALF_EVEN) = currency(amount.setScale(scale, mode))
+  override def rounded(scale: Int, mode: RoundingMode = RoundingMode.HALF_EVEN): Money = currency(amount.setScale(scale, mode))
 
   /**
    * Applies a function to the underlying amount of the Money, returning a Money in the same Currency
@@ -384,27 +383,27 @@ final class Money private (val amount: BigDecimal)(val currency: Currency)
    * @param f BigDecimal => BigDecimal function
    * @return Money
    */
-  def mapAmount(f: BigDecimal => BigDecimal) = currency(f(amount))
+  def mapAmount(f: BigDecimal => BigDecimal): Money = currency(f(amount))
 }
 
 /**
  * Factory singleton for Money
  */
 object Money extends Dimension[Money] {
-  def apply(value: Double)(implicit fxContext: MoneyContext) = new Money(BigDecimal(value))(fxContext.defaultCurrency)
-  def apply(value: BigDecimal)(implicit fxContext: MoneyContext) = new Money(value)(fxContext.defaultCurrency)
+  def apply(value: Double)(using fxContext: MoneyContext) = new Money(BigDecimal(value))(fxContext.defaultCurrency)
+  def apply(value: BigDecimal)(using fxContext: MoneyContext) = new Money(value)(fxContext.defaultCurrency)
 
   def apply(value: BigDecimal, currency: Currency) = new Money(value)(currency)
-  def apply(value: BigDecimal, currency: String)(implicit fxContext: MoneyContext): Try[Money] = {
+  def apply(value: BigDecimal, currency: String)(using fxContext: MoneyContext): Try[Money] = {
     Currency(currency).map(new Money(value)(_))
   }
 
-  def apply[A](n: A, currency: Currency)(implicit num: Numeric[A]) = new Money(BigDecimal(num.toDouble(n)))(currency)
-  def apply[A](n: A, currency: String)(implicit num: Numeric[A], fxContext: MoneyContext): Try[Money] = {
+  def apply[A](n: A, currency: Currency)(using num: Numeric[A]) = new Money(BigDecimal(num.toDouble(n)))(currency)
+  def apply[A](n: A, currency: String)(using num: Numeric[A], fxContext: MoneyContext): Try[Money] = {
     Currency(currency).map(new Money(BigDecimal(num.toDouble(n)))(_))
   }
 
-  def apply(s: String)(implicit fxContext: MoneyContext): Try[Money] = s match {
+  def apply(s: String)(using fxContext: MoneyContext): Try[Money] = s match {
     case fxContext.moneyPattern(value, currency) => Currency(currency.nn).map(Money(BigDecimal(value.nn), _))
     case _ => Failure(QuantityParseException("Unable to parse Money", s))
   }
@@ -425,7 +424,7 @@ object Money extends Dimension[Money] {
  */
 abstract class Currency(val code: String, val name: String, val symbol: String, val formatDecimals: Int) extends UnitOfMeasure[Money] {
   def apply(d: BigDecimal): Money = Money(d, this)
-  def apply[A](n: A)(implicit num: Numeric[A]) = Money(BigDecimal(num.toDouble(n)), this)
+  def apply[A](n: A)(using num: Numeric[A]): Money = Money(BigDecimal(num.toDouble(n)), this)
   protected def converterFrom: Double => Double = ???
   protected def converterTo: Double => Double = ???
   def /(that: Money): CurrencyExchangeRate = that.toThe(Money(1, this))
@@ -447,7 +446,7 @@ abstract class Currency(val code: String, val name: String, val symbol: String, 
 }
 
 object Currency {
-  def apply(currency: String)(implicit fxContext: MoneyContext): Try[Currency] =
+  def apply(currency: String)(using fxContext: MoneyContext): Try[Currency] =
     fxContext.currencyMap.get(currency).toRight(NoSuchCurrencyException(currency, fxContext)).toTry
 }
 
@@ -488,59 +487,63 @@ object THB extends Currency("THB", "Thai Baht", "฿", 2)
  * Support for Money DSL
  */
 object MoneyConversions {
-  lazy val dollar = Money(1, USD)
-  lazy val euro = Money(1, EUR)
-  lazy val yen = Money(1, JPY)
+  lazy val dollar: Money = Money(1, USD)
+  lazy val euro: Money = Money(1, EUR)
+  lazy val yen: Money = Money(1, JPY)
 
-  implicit def fromLong(l: Long): MoneyConversions[BigDecimal] = new MoneyConversions(BigDecimal(l))
-  implicit def fromDouble(d: Double): MoneyConversions[BigDecimal] = new MoneyConversions(BigDecimal(d))
-
-  implicit class MoneyConversions[A](n: A)(implicit num: Numeric[A]) {
-    def money(implicit context: MoneyContext) = Money(n, context.defaultCurrency)
-    def XAU = Money(n, squants.market.XAU)
-    def XAG = Money(n, squants.market.XAG)
-    def USD = Money(n, squants.market.USD)
-    def dollars = USD
-    def cents = Money(num.toDouble(n) / 100d, squants.market.USD)
-    def EUR = Money(n, squants.market.EUR)
-    def euros = EUR
-    def JPY = Money(n, squants.market.JPY)
-    def yen = JPY
-    def GBP = Money(n, squants.market.GBP)
-    def poundSterling = GBP
-    def CHF = Money(n, squants.market.CHF)
-    def swissFrancs = CHF
-    def AUD = Money(n, squants.market.AUD)
-    def CAD = Money(n, squants.market.CAD)
-    def SEK = Money(n, squants.market.SEK)
-    def HKD = Money(n, squants.market.HKD)
-    def NOK = Money(n, squants.market.NOK)
-    def NZD = Money(n, squants.market.NZD)
-    def BTC = Money(n, squants.market.BTC)
-    def bitcoin = BTC
-    def ETH = Money(n, squants.market.ETH)
-    def ether = ETH
-    def LTC = Money(n, squants.market.LTC)
-    def litecoin = LTC
-    def ZAR = Money(n, squants.market.ZAR)
-    def NAD = Money(n, squants.market.NAD)
-    def TRY = Money(n, squants.market.TRY)
-    def UAH = Money(n, squants.market.UAH)
-    def THB = Money(n, squants.market.THB)
-    def satang = Money(num.toDouble(n) / 100d, squants.market.THB)
+  /**
+   * The number-leading DSL (`10.USD`). Its methods are named after the currencies, so they sit in a given instead of
+   * directly in this object, where a wildcard import would make `USD` ambiguous with the currency itself.
+   * Bring it in with `import MoneyConversions.given`.
+   */
+  given MoneyDsl: AnyRef with {
+    extension [A](n: A)(using num: Numeric[A]) {
+      def money(using context: MoneyContext): Money = Money(n, context.defaultCurrency)
+      def XAU: Money = Money(n, squants.market.XAU)
+      def XAG: Money = Money(n, squants.market.XAG)
+      def USD: Money = Money(n, squants.market.USD)
+      def dollars = USD
+      def cents: Money = Money(num.toDouble(n) / 100d, squants.market.USD)
+      def EUR: Money = Money(n, squants.market.EUR)
+      def euros = EUR
+      def JPY: Money = Money(n, squants.market.JPY)
+      def yen = JPY
+      def GBP: Money = Money(n, squants.market.GBP)
+      def poundSterling = GBP
+      def CHF: Money = Money(n, squants.market.CHF)
+      def swissFrancs = CHF
+      def AUD: Money = Money(n, squants.market.AUD)
+      def CAD: Money = Money(n, squants.market.CAD)
+      def SEK: Money = Money(n, squants.market.SEK)
+      def HKD: Money = Money(n, squants.market.HKD)
+      def NOK: Money = Money(n, squants.market.NOK)
+      def NZD: Money = Money(n, squants.market.NZD)
+      def BTC: Money = Money(n, squants.market.BTC)
+      def bitcoin = BTC
+      def ETH: Money = Money(n, squants.market.ETH)
+      def ether = ETH
+      def LTC: Money = Money(n, squants.market.LTC)
+      def litecoin = LTC
+      def ZAR: Money = Money(n, squants.market.ZAR)
+      def NAD: Money = Money(n, squants.market.NAD)
+      def TRY: Money = Money(n, squants.market.TRY)
+      def UAH: Money = Money(n, squants.market.UAH)
+      def THB: Money = Money(n, squants.market.THB)
+      def satang: Money = Money(num.toDouble(n) / 100d, squants.market.THB)
+    }
   }
 
-  class MoneyNumeric()(implicit mc: MoneyContext) extends Numeric[Money] {
-    def plus(x: Money, y: Money) = x + y
-    def minus(x: Money, y: Money) = x - y
-    def times(x: Money, y: Money) = throw new UnsupportedOperationException("Numeric.times not supported for Quantities")
-    def negate(x: Money) = -x
-    def fromInt(x: Int) = mc.defaultCurrency(x)
+  class MoneyNumeric()(using mc: MoneyContext) extends Numeric[Money] {
+    def plus(x: Money, y: Money): Money = x + y
+    def minus(x: Money, y: Money): Money = x - y
+    def times(x: Money, y: Money): Money = throw new UnsupportedOperationException("Numeric.times not supported for Quantities")
+    def negate(x: Money): Money = -x
+    def fromInt(x: Int): Money = mc.defaultCurrency(x)
     def toInt(x: Money) = x.value.toInt
     def toLong(x: Money) = x.value.toLong
     def toFloat(x: Money) = x.value.toFloat
     def toDouble(x: Money) = x.value
-    def compare(x: Money, y: Money) = if (x.value > y.value) 1 else if (x.value < y.value) -1 else 0
+    def compare(x: Money, y: Money): Int = if (x.value > y.value) 1 else if (x.value < y.value) -1 else 0
     def parseString(str: String): Option[Money] = Money(str).toOption
 
     /**

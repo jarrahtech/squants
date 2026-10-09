@@ -10,6 +10,7 @@ package squants.energy
 
 import squants.{ Time, _ }
 import squants.time._
+import scala.util.Try
 
 /**
  * Represents the rate of change of [[squants.energy.Power]] over time
@@ -26,31 +27,31 @@ final class PowerRamp private (val value: Double, val unit: PowerRampUnit)
 
   def dimension = PowerRamp
 
-  protected[squants] def timeIntegrated = Watts(toWattsPerHour)
-  protected[squants] def time = Hours(1)
+  protected[squants] def timeIntegrated: Power = Watts(toWattsPerHour)
+  protected[squants] def time: Time = Hours(1)
 
   def *(that: TimeSquared): Energy = this * that.time1 * that.time2
 
-  def toWattsPerHour = to(WattsPerHour)
-  def toWattsPerMinutes = to(WattsPerMinute)
-  def toKilowattsPerHour = to(KilowattsPerHour)
-  def toKilowattsPerMinute = to(KilowattsPerMinute)
-  def toMegawattsPerHour = to(MegawattsPerHour)
-  def toGigawattsPerHour = to(GigawattsPerHour)
+  def toWattsPerHour: Double = to(WattsPerHour)
+  def toWattsPerMinutes: Double = to(WattsPerMinute)
+  def toKilowattsPerHour: Double = to(KilowattsPerHour)
+  def toKilowattsPerMinute: Double = to(KilowattsPerMinute)
+  def toMegawattsPerHour: Double = to(MegawattsPerHour)
+  def toGigawattsPerHour: Double = to(GigawattsPerHour)
 }
 
 object PowerRamp extends Dimension[PowerRamp] {
-  private[energy] def apply[A](n: A, unit: PowerRampUnit)(implicit num: Numeric[A]) = new PowerRamp(num.toDouble(n), unit)
+  private[energy] def apply[A](n: A, unit: PowerRampUnit)(using num: Numeric[A]) = new PowerRamp(num.toDouble(n), unit)
   def apply(change: Power, time: Time): PowerRamp = apply(change.toWatts / time.toHours, WattsPerHour)
-  def apply(value: Any) = parse(value)
+  def apply(value: Any): Try[PowerRamp] = parse(value)
   def name = "PowerRamp"
   def primaryUnit = WattsPerHour
   def siUnit = WattsPerHour
-  def units = Set(WattsPerHour, WattsPerMinute, KilowattsPerHour, KilowattsPerMinute, MegawattsPerHour, GigawattsPerHour)
+  def units: Set[UnitOfMeasure[PowerRamp]] = Set(WattsPerHour, WattsPerMinute, KilowattsPerHour, KilowattsPerMinute, MegawattsPerHour, GigawattsPerHour)
 }
 
 trait PowerRampUnit extends UnitOfMeasure[PowerRamp] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = PowerRamp(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): PowerRamp = PowerRamp(n, this)
 }
 
 object WattsPerHour extends PowerRampUnit with PrimaryUnit with SiUnit {
@@ -58,7 +59,7 @@ object WattsPerHour extends PowerRampUnit with PrimaryUnit with SiUnit {
 }
 
 object WattsPerMinute extends PowerRampUnit with SiUnit {
-  val conversionFactor = WattsPerHour.conversionFactor / 60D
+  val conversionFactor: Double = WattsPerHour.conversionFactor / 60D
   val symbol = "W/m"
 }
 
@@ -68,7 +69,7 @@ object KilowattsPerHour extends PowerRampUnit with SiUnit {
 }
 
 object KilowattsPerMinute extends PowerRampUnit with SiUnit {
-  val conversionFactor = KilowattsPerHour.conversionFactor / 60D
+  val conversionFactor: Double = KilowattsPerHour.conversionFactor / 60D
   val symbol = "kW/m"
 }
 
@@ -83,31 +84,31 @@ object GigawattsPerHour extends PowerRampUnit with SiUnit {
 }
 
 object PowerRampConversions {
-  lazy val wattPerHour = WattsPerHour(1)
+  lazy val wattPerHour: PowerRamp = WattsPerHour(1)
   lazy val Wph = wattPerHour
-  lazy val wattPerMinute = WattsPerMinute(1)
+  lazy val wattPerMinute: PowerRamp = WattsPerMinute(1)
   lazy val Wpm = wattPerMinute
-  lazy val kilowattPerHour = KilowattsPerHour(1)
+  lazy val kilowattPerHour: PowerRamp = KilowattsPerHour(1)
   lazy val kWph = kilowattPerHour
-  lazy val kilowattPerMinute = KilowattsPerMinute(1)
+  lazy val kilowattPerMinute: PowerRamp = KilowattsPerMinute(1)
   lazy val kWpm = kilowattPerMinute
-  lazy val megawattPerHour = MegawattsPerHour(1)
+  lazy val megawattPerHour: PowerRamp = MegawattsPerHour(1)
   lazy val MWph = megawattPerHour
-  lazy val gigawattPerHour = GigawattsPerHour(1)
+  lazy val gigawattPerHour: PowerRamp = GigawattsPerHour(1)
   lazy val GWph = gigawattPerHour
 
-  implicit class PowerRampConversions[A](n: A)(implicit num: Numeric[A]) {
-    def Wph = WattsPerHour(n)
-    def Wpm = WattsPerMinute(n)
-    def kWph = KilowattsPerHour(n)
-    def kWpm = KilowattsPerMinute(n)
-    def MWph = MegawattsPerHour(n)
-    def GWph = GigawattsPerHour(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def Wph: PowerRamp = WattsPerHour(n)
+    def Wpm: PowerRamp = WattsPerMinute(n)
+    def kWph: PowerRamp = KilowattsPerHour(n)
+    def kWpm: PowerRamp = KilowattsPerMinute(n)
+    def MWph: PowerRamp = MegawattsPerHour(n)
+    def GWph: PowerRamp = GigawattsPerHour(n)
   }
 
-  implicit class PowerRampStringConversion(s: String) {
-    def toPowerRamp = PowerRamp(s)
+  extension (s: String) {
+    def toPowerRamp: Try[PowerRamp] = PowerRamp(s)
   }
 
-  implicit object PowerRampNumeric extends AbstractQuantityNumeric[PowerRamp](PowerRamp.primaryUnit)
+  given PowerRampNumeric: AbstractQuantityNumeric[PowerRamp](PowerRamp.primaryUnit) {}
 }

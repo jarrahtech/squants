@@ -7,8 +7,9 @@
 \*                                                                      */
 
 package squants
+package market
 
-/**
+/*
  * Squants Market API
  *
  * Market Types are similar but not quite the same as other quantities in the library.
@@ -53,22 +54,20 @@ package squants
  * @author  garyKeorkunian
  * @since   0.1
  */
-package object market {
 
-  lazy val defaultCurrencySet = Set(
-    USD, ARS, AUD, BRL, CAD,
-    CHF, CLP, CNY, CZK, DKK,
-    EUR, GBP, HKD, INR, JPY,
-    KRW, MXN, MYR, NOK, NZD,
-    RUB, SEK, XAG, XAU, BTC,
-    ETH, LTC, ZAR, NAD, TRY,
-    UAH, THB)
+lazy val defaultCurrencySet: Set[Currency] = Set(
+  USD, ARS, AUD, BRL, CAD,
+  CHF, CLP, CNY, CZK, DKK,
+  EUR, GBP, HKD, INR, JPY,
+  KRW, MXN, MYR, NOK, NZD,
+  RUB, SEK, XAG, XAU, BTC,
+  ETH, LTC, ZAR, NAD, TRY,
+  UAH, THB)
 
-  lazy val defaultMoneyContext = MoneyContext(USD, defaultCurrencySet, Nil)
+lazy val defaultMoneyContext: MoneyContext = MoneyContext(USD, defaultCurrencySet, Nil)
 
-  class NoSuchExchangeRateException(val s: String) extends Exception
+class NoSuchExchangeRateException(val s: String) extends Exception
 
-  case class NoSuchCurrencyException(code: String, fxContext: MoneyContext) extends Exception(
-    s"Code $code cannot be matched against any context defined Currency. " +
-      s"Available Currencies are ${fxContext.currencies.map(_.code).mkString(", ")}")
-}
+case class NoSuchCurrencyException(code: String, fxContext: MoneyContext) extends Exception(
+  s"Code $code cannot be matched against any context defined Currency. " +
+    s"Available Currencies are ${fxContext.currencies.map(_.code).mkString(", ")}")

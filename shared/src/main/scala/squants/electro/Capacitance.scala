@@ -9,6 +9,7 @@
 package squants.electro
 
 import squants._
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -24,25 +25,25 @@ final class Capacitance private (val value: Double, val unit: CapacitanceUnit)
   def *(that: ElectricPotential): ElectricCharge = Coulombs(this.toFarads * that.toVolts)
   def /(that: Length): Permittivity = FaradsPerMeter(this.toFarads / that.toMeters)
 
-  def toFarads = to(Farads)
-  def toPicofarads = to(Picofarads)
-  def toNanofarads = to(Nanofarads)
-  def toMicrofarads = to(Microfarads)
-  def toMillifarads = to(Millifarads)
-  def toKilofarads = to(Kilofarads)
+  def toFarads: Double = to(Farads)
+  def toPicofarads: Double = to(Picofarads)
+  def toNanofarads: Double = to(Nanofarads)
+  def toMicrofarads: Double = to(Microfarads)
+  def toMillifarads: Double = to(Millifarads)
+  def toKilofarads: Double = to(Kilofarads)
 }
 
 object Capacitance extends Dimension[Capacitance] {
-  private[electro] def apply[A](n: A, unit: CapacitanceUnit)(implicit num: Numeric[A]) = new Capacitance(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[electro] def apply[A](n: A, unit: CapacitanceUnit)(using num: Numeric[A]) = new Capacitance(num.toDouble(n), unit)
+  def apply(value: Any): Try[Capacitance] = parse(value)
   def name = "Capacitance"
   def primaryUnit = Farads
   def siUnit = Farads
-  def units = Set(Farads, Picofarads, Nanofarads, Microfarads, Millifarads, Kilofarads)
+  def units: Set[UnitOfMeasure[Capacitance]] = Set(Farads, Picofarads, Nanofarads, Microfarads, Millifarads, Kilofarads)
 }
 
 trait CapacitanceUnit extends UnitOfMeasure[Capacitance] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = Capacitance(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): Capacitance = Capacitance(n, this)
 }
 
 object Farads extends CapacitanceUnit with PrimaryUnit with SiUnit {
@@ -75,21 +76,21 @@ object Kilofarads extends CapacitanceUnit with SiUnit {
 }
 
 object CapacitanceConversions {
-  lazy val farad = Farads(1)
-  lazy val picofarad = Picofarads(1)
-  lazy val nanofarad = Nanofarads(1)
-  lazy val microfarad = Microfarads(1)
-  lazy val millifarad = Millifarads(1)
-  lazy val kilofarad = Kilofarads(1)
+  lazy val farad: Capacitance = Farads(1)
+  lazy val picofarad: Capacitance = Picofarads(1)
+  lazy val nanofarad: Capacitance = Nanofarads(1)
+  lazy val microfarad: Capacitance = Microfarads(1)
+  lazy val millifarad: Capacitance = Millifarads(1)
+  lazy val kilofarad: Capacitance = Kilofarads(1)
 
-  implicit class CapacitanceConversions[A](n: A)(implicit num: Numeric[A]) {
-    def farads = Farads(n)
-    def picofarads = Picofarads(n)
-    def nanofarads = Nanofarads(n)
-    def microfarads = Microfarads(n)
-    def millifarads = Millifarads(n)
-    def kilofarads = Kilofarads(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def farads: Capacitance = Farads(n)
+    def picofarads: Capacitance = Picofarads(n)
+    def nanofarads: Capacitance = Nanofarads(n)
+    def microfarads: Capacitance = Microfarads(n)
+    def millifarads: Capacitance = Millifarads(n)
+    def kilofarads: Capacitance = Kilofarads(n)
   }
 
-  implicit object CapacitanceNumeric extends AbstractQuantityNumeric[Capacitance](Capacitance.primaryUnit)
+  given CapacitanceNumeric: AbstractQuantityNumeric[Capacitance](Capacitance.primaryUnit) {}
 }

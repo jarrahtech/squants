@@ -3,7 +3,8 @@ package squants.motion
 import squants.mass.MomentOfInertia
 import squants.space._
 import squants.time.{ Seconds, Time, TimeDerivative }
-import squants.{ AbstractQuantityNumeric, Dimension, Length, PrimaryUnit, Quantity, SiUnit, SquantifiedDouble, UnitConverter, UnitOfMeasure }
+import squants.{ AbstractQuantityNumeric, Dimension, Length, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure }
+import scala.util.Try
 
 /**
  *
@@ -17,12 +18,12 @@ final class AngularAcceleration private (val value: Double, val unit: AngularAcc
 
   def dimension = AngularAcceleration
 
-  def toRadiansPerSecondSquared = to(RadiansPerSecondSquared)
-  def toDegreesPerSecondSquared = to(DegreesPerSecondSquared)
-  def toGradsPerSecondSquared = to(GradiansPerSecondSquared)
-  def toTurnsPerSecondSquared = to(TurnsPerSecondSquared)
-  def toArcminutesPerSecondSquared = to(ArcminutesPerSecondSquared)
-  def toArcsecondsPerSecondSquared = to(ArcsecondsPerSecondSquared)
+  def toRadiansPerSecondSquared: Double = to(RadiansPerSecondSquared)
+  def toDegreesPerSecondSquared: Double = to(DegreesPerSecondSquared)
+  def toGradsPerSecondSquared: Double = to(GradiansPerSecondSquared)
+  def toTurnsPerSecondSquared: Double = to(TurnsPerSecondSquared)
+  def toArcminutesPerSecondSquared: Double = to(ArcminutesPerSecondSquared)
+  def toArcsecondsPerSecondSquared: Double = to(ArcsecondsPerSecondSquared)
 
   /**
    * linear acceleration of an object rotating with this angular acceleration
@@ -30,7 +31,7 @@ final class AngularAcceleration private (val value: Double, val unit: AngularAcc
    * @param radius the distance from the center of rotation
    * @return linear acceleration with given angular acceleration and radius
    */
-  infix def onRadius(radius: Length): Acceleration = toRadiansPerSecondSquared * radius / Seconds(1).squared
+  infix def onRadius(radius: Length): Acceleration = radius * toRadiansPerSecondSquared / Seconds(1).squared
 
   def *(that: MomentOfInertia): Torque = {
     NewtonMeters(this.toRadiansPerSecondSquared * that.toKilogramsMetersSquared)
@@ -42,12 +43,12 @@ final class AngularAcceleration private (val value: Double, val unit: AngularAcc
 }
 
 object AngularAcceleration extends Dimension[AngularAcceleration] {
-  private[motion] def apply[A](n: A, unit: AngularAccelerationUnit)(implicit num: Numeric[A]) = new AngularAcceleration(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[motion] def apply[A](n: A, unit: AngularAccelerationUnit)(using num: Numeric[A]) = new AngularAcceleration(num.toDouble(n), unit)
+  def apply(value: Any): Try[AngularAcceleration] = parse(value)
   def name = "AngularAcceleration"
   def primaryUnit = RadiansPerSecondSquared
   def siUnit = RadiansPerSecondSquared
-  def units = Set(
+  def units: Set[UnitOfMeasure[AngularAcceleration]] = Set(
     RadiansPerSecondSquared,
     DegreesPerSecondSquared,
     GradiansPerSecondSquared,
@@ -57,7 +58,7 @@ object AngularAcceleration extends Dimension[AngularAcceleration] {
 }
 
 trait AngularAccelerationUnit extends UnitOfMeasure[AngularAcceleration] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = {
+  def apply[A](n: A)(using num: Numeric[A]): AngularAcceleration = {
     AngularAcceleration(num.toDouble(n), this)
   }
 
@@ -65,46 +66,46 @@ trait AngularAccelerationUnit extends UnitOfMeasure[AngularAcceleration] with Un
 }
 
 object RadiansPerSecondSquared extends AngularAccelerationUnit with PrimaryUnit with SiUnit {
-  val symbol = Radians.symbol + "/s²"
+  val symbol: String = Radians.symbol + "/s²"
 }
 
 object DegreesPerSecondSquared extends AngularAccelerationUnit {
-  val symbol = Degrees.symbol + "/s²"
+  val symbol: String = Degrees.symbol + "/s²"
   val conversionFactor = Degrees.conversionFactor
 }
 
 object GradiansPerSecondSquared extends AngularAccelerationUnit {
-  val symbol = Gradians.symbol + "/s²"
+  val symbol: String = Gradians.symbol + "/s²"
   val conversionFactor = Gradians.conversionFactor
 }
 
 object TurnsPerSecondSquared extends AngularAccelerationUnit {
-  val symbol = Turns.symbol + "/s²"
+  val symbol: String = Turns.symbol + "/s²"
   val conversionFactor = Turns.conversionFactor
 }
 
 object ArcminutesPerSecondSquared extends AngularAccelerationUnit {
-  val symbol = Arcminutes.symbol + "/s²"
+  val symbol: String = Arcminutes.symbol + "/s²"
   val conversionFactor = Arcminutes.conversionFactor
 }
 
 object ArcsecondsPerSecondSquared extends AngularAccelerationUnit {
-  val symbol = Arcseconds.symbol + "/s²"
+  val symbol: String = Arcseconds.symbol + "/s²"
   val conversionFactor = Arcseconds.conversionFactor
 }
 
 object AngularAccelerationConversions {
-  lazy val radianPerSecondSquared = RadiansPerSecondSquared(1)
-  lazy val degreePerSecondSquared = DegreesPerSecondSquared(1)
-  lazy val gradPerSecondSquared = GradiansPerSecondSquared(1)
-  lazy val turnPerSecondSquared = TurnsPerSecondSquared(1)
+  lazy val radianPerSecondSquared: AngularAcceleration = RadiansPerSecondSquared(1)
+  lazy val degreePerSecondSquared: AngularAcceleration = DegreesPerSecondSquared(1)
+  lazy val gradPerSecondSquared: AngularAcceleration = GradiansPerSecondSquared(1)
+  lazy val turnPerSecondSquared: AngularAcceleration = TurnsPerSecondSquared(1)
 
-  implicit class AngularAccelerationConversions[A](val n: A) extends AnyVal {
-    def radiansPerSecondSquared(implicit num: Numeric[A]) = RadiansPerSecondSquared(n)
-    def degreesPerSecondSquared(implicit num: Numeric[A]) = DegreesPerSecondSquared(n)
-    def gradsPerSecondSquared(implicit num: Numeric[A]) = GradiansPerSecondSquared(n)
-    def turnsPerSecondSquared(implicit num: Numeric[A]) = TurnsPerSecondSquared(n)
+  extension [A](n: A) {
+    def radiansPerSecondSquared(using num: Numeric[A]): AngularAcceleration = RadiansPerSecondSquared(n)
+    def degreesPerSecondSquared(using num: Numeric[A]): AngularAcceleration = DegreesPerSecondSquared(n)
+    def gradsPerSecondSquared(using num: Numeric[A]): AngularAcceleration = GradiansPerSecondSquared(n)
+    def turnsPerSecondSquared(using num: Numeric[A]): AngularAcceleration = TurnsPerSecondSquared(n)
   }
 
-  implicit object AngularAccelerationNumeric extends AbstractQuantityNumeric[AngularAcceleration](AngularAcceleration.primaryUnit)
+  given AngularAccelerationNumeric: AbstractQuantityNumeric[AngularAcceleration](AngularAcceleration.primaryUnit) {}
 }

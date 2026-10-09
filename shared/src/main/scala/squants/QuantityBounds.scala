@@ -11,45 +11,45 @@ package squants
 final case class QuantityBounds[A <: Quantity[A]](lower: A, upper: A) {
   require(lower<=upper, "Lower bound must be equal or smaller than upper")
 
-  def isPoint = lower==upper
+  def isPoint: Boolean = lower==upper
   def map[B <: Quantity[B]](op: A => B): QuantityBounds[B] = QuantityBounds(op(lower), op(upper))
 
-  def shift(that: A) = QuantityBounds(this.lower + that, this.upper + that)
-  def ++(that: A) = shift(that)
-  def --(that: A) = shift(-that)
+  def shift(that: A): QuantityBounds[A] = QuantityBounds(this.lower + that, this.upper + that)
+  def ++(that: A): QuantityBounds[A] = shift(that)
+  def --(that: A): QuantityBounds[A] = shift(-that)
 
-  def shiftUpper(that: A) = QuantityBounds(this.lower, this.upper + that)
-  def =+(that: A) = shiftUpper(that)
-  def =-(that: A) = shiftUpper(-that)
+  def shiftUpper(that: A): QuantityBounds[A] = QuantityBounds(this.lower, this.upper + that)
+  def =+(that: A): QuantityBounds[A] = shiftUpper(that)
+  def =-(that: A): QuantityBounds[A] = shiftUpper(-that)
 
   // No operator alias: `+=` and `-=` would read as mutation.
-  def shiftLower(that: A) = QuantityBounds(this.lower + that, this.upper)
+  def shiftLower(that: A): QuantityBounds[A] = QuantityBounds(this.lower + that, this.upper)
 
-  def expand(that: A) = QuantityBounds(this.lower - that, this.upper + that)
-  def -+(that: A) = expand(that)
+  def expand(that: A): QuantityBounds[A] = QuantityBounds(this.lower - that, this.upper + that)
+  def -+(that: A): QuantityBounds[A] = expand(that)
 
   // No operator alias: `+-` already means "plus or minus" on `Quantity`.
-  def shrink(that: A) = QuantityBounds(this.lower + that, this.upper - that)
+  def shrink(that: A): QuantityBounds[A] = QuantityBounds(this.lower + that, this.upper - that)
 
   /** True if `q` is strictly between the bounds: both ends are excluded. */
-  def contains(q: A) = q > lower && q < upper
+  def contains(q: A): Boolean = q > lower && q < upper
   def contains(that: QuantityBounds[A]): Boolean = contains(that.lower) && contains(that.upper)
 
   /** True if `q` is between the bounds or equal to one of them: both ends count. */
-  def includes(q: A) = q >= lower && q <= upper
+  def includes(q: A): Boolean = q >= lower && q <= upper
   def includes(that: QuantityBounds[A]): Boolean = includes(that.lower) && includes(that.upper)
 
   /** The same bounds as a [[QuantityRange]], or None for a point, which a range (lower < upper) cannot represent. */
   def toRange: Option[QuantityRange[A]] = if (isPoint) None else Some(QuantityRange(lower, upper))
 
-  lazy val toQuantity = upper - lower
+  lazy val toQuantity: A = upper - lower
   def toSeq: Seq[A] = Seq(lower, upper)
   def toList: List[A] = List(lower, upper)
   def toTuple: (lower: A, upper: A) = (lower, upper)
 
   /** The value `ratio` of the way from `lower` to `upper`; below `lower` or above `upper` it extrapolates. */
-  def lerp(ratio: Double) = lower + toQuantity*ratio
-  def mid = lerp(0.5d)
+  def lerp(ratio: Double): A = lower + toQuantity*ratio
+  def mid: A = lerp(0.5d)
 
   /**
    * How far `value` is from `lower`, as a fraction of the length: 0 at `lower`, 1 at `upper`, outside [0, 1] when

@@ -25,14 +25,14 @@ trait UnitOfMeasure[A <: Quantity[A]] extends Serializable {
    * @param n N - the Quantity's value in terms of this UnitOfMeasure
    * @return
    */
-  def apply[N](n: N)(implicit num: Numeric[N]): A
+  def apply[N](n: N)(using num: Numeric[N]): A
 
   /**
    * Extractor method for getting the Numeric value of a Quantity in this UnitOfMeasure
    * @param q A - The Quantity being matched
    * @return
    */
-  def unapply(q: A) = Some(q.to(this))
+  def unapply(q: A): Some[Double] = Some(q.to(this))
 
   /**
    * Symbol used when representing Quantities in this UnitOfMeasure
@@ -59,7 +59,7 @@ trait UnitOfMeasure[A <: Quantity[A]] extends Serializable {
    * @tparam N Type
    * @return
    */
-  final def convertTo[N](n: N)(implicit num: Numeric[N]) = converterTo(num.toDouble(n))
+  final def convertTo[N](n: N)(using num: Numeric[N]): Double = converterTo(num.toDouble(n))
 
   /**
    * Applies the converterFrom method to a value
@@ -69,7 +69,7 @@ trait UnitOfMeasure[A <: Quantity[A]] extends Serializable {
    * @tparam N Type
    * @return
    */
-  final def convertFrom[N](n: N)(implicit num: Numeric[N]) = converterFrom(num.toDouble(n))
+  final def convertFrom[N](n: N)(using num: Numeric[N]): Double = converterFrom(num.toDouble(n))
 }
 
 /**

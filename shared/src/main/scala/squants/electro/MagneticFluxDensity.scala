@@ -9,6 +9,7 @@
 package squants.electro
 
 import squants._
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -23,21 +24,21 @@ final class MagneticFluxDensity private (val value: Double, val unit: MagneticFl
 
   def *(that: Area): MagneticFlux = Webers(this.toTeslas * that.toSquareMeters)
 
-  def toTeslas = to(Teslas)
-  def toGuass = to(Gauss)
+  def toTeslas: Double = to(Teslas)
+  def toGuass: Double = to(Gauss)
 }
 
 object MagneticFluxDensity extends Dimension[MagneticFluxDensity] {
-  private[electro] def apply[A](n: A, unit: MagneticFluxDensityUnit)(implicit num: Numeric[A]) = new MagneticFluxDensity(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[electro] def apply[A](n: A, unit: MagneticFluxDensityUnit)(using num: Numeric[A]) = new MagneticFluxDensity(num.toDouble(n), unit)
+  def apply(value: Any): Try[MagneticFluxDensity] = parse(value)
   def name = "MagneticFluxDensity"
   def primaryUnit = Teslas
   def siUnit = Teslas
-  def units = Set(Teslas, Gauss)
+  def units: Set[UnitOfMeasure[MagneticFluxDensity]] = Set(Teslas, Gauss)
 }
 
 trait MagneticFluxDensityUnit extends UnitOfMeasure[MagneticFluxDensity] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = MagneticFluxDensity(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): MagneticFluxDensity = MagneticFluxDensity(n, this)
 }
 
 object Teslas extends MagneticFluxDensityUnit with PrimaryUnit with SiUnit {
@@ -45,18 +46,18 @@ object Teslas extends MagneticFluxDensityUnit with PrimaryUnit with SiUnit {
 }
 
 object Gauss extends MagneticFluxDensityUnit {
-  val conversionFactor = 100 * MetricSystem.Micro
+  val conversionFactor: Double = 100 * MetricSystem.Micro
   val symbol = "Gs"
 }
 
 object MagneticFluxDensityConversions {
-  lazy val tesla = Teslas(1)
-  lazy val gauss = Gauss(1)
+  lazy val tesla: MagneticFluxDensity = Teslas(1)
+  lazy val gauss: MagneticFluxDensity = Gauss(1)
 
-  implicit class MagneticFluxDensistyConversions[A](n: A)(implicit num: Numeric[A]) {
-    def teslas = Teslas(n)
-    def gauss = Gauss(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def teslas: MagneticFluxDensity = Teslas(n)
+    def gauss: MagneticFluxDensity = Gauss(n)
   }
 
-  implicit object MagneticFluxDensistyNumeric extends AbstractQuantityNumeric[MagneticFluxDensity](MagneticFluxDensity.primaryUnit)
+  given MagneticFluxDensistyNumeric: AbstractQuantityNumeric[MagneticFluxDensity](MagneticFluxDensity.primaryUnit) {}
 }

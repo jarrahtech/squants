@@ -79,7 +79,7 @@ final class Temperature private (val value: Double, val unit: TemperatureScale)
   override infix def plus(that: Temperature): Temperature = Temperature(this.value + that.convert(unit, withOffset = false).value, unit)
   override infix def minus(that: Temperature): Temperature = Temperature(this.value - that.convert(unit, withOffset = false).value, unit)
 
-  def *(that: ThermalCapacity) = Joules(this.toKelvinScale * that.toJoulesPerKelvin)
+  def *(that: ThermalCapacity): squants.energy.Energy = Joules(this.toKelvinScale * that.toJoulesPerKelvin)
 
   override def toString: String = unit match {
     case Kelvin => super.toString
@@ -121,16 +121,16 @@ final class Temperature private (val value: Double, val unit: TemperatureScale)
     case (Rankine, Kelvin, false) => Kelvin(TemperatureConversions.rankineToKelvinDegrees(value))
   }
 
-  infix def in(unit: TemperatureScale) = convert(unit, withOffset = true)
+  infix def in(unit: TemperatureScale): Temperature = convert(unit, withOffset = true)
   def inFahrenheit: Temperature = convert(Fahrenheit)
   def inCelsius: Temperature = convert(Celsius)
   def inKelvin: Temperature = convert(Kelvin)
 
-  infix def to(unit: TemperatureScale) = toScale(unit)
-  def toScale(unit: TemperatureScale) = convert(unit, withOffset = true).value
-  def toFahrenheitScale = toScale(Fahrenheit)
-  def toCelsiusScale = toScale(Celsius)
-  def toKelvinScale = toScale(Kelvin)
+  infix def to(unit: TemperatureScale): Double = toScale(unit)
+  def toScale(unit: TemperatureScale): Double = convert(unit, withOffset = true).value
+  def toFahrenheitScale: Double = toScale(Fahrenheit)
+  def toCelsiusScale: Double = toScale(Celsius)
+  def toKelvinScale: Double = toScale(Kelvin)
 
   /** The irradiance a blackbody at this temperature radiates (Stefan-Boltzmann law): `E = sigma * T⁴`, with T in kelvin. NaN below absolute zero. */
   def blackbodyIrradiance: Irradiance = {
@@ -138,17 +138,17 @@ final class Temperature private (val value: Double, val unit: TemperatureScale)
     WattsPerSquareMeter(if (k < 0) Double.NaN else PhysicalConstants.StefanBoltzmann * (k * k) * (k * k))
   }
 
-  def toDegrees(unit: TemperatureScale) = convert(unit, withOffset = false).value
-  def toFahrenheitDegrees = toDegrees(Fahrenheit)
-  def toCelsiusDegrees = toDegrees(Celsius)
-  def toKelvinDegrees = toDegrees(Kelvin)
+  def toDegrees(unit: TemperatureScale): Double = convert(unit, withOffset = false).value
+  def toFahrenheitDegrees: Double = toDegrees(Fahrenheit)
+  def toCelsiusDegrees: Double = toDegrees(Celsius)
+  def toKelvinDegrees: Double = toDegrees(Kelvin)
 }
 
 /**
  * Temperature companion object
  */
 object Temperature extends Dimension[Temperature] with BaseDimension {
-  def apply[A](n: A, scale: TemperatureScale)(implicit num: Numeric[A]) = new Temperature(num.toDouble(n), scale)
+  def apply[A](n: A, scale: TemperatureScale)(using num: Numeric[A]) = new Temperature(num.toDouble(n), scale)
 
   private val TemperatureString = "([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?) *°? *(f|F|c|C|k|K|r|R)".r
 
@@ -167,7 +167,7 @@ object Temperature extends Dimension[Temperature] with BaseDimension {
   def name = "Temperature"
   def primaryUnit = Kelvin
   def siUnit = Kelvin
-  def units = Set(Kelvin, Fahrenheit, Celsius, Rankine)
+  def units: Set[UnitOfMeasure[Temperature]] = Set(Kelvin, Fahrenheit, Celsius, Rankine)
   def dimensionSymbol = "Θ"
 }
 
@@ -176,7 +176,7 @@ object Temperature extends Dimension[Temperature] with BaseDimension {
  */
 sealed trait TemperatureScale extends UnitOfMeasure[Temperature] {
   def self: TemperatureScale
-  def apply[A](n: A)(implicit num: Numeric[A]) = Temperature(num.toDouble(n), this)
+  def apply[A](n: A)(using num: Numeric[A]): Temperature = Temperature(num.toDouble(n), this)
 }
 
 object Celsius extends TemperatureScale {
@@ -210,65 +210,65 @@ object Rankine extends TemperatureScale {
 }
 
 object TemperatureConversions {
-  lazy val kelvin = Kelvin(1)
-  lazy val fahrenheit = Fahrenheit(1)
-  lazy val celsius = Celsius(1)
-  lazy val rankine = Rankine(1)
+  lazy val kelvin: Temperature = Kelvin(1)
+  lazy val fahrenheit: Temperature = Fahrenheit(1)
+  lazy val celsius: Temperature = Celsius(1)
+  lazy val rankine: Temperature = Rankine(1)
 
   /*
    * Degree conversions are used to convert a quantity of degrees from one scale to another.
    * These conversions do not adjust for the zero offset.
    * Essentially they only do the 9:5 conversion between F degrees and C|K degrees
    */
-  def celsiusToFahrenheitDegrees(celsius: Double) = celsius * 9d / 5d
-  def fahrenheitToCelsiusDegrees(fahrenheit: Double) = fahrenheit * 5d / 9d
+  def celsiusToFahrenheitDegrees(celsius: Double): Double = celsius * 9d / 5d
+  def fahrenheitToCelsiusDegrees(fahrenheit: Double): Double = fahrenheit * 5d / 9d
   def celsiusToKelvinDegrees(celsius: Double) = celsius
   def kelvinToCelsiusDegrees(kelvin: Double) = kelvin
-  def fahrenheitToKelvinDegrees(fahrenheit: Double) = fahrenheit * 5d / 9d
-  def kelvinToFahrenheitDegrees(kelvin: Double) = kelvin * 9d / 5d
-  def celsiusToRankineDegrees(celsius: Double) = celsius * 9d / 5d
-  def rankineToCelsiusDegrees(rankine: Double) = rankine * 5d / 9d
+  def fahrenheitToKelvinDegrees(fahrenheit: Double): Double = fahrenheit * 5d / 9d
+  def kelvinToFahrenheitDegrees(kelvin: Double): Double = kelvin * 9d / 5d
+  def celsiusToRankineDegrees(celsius: Double): Double = celsius * 9d / 5d
+  def rankineToCelsiusDegrees(rankine: Double): Double = rankine * 5d / 9d
   def fahrenheitToRankineDegrees(fahrenheit: Double) = fahrenheit
   def rankineToFahrenheitDegrees(rankine: Double) = rankine
-  def kelvinToRankineDegrees(kelvin: Double) = kelvin * 9d / 5d
-  def rankineToKelvinDegrees(rankine: Double) = rankine * 5d / 9d
+  def kelvinToRankineDegrees(kelvin: Double): Double = kelvin * 9d / 5d
+  def rankineToKelvinDegrees(rankine: Double): Double = rankine * 5d / 9d
 
   /*
    * Scale conversions are used to convert a "thermometer" temperature from one scale to another.
    * These conversions will adjust the result by the zero offset.
    * They are used to find the equivalent absolute temperature in the other scale.
    */
-  def celsiusToFahrenheitScale(celsius: Double) = celsius * 9d / 5d + 32d
-  def fahrenheitToCelsiusScale(fahrenheit: Double) = (fahrenheit - 32d) * 5d / 9d
-  def celsiusToKelvinScale(celsius: Double) = celsius + 273.15
-  def kelvinToCelsiusScale(kelvin: Double) = kelvin - 273.15
-  def fahrenheitToKelvinScale(fahrenheit: Double) = (fahrenheit + 459.67) * 5d / 9d
-  def kelvinToFahrenheitScale(kelvin: Double) = kelvin * 9d / 5d - 459.67
-  def celsiusToRankineScale(celsius: Double) = (celsius + 273.15) * 9d / 5d
-  def rankineToCelsiusScale(rankine: Double) = (rankine - 491.67) * 5d / 9d
-  def fahrenheitToRankineScale(fahrenheit: Double) = fahrenheit + 459.67
-  def rankineToFahrenheitScale(rankine: Double) = rankine - 459.67
-  def kelvinToRankineScale(kelvin: Double) = kelvin * 9d / 5d
-  def rankineToKelvinScale(rankine: Double) = rankine * 5d / 9d
+  def celsiusToFahrenheitScale(celsius: Double): Double = celsius * 9d / 5d + 32d
+  def fahrenheitToCelsiusScale(fahrenheit: Double): Double = (fahrenheit - 32d) * 5d / 9d
+  def celsiusToKelvinScale(celsius: Double): Double = celsius + 273.15
+  def kelvinToCelsiusScale(kelvin: Double): Double = kelvin - 273.15
+  def fahrenheitToKelvinScale(fahrenheit: Double): Double = (fahrenheit + 459.67) * 5d / 9d
+  def kelvinToFahrenheitScale(kelvin: Double): Double = kelvin * 9d / 5d - 459.67
+  def celsiusToRankineScale(celsius: Double): Double = (celsius + 273.15) * 9d / 5d
+  def rankineToCelsiusScale(rankine: Double): Double = (rankine - 491.67) * 5d / 9d
+  def fahrenheitToRankineScale(fahrenheit: Double): Double = fahrenheit + 459.67
+  def rankineToFahrenheitScale(rankine: Double): Double = rankine - 459.67
+  def kelvinToRankineScale(kelvin: Double): Double = kelvin * 9d / 5d
+  def rankineToKelvinScale(rankine: Double): Double = rankine * 5d / 9d
 
-  implicit class TemperatureConversions[A](n: A)(implicit num: Numeric[A]) {
-    def C = Celsius(n)
-    def celsius = Celsius(n)
-    def degreesCelsius = Celsius(n)
-    def F = Fahrenheit(n)
-    def Fah = Fahrenheit(n) // F conflicts with (Float) in the console; Fah is provided as an alternative
-    def fahrenheit = Fahrenheit(n)
-    def degreesFahrenheit = Fahrenheit(n)
-    def K = Kelvin(n)
-    def kelvin = Kelvin(n)
-    def degreesKelvin = Kelvin(n)
-    def R = Rankine(n)
-    def rankine = Rankine(n)
-    def degreesRankine = Rankine(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def C: Temperature = Celsius(n)
+    def celsius: Temperature = Celsius(n)
+    def degreesCelsius: Temperature = Celsius(n)
+    def F: Temperature = Fahrenheit(n)
+    def Fah: Temperature = Fahrenheit(n) // F conflicts with (Float) in the console; Fah is provided as an alternative
+    def fahrenheit: Temperature = Fahrenheit(n)
+    def degreesFahrenheit: Temperature = Fahrenheit(n)
+    def K: Temperature = Kelvin(n)
+    def kelvin: Temperature = Kelvin(n)
+    def degreesKelvin: Temperature = Kelvin(n)
+    def R: Temperature = Rankine(n)
+    def rankine: Temperature = Rankine(n)
+    def degreesRankine: Temperature = Rankine(n)
   }
 
-  implicit class TemperatureStringConversion(s: String) {
-    def toTemperature = Temperature(s)
+  extension (s: String) {
+    def toTemperature: Try[Temperature] = Temperature(s)
   }
 }
 

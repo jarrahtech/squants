@@ -9,6 +9,7 @@ package squants.photo
 
 import squants._
 import squants.time.TimeDerivative
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -22,25 +23,25 @@ final class Illuminance private (val value: Double, val unit: IlluminanceUnit)
 
   def dimension = Illuminance
 
-  protected[squants] def timeIntegrated = LuxSeconds(toLux)
-  protected[squants] def time = Seconds(1)
+  protected[squants] def timeIntegrated: LuminousExposure = LuxSeconds(toLux)
+  protected[squants] def time: Time = Seconds(1)
 
   def *(that: Area): LuminousFlux = Lumens(this.toLux * that.toSquareMeters)
 
-  def toLux = to(Lux)
+  def toLux: Double = to(Lux)
 }
 
 object Illuminance extends Dimension[Illuminance] {
-  private[photo] def apply[A](n: A, unit: IlluminanceUnit)(implicit num: Numeric[A]) = new Illuminance(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[photo] def apply[A](n: A, unit: IlluminanceUnit)(using num: Numeric[A]) = new Illuminance(num.toDouble(n), unit)
+  def apply(value: Any): Try[Illuminance] = parse(value)
   def name = "Illuminance"
   def primaryUnit = Lux
   def siUnit = Lux
-  def units = Set(Lux)
+  def units: Set[UnitOfMeasure[Illuminance]] = Set(Lux)
 }
 
 trait IlluminanceUnit extends UnitOfMeasure[Illuminance] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = Illuminance(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): Illuminance = Illuminance(n, this)
 }
 
 object Lux extends IlluminanceUnit with PrimaryUnit with SiUnit {
@@ -48,11 +49,11 @@ object Lux extends IlluminanceUnit with PrimaryUnit with SiUnit {
 }
 
 object IlluminanceConversions {
-  lazy val lux = Lux(1)
+  lazy val lux: Illuminance = Lux(1)
 
-  implicit class IlluminanceConversions[A](n: A)(implicit num: Numeric[A]) {
-    def lux = Lux(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def lux: Illuminance = Lux(n)
   }
 
-  implicit object IlluminanceNumeric extends AbstractQuantityNumeric[Illuminance](Illuminance.primaryUnit)
+  given IlluminanceNumeric: AbstractQuantityNumeric[Illuminance](Illuminance.primaryUnit) {}
 }

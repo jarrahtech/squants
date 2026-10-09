@@ -13,6 +13,7 @@ import squants.motion.{ Force, MassFlow, Momentum, _ }
 import squants.space.{ CubicMeters, SquareMeters }
 import squants.time.TimeIntegral
 import squants.{ Acceleration, Energy => _, Velocity, _ }
+import scala.util.Try
 
 /**
  * Represents a quantity of Mass
@@ -28,8 +29,8 @@ final class Mass private (val value: Double, val unit: MassUnit)
 
   def dimension = Mass
 
-  protected def timeDerived = KilogramsPerSecond(toKilograms)
-  protected def time = Seconds(1)
+  protected def timeDerived: MassFlow = KilogramsPerSecond(toKilograms)
+  protected def time: Time = Seconds(1)
 
   def *(that: SpecificEnergy): Energy = Joules(this.toKilograms * that.toGrays)
   def *(that: Velocity): Momentum = Momentum(this, that)
@@ -47,47 +48,47 @@ final class Mass private (val value: Double, val unit: MassUnit)
    */
   infix def onRadius(radius: Length): MomentOfInertia = KilogramsMetersSquared(toKilograms * radius.squared.toSquareMeters)
 
-  def toNanograms = to(Nanograms)
-  def toMicrograms = to(Micrograms)
-  def toMilligrams = to(Milligrams)
-  def toGrams = to(Grams)
-  def toKilograms = to(Kilograms)
-  def toTonnes = to(Tonnes)
-  def toOunces = to(Ounces)
-  def toPounds = to(Pounds)
-  def toKilopounds = to(Kilopounds)
-  def toMegapounds = to(Megapounds)
-  def toStone = to(Stone)
-  def toTroyGrains = to(TroyGrains)
-  def toPennyweights = to(Pennyweights)
-  def toTroyOunces = to(TroyOunces)
-  def toTroyPounds = to(TroyPounds)
-  def toTolas = to(Tolas)
-  def toCarats = to(Carats)
-  def toSolarMasses = to(SolarMasses)
-  def toEarthMasses = to(EarthMasses)
-  def toDalton = to(Dalton)
+  def toNanograms: Double = to(Nanograms)
+  def toMicrograms: Double = to(Micrograms)
+  def toMilligrams: Double = to(Milligrams)
+  def toGrams: Double = to(Grams)
+  def toKilograms: Double = to(Kilograms)
+  def toTonnes: Double = to(Tonnes)
+  def toOunces: Double = to(Ounces)
+  def toPounds: Double = to(Pounds)
+  def toKilopounds: Double = to(Kilopounds)
+  def toMegapounds: Double = to(Megapounds)
+  def toStone: Double = to(Stone)
+  def toTroyGrains: Double = to(TroyGrains)
+  def toPennyweights: Double = to(Pennyweights)
+  def toTroyOunces: Double = to(TroyOunces)
+  def toTroyPounds: Double = to(TroyPounds)
+  def toTolas: Double = to(Tolas)
+  def toCarats: Double = to(Carats)
+  def toSolarMasses: Double = to(SolarMasses)
+  def toEarthMasses: Double = to(EarthMasses)
+  def toDalton: Double = to(Dalton)
 
-  def toeV = to(ElectronVoltMass)
-  def tomeV = to(MilliElectronVoltMass)
-  def tokeV = to(KiloElectronVoltMass)
-  def toMeV = to(MegaElectronVoltMass)
-  def toGeV = to(GigaElectronVoltMass)
-  def toTeV = to(TeraElectronVoltMass)
-  def toPeV = to(PetaElectronVoltMass)
-  def toEeV = to(ExaElectronVoltMass)
+  def toeV: Double = to(ElectronVoltMass)
+  def tomeV: Double = to(MilliElectronVoltMass)
+  def tokeV: Double = to(KiloElectronVoltMass)
+  def toMeV: Double = to(MegaElectronVoltMass)
+  def toGeV: Double = to(GigaElectronVoltMass)
+  def toTeV: Double = to(TeraElectronVoltMass)
+  def toPeV: Double = to(PetaElectronVoltMass)
+  def toEeV: Double = to(ExaElectronVoltMass)
 }
 
 /**
  * Factory singleton for [[squants.mass.Mass]] values
  */
 object Mass extends Dimension[Mass] with BaseDimension {
-  private[mass] def apply[A](n: A, unit: MassUnit)(implicit num: Numeric[A]) = new Mass(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[mass] def apply[A](n: A, unit: MassUnit)(using num: Numeric[A]) = new Mass(num.toDouble(n), unit)
+  def apply(value: Any): Try[Mass] = parse(value)
   def name = "Mass"
   def primaryUnit = Grams
   def siUnit = Kilograms
-  def units = Set(Nanograms, Micrograms, Milligrams, Grams, Kilograms, Tonnes, Ounces, Pounds, Kilopounds, Megapounds,
+  def units: Set[UnitOfMeasure[Mass]] = Set(Nanograms, Micrograms, Milligrams, Grams, Kilograms, Tonnes, Ounces, Pounds, Kilopounds, Megapounds,
     Stone, TroyGrains, Pennyweights, TroyOunces, TroyPounds, Tolas, Carats, SolarMasses, EarthMasses, Dalton,
     ElectronVoltMass, MilliElectronVoltMass, KiloElectronVoltMass, MegaElectronVoltMass,
     GigaElectronVoltMass, TeraElectronVoltMass, PetaElectronVoltMass, ExaElectronVoltMass)
@@ -98,7 +99,7 @@ object Mass extends Dimension[Mass] with BaseDimension {
  * Base trait for units of [[squants.mass.Mass]]
  */
 trait MassUnit extends UnitOfMeasure[Mass] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = Mass(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): Mass = Mass(n, this)
 }
 
 object Grams extends MassUnit with PrimaryUnit with SiUnit {
@@ -131,57 +132,57 @@ object Tonnes extends MassUnit {
 }
 
 object Ounces extends MassUnit {
-  val conversionFactor = Pounds.conversionFactor / 16d
+  val conversionFactor: Double = Pounds.conversionFactor / 16d
   val symbol = "oz"
 }
 
 object Pounds extends MassUnit {
-  val conversionFactor = Kilograms.conversionFactor * 4.5359237e-1
+  val conversionFactor: Double = Kilograms.conversionFactor * 4.5359237e-1
   val symbol = "lb"
 }
 
 object Kilopounds extends MassUnit {
-  val conversionFactor = Pounds.conversionFactor * MetricSystem.Kilo
+  val conversionFactor: Double = Pounds.conversionFactor * MetricSystem.Kilo
   val symbol = "klb"
 }
 
 object Megapounds extends MassUnit {
-  val conversionFactor = Pounds.conversionFactor * MetricSystem.Mega
+  val conversionFactor: Double = Pounds.conversionFactor * MetricSystem.Mega
   val symbol = "Mlb"
 }
 
 object Stone extends MassUnit {
-  val conversionFactor = Pounds.conversionFactor * 14d
+  val conversionFactor: Double = Pounds.conversionFactor * 14d
   val symbol = "st"
 }
 
 object TroyGrains extends MassUnit {
-  val conversionFactor = 64.79891 * Milligrams.conversionFactor
+  val conversionFactor: Double = 64.79891 * Milligrams.conversionFactor
   val symbol = "gr"
 }
 
 object Pennyweights extends MassUnit {
-  val conversionFactor = 24d * TroyGrains.conversionFactor
+  val conversionFactor: Double = 24d * TroyGrains.conversionFactor
   val symbol = "dwt"
 }
 
 object TroyOunces extends MassUnit {
-  val conversionFactor = 480d * TroyGrains.conversionFactor
+  val conversionFactor: Double = 480d * TroyGrains.conversionFactor
   val symbol = "oz t"
 }
 
 object TroyPounds extends MassUnit {
-  val conversionFactor = 12d * TroyOunces.conversionFactor
+  val conversionFactor: Double = 12d * TroyOunces.conversionFactor
   val symbol = "lb t"
 }
 
 object Tolas extends MassUnit {
-  val conversionFactor = 180d * TroyGrains.conversionFactor
+  val conversionFactor: Double = 180d * TroyGrains.conversionFactor
   val symbol = "tola"
 }
 
 object Carats extends MassUnit {
-  val conversionFactor = 200d * Milligrams.conversionFactor
+  val conversionFactor: Double = 200d * Milligrams.conversionFactor
   val symbol = "ct"
 }
 
@@ -191,13 +192,13 @@ object SolarMasses extends MassUnit {
 }
 
 object EarthMasses extends MassUnit {
-  val conversionFactor = 5.972168e24 * Kilograms.conversionFactor
+  val conversionFactor: Double = 5.972168e24 * Kilograms.conversionFactor
   val symbol = "M🜨"
 }
 
 object Dalton extends MassUnit {
   // Value with reference to NIST (https://physics.nist.gov/cgi-bin/cuu/Value?u)
-  val conversionFactor = 1.66053906660e-27 * MetricSystem.Kilo
+  val conversionFactor: Double = 1.66053906660e-27 * MetricSystem.Kilo
   val symbol = "Da"
 }
 
@@ -207,37 +208,37 @@ object ElectronVoltMass extends MassUnit {
 }
 
 object MilliElectronVoltMass extends MassUnit {
-  val conversionFactor = ElectronVoltMass.conversionFactor * MetricSystem.Milli
+  val conversionFactor: Double = ElectronVoltMass.conversionFactor * MetricSystem.Milli
   val symbol = "meV/c²"
 }
 
 object KiloElectronVoltMass extends MassUnit {
-  val conversionFactor = ElectronVoltMass.conversionFactor * MetricSystem.Kilo
+  val conversionFactor: Double = ElectronVoltMass.conversionFactor * MetricSystem.Kilo
   val symbol = "keV/c²"
 }
 
 object MegaElectronVoltMass extends MassUnit {
-  val conversionFactor = ElectronVoltMass.conversionFactor * MetricSystem.Mega
+  val conversionFactor: Double = ElectronVoltMass.conversionFactor * MetricSystem.Mega
   val symbol = "MeV/c²"
 }
 
 object GigaElectronVoltMass extends MassUnit {
-  val conversionFactor = ElectronVoltMass.conversionFactor * MetricSystem.Giga
+  val conversionFactor: Double = ElectronVoltMass.conversionFactor * MetricSystem.Giga
   val symbol = "GeV/c²"
 }
 
 object TeraElectronVoltMass extends MassUnit {
-  val conversionFactor = ElectronVoltMass.conversionFactor * MetricSystem.Tera
+  val conversionFactor: Double = ElectronVoltMass.conversionFactor * MetricSystem.Tera
   val symbol = "TeV/c²"
 }
 
 object PetaElectronVoltMass extends MassUnit {
-  val conversionFactor = ElectronVoltMass.conversionFactor * MetricSystem.Peta
+  val conversionFactor: Double = ElectronVoltMass.conversionFactor * MetricSystem.Peta
   val symbol = "PeV/c²"
 }
 
 object ExaElectronVoltMass extends MassUnit {
-  val conversionFactor = ElectronVoltMass.conversionFactor * MetricSystem.Exa
+  val conversionFactor: Double = ElectronVoltMass.conversionFactor * MetricSystem.Exa
   val symbol = "EeV/c²"
 }
 /**
@@ -246,77 +247,77 @@ object ExaElectronVoltMass extends MassUnit {
  * Provides support fot the DSL
  */
 object MassConversions {
-  lazy val nanogram = Nanograms(1)
-  lazy val microgram = Micrograms(1)
-  lazy val milligram = Milligrams(1)
-  lazy val gram = Grams(1)
-  lazy val kilogram = Kilograms(1)
-  lazy val tonne = Tonnes(1)
-  lazy val ounce = Ounces(1)
-  lazy val pound = Pounds(1)
-  lazy val kilopound = Kilopounds(1)
-  lazy val megapound = Megapounds(1)
-  lazy val stone = Stone(1)
-  lazy val troyGrain = TroyGrains(1)
-  lazy val pennyweight = Pennyweights(1)
-  lazy val troyOunce = TroyOunces(1)
-  lazy val troyPound = TroyPounds(1)
-  lazy val tola = Tolas(1)
-  lazy val carat = Carats(1)
-  lazy val solarMass = SolarMasses(1)
-  lazy val dalton = Dalton(1)
+  lazy val nanogram: Mass = Nanograms(1)
+  lazy val microgram: Mass = Micrograms(1)
+  lazy val milligram: Mass = Milligrams(1)
+  lazy val gram: Mass = Grams(1)
+  lazy val kilogram: Mass = Kilograms(1)
+  lazy val tonne: Mass = Tonnes(1)
+  lazy val ounce: Mass = Ounces(1)
+  lazy val pound: Mass = Pounds(1)
+  lazy val kilopound: Mass = Kilopounds(1)
+  lazy val megapound: Mass = Megapounds(1)
+  lazy val stone: Mass = Stone(1)
+  lazy val troyGrain: Mass = TroyGrains(1)
+  lazy val pennyweight: Mass = Pennyweights(1)
+  lazy val troyOunce: Mass = TroyOunces(1)
+  lazy val troyPound: Mass = TroyPounds(1)
+  lazy val tola: Mass = Tolas(1)
+  lazy val carat: Mass = Carats(1)
+  lazy val solarMass: Mass = SolarMasses(1)
+  lazy val dalton: Mass = Dalton(1)
 
-  lazy val eV = ElectronVoltMass(1)
-  lazy val meV = MilliElectronVoltMass(1)
-  lazy val keV = KiloElectronVoltMass(1)
-  lazy val MeV = MegaElectronVoltMass(1)
-  lazy val GeV = GigaElectronVoltMass(1)
-  lazy val TeV = TeraElectronVoltMass(1)
-  lazy val PeV = PetaElectronVoltMass(1)
-  lazy val EeV = ExaElectronVoltMass(1)
+  lazy val eV: Mass = ElectronVoltMass(1)
+  lazy val meV: Mass = MilliElectronVoltMass(1)
+  lazy val keV: Mass = KiloElectronVoltMass(1)
+  lazy val MeV: Mass = MegaElectronVoltMass(1)
+  lazy val GeV: Mass = GigaElectronVoltMass(1)
+  lazy val TeV: Mass = TeraElectronVoltMass(1)
+  lazy val PeV: Mass = PetaElectronVoltMass(1)
+  lazy val EeV: Mass = ExaElectronVoltMass(1)
 
-  implicit class MassConversions[A](n: A)(implicit num: Numeric[A]) {
-    def ng = Nanograms(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def ng: Mass = Nanograms(n)
     def nanograms = ng
-    def mcg = Micrograms(n)
+    def mcg: Mass = Micrograms(n)
     def micrograms = mcg
-    def mg = Milligrams(n)
+    def mg: Mass = Milligrams(n)
     def milligrams = mg
-    def g = Grams(n)
+    def g: Mass = Grams(n)
     def grams = g
-    def kg = Kilograms(n)
+    def kg: Mass = Kilograms(n)
     def kilograms = kg
-    def tonnes = Tonnes(n)
-    def ounces = Ounces(n)
-    def pounds = Pounds(n)
-    def kilopounds = Kilopounds(n)
-    def megapounds = Megapounds(n)
-    def stone = Stone(n)
-    def troyGrains = TroyGrains(n)
-    def dwt = Pennyweights(n)
-    def pennyweights = Pennyweights(n)
-    def troyOunces = TroyOunces(n)
-    def troyPounds = TroyPounds(n)
-    def tolas = Tolas(n)
-    def ct = Carats(n)
-    def carats = Carats(n)
-    def solarMasses = SolarMasses(n)
-    def dalton = Dalton(n)
+    def tonnes: Mass = Tonnes(n)
+    def ounces: Mass = Ounces(n)
+    def pounds: Mass = Pounds(n)
+    def kilopounds: Mass = Kilopounds(n)
+    def megapounds: Mass = Megapounds(n)
+    def stone: Mass = Stone(n)
+    def troyGrains: Mass = TroyGrains(n)
+    def dwt: Mass = Pennyweights(n)
+    def pennyweights: Mass = Pennyweights(n)
+    def troyOunces: Mass = TroyOunces(n)
+    def troyPounds: Mass = TroyPounds(n)
+    def tolas: Mass = Tolas(n)
+    def ct: Mass = Carats(n)
+    def carats: Mass = Carats(n)
+    def solarMasses: Mass = SolarMasses(n)
+    def dalton: Mass = Dalton(n)
 
-    def eV = ElectronVoltMass(n)
-    def meV = MilliElectronVoltMass(n)
-    def keV = KiloElectronVoltMass(n)
-    def MeV = MegaElectronVoltMass(n)
-    def GeV = GigaElectronVoltMass(n)
-    def TeV = TeraElectronVoltMass(n)
-    def PeV = PetaElectronVoltMass(n)
-    def EeV = ExaElectronVoltMass(n)
+    def eV: Mass = ElectronVoltMass(n)
+    def meV: Mass = MilliElectronVoltMass(n)
+    def keV: Mass = KiloElectronVoltMass(n)
+    def MeV: Mass = MegaElectronVoltMass(n)
+    def GeV: Mass = GigaElectronVoltMass(n)
+    def TeV: Mass = TeraElectronVoltMass(n)
+    def PeV: Mass = PetaElectronVoltMass(n)
+    def EeV: Mass = ExaElectronVoltMass(n)
   }
 
-  implicit class MassStringConversions(val s: String) {
-    def toMass = Mass(s)
+  extension (s: String) {
+    def toMass: Try[Mass] = Mass(s)
   }
 
-  implicit object MassNumeric extends AbstractQuantityNumeric[Mass](Mass.primaryUnit)
+  given MassNumeric: AbstractQuantityNumeric[Mass](Mass.primaryUnit) {}
 }
 

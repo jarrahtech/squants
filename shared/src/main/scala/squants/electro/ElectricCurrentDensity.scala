@@ -2,6 +2,7 @@ package squants.electro
 
 import squants.space.Meters
 import squants.{ AbstractQuantityNumeric, Area, Dimension, Length, PrimaryUnit, Quantity, SiUnit, UnitConverter, UnitOfMeasure }
+import scala.util.Try
 
 /**
  *
@@ -18,32 +19,32 @@ final class ElectricCurrentDensity private (val value: Double, val unit: Electri
   def *(that: Area): ElectricCurrent = Amperes(this.toAmperesPerSquareMeter * that.toSquareMeters)
   def *(that: Length): MagneticFieldStrength = AmperesPerMeter(this.toAmperesPerSquareMeter * that.toMeters)
 
-  def toAmperesPerSquareMeter = to(AmperesPerSquareMeter)
+  def toAmperesPerSquareMeter: Double = to(AmperesPerSquareMeter)
 }
 
 object ElectricCurrentDensity extends Dimension[ElectricCurrentDensity] {
-  private[electro] def apply[A](n: A, unit: ElectricCurrentDensityUnit)(implicit num: Numeric[A]) = new ElectricCurrentDensity(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[electro] def apply[A](n: A, unit: ElectricCurrentDensityUnit)(using num: Numeric[A]) = new ElectricCurrentDensity(num.toDouble(n), unit)
+  def apply(value: Any): Try[ElectricCurrentDensity] = parse(value)
   def name = "ElectricCurrentDensity"
   def primaryUnit = AmperesPerSquareMeter
   def siUnit = AmperesPerSquareMeter
-  def units = Set(AmperesPerSquareMeter)
+  def units: Set[UnitOfMeasure[ElectricCurrentDensity]] = Set(AmperesPerSquareMeter)
 }
 
 trait ElectricCurrentDensityUnit extends UnitOfMeasure[ElectricCurrentDensity] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = ElectricCurrentDensity(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): ElectricCurrentDensity = ElectricCurrentDensity(n, this)
 }
 
 object AmperesPerSquareMeter extends ElectricCurrentDensityUnit with PrimaryUnit with SiUnit {
-  val symbol = Amperes.symbol + "/" + Meters.symbol + "²"
+  val symbol: String = Amperes.symbol + "/" + Meters.symbol + "²"
 }
 
 object ElectricCurrentDensityConversions {
-  lazy val amperePerSquareMeter = AmperesPerSquareMeter(1)
+  lazy val amperePerSquareMeter: ElectricCurrentDensity = AmperesPerSquareMeter(1)
 
-  implicit class ElectricCurrentDensityConversions[A](n: A)(implicit num: Numeric[A]) {
-    def amperesPerSquareMeter = AmperesPerSquareMeter(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def amperesPerSquareMeter: ElectricCurrentDensity = AmperesPerSquareMeter(n)
   }
 
-  implicit object ElectricCurrentDensityNumeric extends AbstractQuantityNumeric[ElectricCurrentDensity](ElectricCurrentDensity.primaryUnit)
+  given ElectricCurrentDensityNumeric: AbstractQuantityNumeric[ElectricCurrentDensity](ElectricCurrentDensity.primaryUnit) {}
 }

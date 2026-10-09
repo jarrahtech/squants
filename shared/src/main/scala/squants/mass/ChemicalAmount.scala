@@ -9,6 +9,7 @@
 package squants.mass
 
 import squants._
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -23,22 +24,22 @@ final class ChemicalAmount private (val value: Double, val unit: ChemicalAmountU
 
   def /(that: Volume) = ??? // returns SubstanceConcentration
 
-  def toMoles = to(Moles)
-  def toPoundMoles = to(PoundMoles)
+  def toMoles: Double = to(Moles)
+  def toPoundMoles: Double = to(PoundMoles)
 }
 
 object ChemicalAmount extends Dimension[ChemicalAmount] with BaseDimension {
-  private[mass] def apply[A](n: A, unit: ChemicalAmountUnit)(implicit num: Numeric[A]) = new ChemicalAmount(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[mass] def apply[A](n: A, unit: ChemicalAmountUnit)(using num: Numeric[A]) = new ChemicalAmount(num.toDouble(n), unit)
+  def apply(value: Any): Try[ChemicalAmount] = parse(value)
   val name = "ChemicalAmount"
   def primaryUnit = Moles
   def siUnit = Moles
-  def units = Set(Moles, PoundMoles)
+  def units: Set[UnitOfMeasure[ChemicalAmount]] = Set(Moles, PoundMoles)
   def dimensionSymbol = "N"
 }
 
 trait ChemicalAmountUnit extends UnitOfMeasure[ChemicalAmount] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = ChemicalAmount(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): ChemicalAmount = ChemicalAmount(n, this)
 }
 
 object Moles extends ChemicalAmountUnit with PrimaryUnit with SiBaseUnit {
@@ -51,13 +52,13 @@ object PoundMoles extends ChemicalAmountUnit {
 }
 
 object ChemicalAmountConversions {
-  lazy val mole = Moles(1)
-  lazy val poundMole = PoundMoles(1)
+  lazy val mole: ChemicalAmount = Moles(1)
+  lazy val poundMole: ChemicalAmount = PoundMoles(1)
 
-  implicit class ChemicalAmountConversions[A](n: A)(implicit num: Numeric[A]) {
-    def moles = Moles(n)
-    def poundMoles = PoundMoles(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def moles: ChemicalAmount = Moles(n)
+    def poundMoles: ChemicalAmount = PoundMoles(n)
   }
 
-  implicit object ChemicalAmountNumeric extends AbstractQuantityNumeric[ChemicalAmount](ChemicalAmount.primaryUnit)
+  given ChemicalAmountNumeric: AbstractQuantityNumeric[ChemicalAmount](ChemicalAmount.primaryUnit) {}
 }

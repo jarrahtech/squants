@@ -12,6 +12,7 @@ import squants._
 import squants.energy.Watts
 import squants.photo.{ Lumens, LuminousFlux, LuminousIntensity }
 import squants.radio.RadiantIntensity
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -32,16 +33,16 @@ final class SolidAngle private (val value: Double, val unit: SolidAngleUnit)
 }
 
 object SolidAngle extends Dimension[SolidAngle] {
-  private[space] def apply[A](n: A, unit: SolidAngleUnit)(implicit num: Numeric[A]) = new SolidAngle(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[space] def apply[A](n: A, unit: SolidAngleUnit)(using num: Numeric[A]) = new SolidAngle(num.toDouble(n), unit)
+  def apply(value: Any): Try[SolidAngle] = parse(value)
   def name = "SolidAngle"
   def primaryUnit = SquareRadians
   def siUnit = SquareRadians
-  def units = Set(SquareRadians)
+  def units: Set[UnitOfMeasure[SolidAngle]] = Set(SquareRadians)
 }
 
 trait SolidAngleUnit extends UnitOfMeasure[SolidAngle] {
-  def apply[A](n: A)(implicit num: Numeric[A]) = SolidAngle(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): SolidAngle = SolidAngle(n, this)
 }
 
 object SquaredRadians extends SolidAngleUnit with PrimaryUnit with SiUnit {
@@ -49,14 +50,14 @@ object SquaredRadians extends SolidAngleUnit with PrimaryUnit with SiUnit {
 }
 
 object SolidAngleConversions {
-  lazy val squaredRadian = SquaredRadians(1)
-  lazy val steradian = SquaredRadians(1)
+  lazy val squaredRadian: SolidAngle = SquaredRadians(1)
+  lazy val steradian: SolidAngle = SquaredRadians(1)
 
-  implicit class SolidAngleConversions[A](n: A)(implicit num: Numeric[A]) {
-    def squaredRadians = SquaredRadians(n)
-    def steradians = SquaredRadians(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def squaredRadians: SolidAngle = SquaredRadians(n)
+    def steradians: SolidAngle = SquaredRadians(n)
   }
 
-  implicit object SolidAngleNumeric extends AbstractQuantityNumeric[SolidAngle](SolidAngle.primaryUnit)
+  given SolidAngleNumeric: AbstractQuantityNumeric[SolidAngle](SolidAngle.primaryUnit) {}
 }
 

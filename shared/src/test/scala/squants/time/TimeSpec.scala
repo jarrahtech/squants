@@ -15,6 +15,7 @@ import squants.radio.SquareMeterSeconds
 
 import scala.concurrent.duration.{ DAYS, Duration, HOURS, MICROSECONDS, MILLISECONDS, MINUTES, NANOSECONDS, SECONDS }
 import org.scalatest.flatspec.AnyFlatSpec
+import scala.language.implicitConversions
 import org.scalatest.matchers.should.Matchers
 
 /**
@@ -167,7 +168,7 @@ class TimeSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "convert a Scala Concurrent Duration to a Time with the same units" in {
-    import TimeConversions._
+    import TimeConversions.given
 
     val nanoseconds: Time = Duration(1, NANOSECONDS)
     nanoseconds.value should be(1)
@@ -199,14 +200,14 @@ class TimeSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "implicitly convert a Scala Concurrent Duration to a Time in expressions that require it" in {
-    import TimeConversions._
+    import TimeConversions.given
 
     val duration: Duration = Duration(1, "second")
     Meters(1) / duration should be(MetersPerSecond(1))
   }
 
   it should "convert a Time to a Scala Concurrent Duration with the same units" in {
-    import TimeConversions._
+    import TimeConversions.given
 
     val nanoseconds: Duration = Nanoseconds(1)
     nanoseconds.length should be(1)
@@ -238,7 +239,7 @@ class TimeSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "convert a Time in a unit Scala Concurrent Duration lacks to an equal Duration" in {
-    import TimeConversions._
+    import TimeConversions.given
 
     val year: Duration = EarthYears(1)
     year.toMillis should be(EarthYears(1).toMilliseconds.toLong +- 1L)
@@ -248,7 +249,7 @@ class TimeSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "convert a Time to a Scala Concurrent Duration in expressions that require it" in {
-    import TimeConversions._
+    import TimeConversions.given
 
     def doSomethingWithDuration(duration: Duration): Unit = duration should be(Duration(10, SECONDS))
 

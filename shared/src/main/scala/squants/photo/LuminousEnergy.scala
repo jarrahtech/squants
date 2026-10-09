@@ -9,6 +9,7 @@ package squants.photo
 
 import squants._
 import squants.time.{ Seconds, TimeIntegral }
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -22,23 +23,23 @@ final class LuminousEnergy private (val value: Double, val unit: LuminousEnergyU
 
   def dimension = LuminousEnergy
 
-  protected def timeDerived = Lumens(toLumenSeconds)
-  protected[squants] def time = Seconds(1)
+  protected def timeDerived: LuminousFlux = Lumens(toLumenSeconds)
+  protected[squants] def time: Time = Seconds(1)
 
-  def toLumenSeconds = to(LumenSeconds)
+  def toLumenSeconds: Double = to(LumenSeconds)
 }
 
 object LuminousEnergy extends Dimension[LuminousEnergy] {
-  private[photo] def apply[A](n: A, unit: LuminousEnergyUnit)(implicit num: Numeric[A]) = new LuminousEnergy(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[photo] def apply[A](n: A, unit: LuminousEnergyUnit)(using num: Numeric[A]) = new LuminousEnergy(num.toDouble(n), unit)
+  def apply(value: Any): Try[LuminousEnergy] = parse(value)
   def name = "LuminousEnergy"
   def primaryUnit = LumenSeconds
   def siUnit = LumenSeconds
-  def units = Set(LumenSeconds)
+  def units: Set[UnitOfMeasure[LuminousEnergy]] = Set(LumenSeconds)
 }
 
 trait LuminousEnergyUnit extends UnitOfMeasure[LuminousEnergy] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = LuminousEnergy(num.toDouble(n), this)
+  def apply[A](n: A)(using num: Numeric[A]): LuminousEnergy = LuminousEnergy(num.toDouble(n), this)
 }
 
 object LumenSeconds extends LuminousEnergyUnit with PrimaryUnit with SiUnit {
@@ -46,11 +47,11 @@ object LumenSeconds extends LuminousEnergyUnit with PrimaryUnit with SiUnit {
 }
 
 object LuminousEnergyConversions {
-  lazy val lumenSecond = LumenSeconds(1)
+  lazy val lumenSecond: LuminousEnergy = LumenSeconds(1)
 
-  implicit class LuminousEnergyConversions[A](n: A)(implicit num: Numeric[A]) {
-    def lumenSeconds = LumenSeconds(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def lumenSeconds: LuminousEnergy = LumenSeconds(n)
   }
 
-  implicit object LuminousEnergyNumeric extends AbstractQuantityNumeric[LuminousEnergy](LuminousEnergy.primaryUnit)
+  given LuminousEnergyNumeric: AbstractQuantityNumeric[LuminousEnergy](LuminousEnergy.primaryUnit) {}
 }

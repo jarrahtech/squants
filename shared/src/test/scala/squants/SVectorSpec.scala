@@ -315,7 +315,7 @@ class SVectorSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "dot product with another QuantityVector" in {
-    import space.AreaConversions._
+    import space.AreaConversions.given
     val x = Kilometers(1)
     val y = Kilometers(2)
     val z = Kilometers(3)

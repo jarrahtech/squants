@@ -11,6 +11,7 @@ package squants.electro
 import squants._
 import squants.energy.Watts
 import squants.time.{ Seconds, TimeDerivative }
+import scala.util.Try
 
 /**
  * Represents a quantity of electric current
@@ -26,8 +27,8 @@ final class ElectricCurrent private (val value: Double, val unit: ElectricCurren
 
   def dimension = ElectricCurrent
 
-  protected[squants] def timeIntegrated = Coulombs(toAmperes)
-  protected[squants] def time = Seconds(1)
+  protected[squants] def timeIntegrated: ElectricCharge = Coulombs(toAmperes)
+  protected[squants] def time: Time = Seconds(1)
 
   def *(that: ElectricalResistance): ElectricPotential = Volts(this.toAmperes * that.toOhms)
   def *(that: ElectricPotential): Power = Watts(this.toAmperes * that.toVolts)
@@ -36,17 +37,17 @@ final class ElectricCurrent private (val value: Double, val unit: ElectricCurren
   def /(that: Length): MagneticFieldStrength = AmperesPerMeter(this.toAmperes / that.toMeters)
   def /(that: Area): ElectricCurrentDensity = AmperesPerSquareMeter(this.toAmperes / that.toSquareMeters)
 
-  def toAmperes = to(Amperes)
-  def toMilliamperes = to(Milliamperes)
+  def toAmperes: Double = to(Amperes)
+  def toMilliamperes: Double = to(Milliamperes)
 }
 
 object ElectricCurrent extends Dimension[ElectricCurrent] with BaseDimension {
-  private[electro] def apply[A](n: A, unit: ElectricCurrentUnit)(implicit num: Numeric[A]) = new ElectricCurrent(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[electro] def apply[A](n: A, unit: ElectricCurrentUnit)(using num: Numeric[A]) = new ElectricCurrent(num.toDouble(n), unit)
+  def apply(value: Any): Try[ElectricCurrent] = parse(value)
   def name = "ElectricCurrent"
   def primaryUnit = Amperes
   def siUnit = Amperes
-  def units = Set(Amperes, Milliamperes)
+  def units: Set[UnitOfMeasure[ElectricCurrent]] = Set(Amperes, Milliamperes)
   def dimensionSymbol = "I"
 }
 
@@ -54,7 +55,7 @@ object ElectricCurrent extends Dimension[ElectricCurrent] with BaseDimension {
  * Base trait for units of [[squants.electro.ElectricCurrent]]
  */
 trait ElectricCurrentUnit extends UnitOfMeasure[ElectricCurrent] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = ElectricCurrent(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): ElectricCurrent = ElectricCurrent(n, this)
 }
 
 /**
@@ -73,20 +74,19 @@ object Milliamperes extends ElectricCurrentUnit with SiUnit {
 }
 
 object ElectricCurrentConversions {
-  lazy val ampere = Amperes(1)
-  lazy val amp = Amperes(1)
-  lazy val milliampere = Milliamperes(1)
-  lazy val milliamp = Milliamperes(1)
+  lazy val ampere: ElectricCurrent = Amperes(1)
+  lazy val amp: ElectricCurrent = Amperes(1)
+  lazy val milliampere: ElectricCurrent = Milliamperes(1)
+  lazy val milliamp: ElectricCurrent = Milliamperes(1)
 
-  implicit class ElectricCurrentConversions[A](n: A)(implicit num: Numeric[A]) {
-    def amperes = Amperes(n)
-    def amps = Amperes(n)
-    def A = Amperes(n)
-    def milliampers = Milliamperes(n)
-    def milliamps = Milliamperes(n)
-    def mA = Milliamperes(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def amperes: ElectricCurrent = Amperes(n)
+    def amps: ElectricCurrent = Amperes(n)
+    def A: ElectricCurrent = Amperes(n)
+    def milliampers: ElectricCurrent = Milliamperes(n)
+    def milliamps: ElectricCurrent = Milliamperes(n)
+    def mA: ElectricCurrent = Milliamperes(n)
   }
 
-  implicit object ElectricCurrentNumeric
-    extends AbstractQuantityNumeric[ElectricCurrent](ElectricCurrent.primaryUnit)
+  given ElectricCurrentNumeric: AbstractQuantityNumeric[ElectricCurrent](ElectricCurrent.primaryUnit) {}
 }

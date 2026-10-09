@@ -51,13 +51,13 @@ final class Density private (val value: Double, val unit: DensityUnit)
 }
 
 object Density extends Dimension[Density] {
-  private[mass] def apply[A](n: A, unit: DensityUnit)(implicit num: Numeric[A]) = new Density(num.toDouble(n), unit)
+  private[mass] def apply[A](n: A, unit: DensityUnit)(using num: Numeric[A]) = new Density(num.toDouble(n), unit)
   def apply(m: Mass, v: Volume): Density = KilogramsPerCubicMeter(m.toKilograms / v.toCubicMeters)
   def apply(value: Any): Try[Density] = parse(value)
   def name = "Density"
   def primaryUnit: UnitOfMeasure[Density] & PrimaryUnit = KilogramsPerCubicMeter
   def siUnit: UnitOfMeasure[Density] & SiUnit = KilogramsPerCubicMeter
-  def units = Set(
+  def units: Set[UnitOfMeasure[Density]] = Set(
     KilogramsPerCubicMeter, EarthDensities,
     KilogramsPerLitre, GramsPerLitre, MilligramsPerLitre, MicrogramsPerLitre, NanogramsPerLitre,
     KilogramsPerMillilitre, GramsPerMillilitre, MilligramsPerMillilitre, MicrogramsPerMillilitre, NanogramsPerMillilitre,
@@ -66,7 +66,7 @@ object Density extends Dimension[Density] {
 }
 
 trait DensityUnit extends UnitOfMeasure[Density] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]): Density = Density(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): Density = Density(n, this)
 }
 
 object KilogramsPerCubicMeter extends DensityUnit with PrimaryUnit with SiUnit {
@@ -74,7 +74,7 @@ object KilogramsPerCubicMeter extends DensityUnit with PrimaryUnit with SiUnit {
 }
 
 object EarthDensities extends DensityUnit {
-  val conversionFactor = 5513 * KilogramsPerCubicMeter.conversionFactor
+  val conversionFactor: Double = 5513 * KilogramsPerCubicMeter.conversionFactor
   val symbol = "D🜨"
 }
 
@@ -241,7 +241,7 @@ object DensityConversions {
   lazy val nanogramsPerNanolitre: Density = NanogramsPerNanolitre(1)
   lazy val nanogramsPerNanoliter: Density = NanogramsPerNanolitre(1)
 
-  implicit class AreaDensityConversions[A](n: A)(implicit num: Numeric[A]) {
+  extension [A](n: A)(using num: Numeric[A]) {
     def kilogramsPerCubicMeter: Density = KilogramsPerCubicMeter(n)
 
     def kilogramsPerLitre: Density = KilogramsPerLitre(n)
@@ -289,5 +289,5 @@ object DensityConversions {
     def nanogramsPerNanoliter: Density = NanogramsPerNanolitre(n)
   }
 
-  implicit object DensityNumeric extends AbstractQuantityNumeric[Density](KilogramsPerCubicMeter)
+  given DensityNumeric: AbstractQuantityNumeric[Density](KilogramsPerCubicMeter) {}
 }

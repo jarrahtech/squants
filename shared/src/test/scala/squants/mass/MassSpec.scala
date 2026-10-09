@@ -322,7 +322,7 @@ class MassSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "provide Numeric support" in {
-    import MassConversions._
+    import MassConversions.given
 
     val ms = List(Grams(1000), Kilograms(10))
     ms.sum should be(Kilograms(11))

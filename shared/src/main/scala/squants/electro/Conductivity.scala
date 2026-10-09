@@ -10,6 +10,7 @@ package squants.electro
 
 import squants._
 import squants.space.Length
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -24,21 +25,21 @@ final class Conductivity private (val value: Double, val unit: ConductivityUnit)
 
   def *(that: Length): ElectricalConductance = Siemens(this.toSiemensPerMeter * that.toMeters)
 
-  def toSiemensPerMeter = to(SiemensPerMeter)
-  def inOhmMeters = OhmMeters(1d / toSiemensPerMeter)
+  def toSiemensPerMeter: Double = to(SiemensPerMeter)
+  def inOhmMeters: Resistivity = OhmMeters(1d / toSiemensPerMeter)
 }
 
 object Conductivity extends Dimension[Conductivity] {
-  private[electro] def apply[A](n: A, unit: ConductivityUnit)(implicit num: Numeric[A]) = new Conductivity(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[electro] def apply[A](n: A, unit: ConductivityUnit)(using num: Numeric[A]) = new Conductivity(num.toDouble(n), unit)
+  def apply(value: Any): Try[Conductivity] = parse(value)
   def name = "Conductivity"
   def primaryUnit = SiemensPerMeter
   def siUnit = SiemensPerMeter
-  def units = Set(SiemensPerMeter)
+  def units: Set[UnitOfMeasure[Conductivity]] = Set(SiemensPerMeter)
 }
 
 trait ConductivityUnit extends UnitOfMeasure[Conductivity] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = Conductivity(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): Conductivity = Conductivity(n, this)
 }
 
 object SiemensPerMeter extends ConductivityUnit with PrimaryUnit with SiUnit {
@@ -46,11 +47,11 @@ object SiemensPerMeter extends ConductivityUnit with PrimaryUnit with SiUnit {
 }
 
 object ConductivityConversions {
-  lazy val siemenPerMeter = SiemensPerMeter(1)
+  lazy val siemenPerMeter: Conductivity = SiemensPerMeter(1)
 
-  implicit class ConductivityConversions[A](n: A)(implicit num: Numeric[A]) {
-    def siemensPerMeter = SiemensPerMeter(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def siemensPerMeter: Conductivity = SiemensPerMeter(n)
   }
 
-  implicit object ConductivityNumeric extends AbstractQuantityNumeric[Conductivity](Conductivity.primaryUnit)
+  given ConductivityNumeric: AbstractQuantityNumeric[Conductivity](Conductivity.primaryUnit) {}
 }

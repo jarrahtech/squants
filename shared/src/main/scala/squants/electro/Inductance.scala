@@ -9,6 +9,7 @@
 package squants.electro
 
 import squants._
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -24,24 +25,24 @@ final class Inductance private (val value: Double, val unit: InductanceUnit)
   def *(that: ElectricCurrent): MagneticFlux = Webers(this.toHenry * that.toAmperes)
   def /(that: Length): Permeability = HenriesPerMeter(this.toHenry / that.toMeters)
 
-  def toHenry = to(Henry)
-  def toMillihenry = to(Millihenry)
-  def toMicrohenry = to(Microhenry)
-  def toNanohenry = to(Nanohenry)
-  def toPicohenry = to(Picohenry)
+  def toHenry: Double = to(Henry)
+  def toMillihenry: Double = to(Millihenry)
+  def toMicrohenry: Double = to(Microhenry)
+  def toNanohenry: Double = to(Nanohenry)
+  def toPicohenry: Double = to(Picohenry)
 }
 
 object Inductance extends Dimension[Inductance] {
-  private[electro] def apply[A](n: A, unit: InductanceUnit)(implicit num: Numeric[A]) = new Inductance(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[electro] def apply[A](n: A, unit: InductanceUnit)(using num: Numeric[A]) = new Inductance(num.toDouble(n), unit)
+  def apply(value: Any): Try[Inductance] = parse(value)
   def name = "Inductance"
   def primaryUnit = Henry
   def siUnit = Henry
-  def units = Set(Henry, Millihenry, Microhenry, Nanohenry, Picohenry)
+  def units: Set[UnitOfMeasure[Inductance]] = Set(Henry, Millihenry, Microhenry, Nanohenry, Picohenry)
 }
 
 trait InductanceUnit extends UnitOfMeasure[Inductance] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = Inductance(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): Inductance = Inductance(n, this)
 }
 
 object Henry extends InductanceUnit with PrimaryUnit with SiUnit {
@@ -69,19 +70,19 @@ object Picohenry extends InductanceUnit with SiUnit {
 }
 
 object InductanceConversions {
-  lazy val henry = Henry(1)
-  lazy val millihenry = Millihenry(1)
-  lazy val microhenry = Microhenry(1)
-  lazy val nanohenry = Nanohenry(1)
-  lazy val picohenry = Picohenry(1)
+  lazy val henry: Inductance = Henry(1)
+  lazy val millihenry: Inductance = Millihenry(1)
+  lazy val microhenry: Inductance = Microhenry(1)
+  lazy val nanohenry: Inductance = Nanohenry(1)
+  lazy val picohenry: Inductance = Picohenry(1)
 
-  implicit class InductanceConversions[A](n: A)(implicit num: Numeric[A]) {
-    def henry = Henry(n)
-    def millihenry = Millihenry(n)
-    def microhenry = Microhenry(n)
-    def nanohenry = Nanohenry(n)
-    def picohenry = Picohenry(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def henry: Inductance = Henry(n)
+    def millihenry: Inductance = Millihenry(n)
+    def microhenry: Inductance = Microhenry(n)
+    def nanohenry: Inductance = Nanohenry(n)
+    def picohenry: Inductance = Picohenry(n)
   }
 
-  implicit object InductanceNumeric extends AbstractQuantityNumeric[Inductance](Inductance.primaryUnit)
+  given InductanceNumeric: AbstractQuantityNumeric[Inductance](Inductance.primaryUnit) {}
 }

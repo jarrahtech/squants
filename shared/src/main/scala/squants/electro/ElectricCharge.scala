@@ -11,6 +11,7 @@ package squants.electro
 import squants._
 import squants.energy.Joules
 import squants.time.{ Time, TimeIntegral }
+import scala.util.Try
 
 /**
  * @author  garyKeorkunian
@@ -24,8 +25,8 @@ final class ElectricCharge private (val value: Double, val unit: ElectricChargeU
 
   def dimension = ElectricCharge
 
-  protected def timeDerived = Amperes(toCoulombs)
-  protected def time = Seconds(1)
+  protected def timeDerived: ElectricCurrent = Amperes(toCoulombs)
+  protected def time: Time = Seconds(1)
 
   def *(that: ElectricPotential): Energy = Joules(this.toCoulombs * that.toVolts)
   def /(that: ElectricPotential): Capacitance = Farads(this.toCoulombs / that.toVolts)
@@ -35,29 +36,29 @@ final class ElectricCharge private (val value: Double, val unit: ElectricChargeU
   def /(that: Volume): ElectricChargeDensity = CoulombsPerCubicMeter(this.toCoulombs / that.toCubicMeters)
   def /(that: Mass): ElectricChargeMassRatio = CoulombsPerKilogram(this.toCoulombs / that.toKilograms)
 
-  def toCoulombs = to(Coulombs)
-  def toPicocoulombs = to(Picocoulombs)
-  def toNanocoulombs = to(Nanocoulombs)
-  def toMicrocoulombs = to(Microcoulombs)
-  def toMillcoulombs = to(Millicoulombs)
-  def toAbcoulombs = to(Abcoulombs)
-  def toAmpereHours = to(AmpereHours)
-  def toMilliampereHours = to(MilliampereHours)
-  def toMilliampereSeconds = to(MilliampereSeconds)
+  def toCoulombs: Double = to(Coulombs)
+  def toPicocoulombs: Double = to(Picocoulombs)
+  def toNanocoulombs: Double = to(Nanocoulombs)
+  def toMicrocoulombs: Double = to(Microcoulombs)
+  def toMillcoulombs: Double = to(Millicoulombs)
+  def toAbcoulombs: Double = to(Abcoulombs)
+  def toAmpereHours: Double = to(AmpereHours)
+  def toMilliampereHours: Double = to(MilliampereHours)
+  def toMilliampereSeconds: Double = to(MilliampereSeconds)
 }
 
 object ElectricCharge extends Dimension[ElectricCharge] {
-  private[electro] def apply[A](n: A, unit: ElectricChargeUnit)(implicit num: Numeric[A]) = new ElectricCharge(num.toDouble(n), unit)
-  def apply(value: Any) = parse(value)
+  private[electro] def apply[A](n: A, unit: ElectricChargeUnit)(using num: Numeric[A]) = new ElectricCharge(num.toDouble(n), unit)
+  def apply(value: Any): Try[ElectricCharge] = parse(value)
   def name = "ElectricCharge"
   def primaryUnit = Coulombs
   def siUnit = Coulombs
-  def units = Set(Coulombs, Picocoulombs, Nanocoulombs, Microcoulombs, Millicoulombs, Abcoulombs,
+  def units: Set[UnitOfMeasure[ElectricCharge]] = Set(Coulombs, Picocoulombs, Nanocoulombs, Microcoulombs, Millicoulombs, Abcoulombs,
     AmpereHours, MilliampereHours, MilliampereSeconds)
 }
 
 trait ElectricChargeUnit extends UnitOfMeasure[ElectricCharge] with UnitConverter {
-  def apply[A](n: A)(implicit num: Numeric[A]) = ElectricCharge(n, this)
+  def apply[A](n: A)(using num: Numeric[A]): ElectricCharge = ElectricCharge(n, this)
 }
 
 object Coulombs extends ElectricChargeUnit with PrimaryUnit with SiUnit {
@@ -96,37 +97,36 @@ object AmpereHours extends ElectricChargeUnit {
 
 object MilliampereHours extends ElectricChargeUnit {
   val symbol = "mAh"
-  val conversionFactor = AmpereHours.conversionFactor * MetricSystem.Milli
+  val conversionFactor: Double = AmpereHours.conversionFactor * MetricSystem.Milli
 }
 
 object MilliampereSeconds extends ElectricChargeUnit {
   val symbol = "mAs"
-  val conversionFactor = Coulombs.conversionFactor * MetricSystem.Milli
+  val conversionFactor: Double = Coulombs.conversionFactor * MetricSystem.Milli
 }
 
 object ElectricChargeConversions {
-  lazy val coulomb = Coulombs(1)
-  lazy val picocoulomb = Picocoulombs(1)
-  lazy val nanocoulomb = Nanocoulombs(1)
-  lazy val microcoulomb = Microcoulombs(1)
-  lazy val millicoulomb = Millicoulombs(1)
-  lazy val abcoulomb = Abcoulombs(1)
-  lazy val ampereHour = AmpereHours(1)
-  lazy val milliampereHour = MilliampereHours(1)
-  lazy val milliampereSecond = MilliampereSeconds(1)
+  lazy val coulomb: ElectricCharge = Coulombs(1)
+  lazy val picocoulomb: ElectricCharge = Picocoulombs(1)
+  lazy val nanocoulomb: ElectricCharge = Nanocoulombs(1)
+  lazy val microcoulomb: ElectricCharge = Microcoulombs(1)
+  lazy val millicoulomb: ElectricCharge = Millicoulombs(1)
+  lazy val abcoulomb: ElectricCharge = Abcoulombs(1)
+  lazy val ampereHour: ElectricCharge = AmpereHours(1)
+  lazy val milliampereHour: ElectricCharge = MilliampereHours(1)
+  lazy val milliampereSecond: ElectricCharge = MilliampereSeconds(1)
 
-  implicit class ElectricalChargeConversions[A](n: A)(implicit num: Numeric[A]) {
-    def coulombs = Coulombs(n)
-    def picocoulombs = Picocoulombs(n)
-    def nanocoulombs = Nanocoulombs(n)
-    def microcoulombs = Microcoulombs(n)
-    def millicoulombs = Millicoulombs(n)
-    def abcoulombs = Abcoulombs(n)
-    def ampereHours = AmpereHours(n)
-    def milliampereHours = MilliampereHours(n)
-    def milliampereSeconds = MilliampereSeconds(n)
+  extension [A](n: A)(using num: Numeric[A]) {
+    def coulombs: ElectricCharge = Coulombs(n)
+    def picocoulombs: ElectricCharge = Picocoulombs(n)
+    def nanocoulombs: ElectricCharge = Nanocoulombs(n)
+    def microcoulombs: ElectricCharge = Microcoulombs(n)
+    def millicoulombs: ElectricCharge = Millicoulombs(n)
+    def abcoulombs: ElectricCharge = Abcoulombs(n)
+    def ampereHours: ElectricCharge = AmpereHours(n)
+    def milliampereHours: ElectricCharge = MilliampereHours(n)
+    def milliampereSeconds: ElectricCharge = MilliampereSeconds(n)
   }
 
-  implicit object ElectricalChargeNumeric
-    extends AbstractQuantityNumeric[ElectricCharge](ElectricCharge.primaryUnit)
+  given ElectricalChargeNumeric: AbstractQuantityNumeric[ElectricCharge](ElectricCharge.primaryUnit) {}
 }

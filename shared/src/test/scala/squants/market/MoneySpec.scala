@@ -452,7 +452,7 @@ class MoneySpec extends AnyFlatSpec with Matchers with TryValues {
   }
 
   it should "provide implicit conversion from Double" in {
-    import MoneyConversions._
+    import MoneyConversions.given
 
     implicit val moneyContext: MoneyContext = MoneyContext(USD, defaultCurrencySet, Nil)
     val d = 10d
