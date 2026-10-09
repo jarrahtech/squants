@@ -29,6 +29,11 @@ libraryDependencies += "com.jarrahtechnology" %% "squants" % "2.0.0" // %%% in a
   `squantsIronNative` for the Iron module.
 - Run the full test suite with `sbt testFull`. In sbt 2 `test` is incremental and its results are cached on disk, so
   `sbt test` can legitimately report "No tests to run". CI uses `testFull`.
+- Benchmarks live in `bench/` (sbt project `squantsBench`, [JMH](https://github.com/openjdk/jmh) through `sbt-jmh`).
+  Run them with `sbt "squantsBench/Jmh/run"`, one class with `sbt "squantsBench/Jmh/run ConversionBench"`, or a
+  quick pass with `sbt "squantsBench/Jmh/run -wi 1 -i 1 -f 1"`. They measure the JVM build only and need a JDK (JMH
+  compiles generated Java, so a JRE is not enough). The module is not part of the root aggregate, so `testFull` and
+  `publish` ignore it, and it is never published.
 - Publishing goes to GitHub Packages through plain `build.sbt` settings (`publishSettings`), authenticated by the
   `GITHUB_TOKEN` environment variable. The `sbt-github-packages` plugin has no sbt 2 build and was removed. Published POMs
   carry the same project metadata as the ones sbt 1 produced; the JVM POM no longer lists the unused `scalajs-stubs`
@@ -1772,7 +1777,8 @@ Comments, criticisms, and/or praise are welcome, especially from scientists, eng
 # Release procedure
 
 1. Set `ThisBuild / version` in `build.sbt` and the version quoted in this README.
-2. Run the **Scala Publish** workflow (`.github/workflows/publish.yml`) from the Actions tab. It runs
+2. Check the benchmarks still compile, since CI does not build them: `sbt "squantsBench/Jmh/compile"`.
+3. Run the **Scala Publish** workflow (`.github/workflows/publish.yml`) from the Actions tab. It runs
    `sbt 'testFull; publish'` and publishes every module to GitHub Packages.
 
 To publish from a local checkout instead, run the same sbt command with `GITHUB_TOKEN` set to a token that has

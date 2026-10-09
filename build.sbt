@@ -71,6 +71,16 @@ lazy val squantsIron = crossProject(JSPlatform, JVMPlatform, NativePlatform).
   ).
   nativeSettings(nativeCommonSettings)
 
+// JMH benchmarks for the JVM build: `sbt "squantsBench/Jmh/run"`. Deliberately not in root's aggregate and not published.
+lazy val squantsBench = project.in(file("bench")).
+  dependsOn(squants.jvm).
+  enablePlugins(JmhPlugin).
+  settings(
+    name := "squants-bench",
+    commonSettings,
+    publish / skip := true,
+  )
+
 lazy val squantsJS = squants.js
 lazy val squantsJVM = squants.jvm
 lazy val squantsNative = squants.native
