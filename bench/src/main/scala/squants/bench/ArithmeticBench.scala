@@ -1,19 +1,11 @@
 package squants.bench
 
-import java.util.concurrent.TimeUnit
-
-import org.openjdk.jmh.annotations.*
+import org.openjdk.jmh.annotations.Benchmark
 
 import squants.space.{ Feet, Length, Meters }
 
 /** The operators every Quantity has, with the right operand in the same unit and in a different one */
-@State(Scope.Thread)
-@BenchmarkMode(Array(Mode.AverageTime))
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Warmup(iterations = 5, time = 1)
-@Measurement(iterations = 5, time = 1)
-@Fork(2)
-class ArithmeticBench {
+class ArithmeticBench extends SquantsBench {
   var feet: Length = Feet(12.5)
   var moreFeet: Length = Feet(3.75)
   var meters: Length = Meters(3.25)

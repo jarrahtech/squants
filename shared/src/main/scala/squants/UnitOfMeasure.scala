@@ -99,22 +99,19 @@ trait UnitConverter extends PrimaryConversion { uom: UnitOfMeasure[?] =>
   protected def conversionFactor: Double
 
   /**
-   * Implements the converterTo method as a simple quotient of the value and the multiplier
-   *
-   * Final because Quantity converts through fromPrimary and toPrimary below, which repeat this arithmetic.
-   * A unit that converts some other way extends UnitOfMeasure without this trait.
-   * @return
+   * Converts to this unit as a simple quotient of the value and the multiplier
    */
-  protected final def converterTo: Double => Double = value => value / conversionFactor
+  override private[squants] def fromPrimary(value: Double): Double = value / conversionFactor
 
   /**
-   * Implements the converterFrom method as a simple product of the value and the multiplier
-   * @return
+   * Converts from this unit as a simple product of the value and the multiplier
    */
-  protected final def converterFrom: Double => Double = value => value * conversionFactor
-
-  override private[squants] def fromPrimary(value: Double): Double = value / conversionFactor
   override private[squants] def toPrimary(value: Double): Double = value * conversionFactor
+
+  // Final so that they cannot drift from the two methods above, which are what Quantity converts through.
+  // A unit that converts some other way extends UnitOfMeasure without this trait.
+  protected final def converterTo: Double => Double = fromPrimary(_)
+  protected final def converterFrom: Double => Double = toPrimary(_)
 }
 
 /**

@@ -20,7 +20,7 @@ import squants.time.Frequency
  * The API supports typesafe dimensional analysis, improved domain models and more.
  * All types are immutable and thread-safe.
  *
- * Typedefs and implicits for common usages
+ * Type and value aliases for common usages, and the extension that lets a number lead an expression
  *
  * @author  garyKeorkunian
  * @version 0.1
@@ -91,7 +91,7 @@ extension (n: Int | Long | Double | BigDecimal) {
   def *[A](that: SVector[A]): SVector[A] = that * leadingDouble(n)
   def *[A <: Quantity[A]](that: Price[A]): Price[A] = that * leadingDouble(n)
   def /(that: Time): Frequency = Each(leadingDouble(n)) / that
-  infix def per(that: Time): Frequency = Each(leadingDouble(n)) / that
+  infix def per(that: Time): Frequency = n / that
 }
 
 private def leadingDouble(n: Int | Long | Double | BigDecimal): Double = n match {

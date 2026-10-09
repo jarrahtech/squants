@@ -154,12 +154,7 @@ case class MoneyContext(
    * @return
    * @throws NoSuchExchangeRateException when no exchange rate is available
    */
-  def compare(moneyA: Money, moneyB: Money): Int = {
-    val amountB = convert(moneyB, moneyA.currency).amount
-    if (moneyA.amount > amountB) 1
-    else if (moneyA.amount < amountB) -1
-    else 0
-  }
+  def compare(moneyA: Money, moneyB: Money): Int = moneyA.amount.compare(convert(moneyB, moneyA.currency).amount)
 
   /**
    * Create a copy of this context with additional currencies added to the existing set

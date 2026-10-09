@@ -1,8 +1,6 @@
 package squants.bench
 
-import java.util.concurrent.TimeUnit
-
-import org.openjdk.jmh.annotations.*
+import org.openjdk.jmh.annotations.Benchmark
 
 import squants.space.{ Length, Meters }
 
@@ -10,13 +8,7 @@ import squants.space.{ Length, Meters }
  * Conversions over quantities in every Length unit. A loop over one unit lets the JVM specialise the conversion
  * for it; this is the case where it cannot. Times are for one pass over the whole array.
  */
-@State(Scope.Thread)
-@BenchmarkMode(Array(Mode.AverageTime))
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Warmup(iterations = 5, time = 1)
-@Measurement(iterations = 5, time = 1)
-@Fork(2)
-class MixedUnitBench {
+class MixedUnitBench extends SquantsBench {
   var lengths: Array[Length] = Length.units.toArray.sortBy(_.symbol).map(_(12.5))
   var meters: Length = Meters(3.25)
 

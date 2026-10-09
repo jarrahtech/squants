@@ -1,19 +1,11 @@
 package squants.bench
 
-import java.util.concurrent.TimeUnit
-
-import org.openjdk.jmh.annotations.*
+import org.openjdk.jmh.annotations.Benchmark
 
 import squants.market.*
 
 /** Money across currencies, with a direct exchange rate (USD/JPY) and with one found through USD (EUR/JPY) */
-@State(Scope.Thread)
-@BenchmarkMode(Array(Mode.AverageTime))
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Warmup(iterations = 5, time = 1)
-@Measurement(iterations = 5, time = 1)
-@Fork(2)
-class MoneyBench {
+class MoneyBench extends SquantsBench {
   var context: MoneyContext =
     defaultMoneyContext.withExchangeRates(List(USD / JPY(100), USD / EUR(0.75), USD / GBP(0.6), XAU / USD(1200)))
   var dollars: Money = USD(125.5)
@@ -28,7 +20,6 @@ class MoneyBench {
   @Benchmark def indirectRateLookup: Option[CurrencyExchangeRate] = context.indirectRateFor(EUR, JPY)
   @Benchmark def compareDirectRate: Int = context.compare(dollars, yen)
   @Benchmark def compareIndirectRate: Int = context.compare(euros, yen)
-  @Benchmark def currencyHash: Int = USD.hashCode
   @Benchmark def moneyHash: Int = dollars.hashCode
   @Benchmark def setLookup: Boolean = held.contains(euros)
 }

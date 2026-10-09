@@ -113,7 +113,6 @@ object DimensionlessConversions {
   lazy val thousand: Dimensionless = Each(1e3)
   lazy val million: Dimensionless = Each(1e6)
 
-
   extension [A](n: A)(using num: Numeric[A]) {
     def percent: Dimensionless = Percent(n)
     def each: Dimensionless = Each(n)
@@ -127,12 +126,10 @@ object DimensionlessConversions {
     def thousand: Dimensionless = Each(num.toDouble(n) * 1e3)
     def million: Dimensionless = Each(num.toDouble(n) * 1e6)
   }
+
   /**
-   * Provides an implicit conversion from Dimensionless to Double, allowing a Dimensionless value
+   * Converts a Dimensionless to a Double, allowing a Dimensionless value
    * to be used anywhere a Double (or similar primitive) is required
-   *
-   * @param d Dimensionless
-   * @return
    */
   given dimensionlessToDouble: Conversion[Dimensionless, Double] = _.toEach
 

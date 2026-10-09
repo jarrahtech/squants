@@ -177,10 +177,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * Increments the range's from and to values by an amount equal to the Quantity value of the range
    * @return
    */
-  def inc: QuantityRange[A] = {
-    val size = toQuantity
-    QuantityRange(lower + size, upper + size)
-  }
+  def inc: QuantityRange[A] = inc(toQuantity)
   /** inc */
   def ++() = inc
 
@@ -197,10 +194,7 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * Decrements the range's from and to value by an amount equal to the Quantity value of the range
    * @return
    */
-  def dec: QuantityRange[A] = {
-    val size = toQuantity
-    QuantityRange(lower - size, upper - size)
-  }
+  def dec: QuantityRange[A] = dec(toQuantity)
   /** dec */
   def --() = dec
 

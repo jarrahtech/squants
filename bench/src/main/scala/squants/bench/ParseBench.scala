@@ -1,8 +1,6 @@
 package squants.bench
 
-import java.util.concurrent.TimeUnit
-
-import org.openjdk.jmh.annotations.*
+import org.openjdk.jmh.annotations.Benchmark
 
 import scala.util.Try
 
@@ -11,13 +9,7 @@ import squants.space.Length
 import squants.thermal.Temperature
 
 /** Parsing quantities from strings */
-@State(Scope.Thread)
-@BenchmarkMode(Array(Mode.AverageTime))
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Warmup(iterations = 5, time = 1)
-@Measurement(iterations = 5, time = 1)
-@Fork(2)
-class ParseBench {
+class ParseBench extends SquantsBench {
   var lengthString: String = "12.5 km"
   var temperatureString: String = "300 K"
   var moneyString: String = "12.50 USD"

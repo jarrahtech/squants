@@ -177,7 +177,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
     case x: Quantity[_] if x.dimension == dimension =>
       val other = x.asInstanceOf[Quantity[A]]
       if (other.unit == unit) value == other.value
-      else to(dimension.primaryUnit) == other.to(dimension.primaryUnit)
+      else unit.toPrimary(value) == other.unit.toPrimary(other.value)
     case _ => false
   }
 
@@ -186,9 +186,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    *
    * @return
    */
-  override def hashCode(): Int = {
-    Objects.hash(dimension, Double.box(to(dimension.primaryUnit)))
-  }
+  override def hashCode(): Int = Objects.hash(dimension, Double.box(unit.toPrimary(value)))
 
   /**
    * Returns boolean result of approximate equality comparison
@@ -278,7 +276,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    */
   infix def in(uom: UnitOfMeasure[A]): A = uom match {
     case u if u == this.unit => this
-    case _ => uom(uom.fromPrimary(this.unit.toPrimary(value)))
+    case _ => uom(to(uom))
   }
 
   /**

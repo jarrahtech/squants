@@ -1,19 +1,11 @@
 package squants.bench
 
-import java.util.concurrent.TimeUnit
-
-import org.openjdk.jmh.annotations.*
+import org.openjdk.jmh.annotations.Benchmark
 
 import squants.space.{ Feet, Length, Meters, Yards }
 
 /** Quantity.to and Quantity.in, within one unit and across units */
-@State(Scope.Thread)
-@BenchmarkMode(Array(Mode.AverageTime))
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Warmup(iterations = 5, time = 1)
-@Measurement(iterations = 5, time = 1)
-@Fork(2)
-class ConversionBench {
+class ConversionBench extends SquantsBench {
   var feet: Length = Feet(12.5)
   var meters: Length = Meters(3.25)
 
