@@ -65,6 +65,17 @@ import scala.util.{ Failure, Success, Try }
  *
  * The toDegrees(unit) methods are implemented to use Degree conversions.
  *
+ * Multiplying or dividing by a number (`Celsius(20) / 2`) works on the value in the temperature's own scale,
+ * that is, it treats the temperature as a number of degrees: `Celsius(20) / 2` is `Celsius(10)`.
+ *
+ * Dividing one temperature by another (`/`, `%` and `/%`) is only supported when both are on an absolute scale
+ * (Kelvin or Rankine, in any mix), where the answer is the same whether the operands are read as temperatures or as
+ * numbers of degrees. On Celsius or Fahrenheit the two readings differ (20°C / 10°C is 1.035 as temperatures and 2 as
+ * degrees), so the operation throws an UnsupportedOperationException instead of choosing. Say which is meant:
+ *
+ * a.toKelvinScale / b.toKelvinScale     // ratio of two temperatures
+ * a.toKelvinDegrees / b.toKelvinDegrees // ratio of two temperature differences
+ *
  * @author  garyKeorkunian
  * @since   0.1
  *
@@ -78,6 +89,38 @@ final class Temperature private (val value: Double, val unit: TemperatureScale)
 
   override infix def plus(that: Temperature): Temperature = Temperature(this.value + that.convert(unit, withOffset = false).value, unit)
   override infix def minus(that: Temperature): Temperature = Temperature(this.value - that.convert(unit, withOffset = false).value, unit)
+
+  /**
+   * The ratio of two temperatures, which must both be on an absolute scale
+   * @throws scala.UnsupportedOperationException if either temperature is in Celsius or Fahrenheit
+   */
+  override infix def divide(that: Temperature): Double = {
+    requireAbsolute("divide", that)
+    super.divide(that)
+  }
+
+  /**
+   * The remainder of dividing two temperatures, which must both be on an absolute scale
+   * @throws scala.UnsupportedOperationException if either temperature is in Celsius or Fahrenheit
+   */
+  override infix def remainder(that: Temperature): Double = {
+    requireAbsolute("remainder", that)
+    super.remainder(that)
+  }
+
+  /**
+   * The whole quotient and remainder of dividing two temperatures, which must both be on an absolute scale
+   * @throws scala.UnsupportedOperationException if either temperature is in Celsius or Fahrenheit
+   */
+  override infix def divideAndRemainder(that: Temperature): (Double, Temperature) = {
+    requireAbsolute("divideAndRemainder", that)
+    super.divideAndRemainder(that)
+  }
+
+  private def requireAbsolute(operation: String, that: Temperature): Unit =
+    if (!unit.isAbsolute || !that.unit.isAbsolute) throw new UnsupportedOperationException(
+      s"$operation is only supported between temperatures on an absolute scale (Kelvin or Rankine), not $this and $that - " +
+        "use a.toKelvinScale / b.toKelvinScale for a ratio of temperatures, or a.toKelvinDegrees / b.toKelvinDegrees for a ratio of temperature differences")
 
   def *(that: ThermalCapacity): squants.energy.Energy = Joules(this.toKelvinScale * that.toJoulesPerKelvin)
 
@@ -176,6 +219,9 @@ object Temperature extends Dimension[Temperature] with BaseDimension {
  */
 sealed trait TemperatureScale extends UnitOfMeasure[Temperature] {
   def self: TemperatureScale
+
+  /** True for a scale whose zero is absolute zero (Kelvin and Rankine) */
+  def isAbsolute: Boolean = false
   def apply[A](n: A)(using num: Numeric[A]): Temperature = Temperature(num.toDouble(n), this)
 }
 
@@ -198,12 +244,14 @@ object Fahrenheit extends TemperatureScale {
 object Kelvin extends TemperatureScale with PrimaryUnit with SiBaseUnit {
   val symbol = "K"
   val self = this
+  override val isAbsolute = true
   def apply(temperature: Temperature): Temperature = temperature.inKelvin
 }
 
 object Rankine extends TemperatureScale {
   val symbol = "°R"
   val self = this
+  override val isAbsolute = true
   protected def converterFrom: Double => Double = TemperatureConversions.rankineToKelvinScale(_)
   protected def converterTo: Double => Double = TemperatureConversions.kelvinToRankineScale(_)
   def apply(temperature: Temperature): Temperature = temperature.in(Rankine)

@@ -67,6 +67,11 @@ have explicit result types. It is binary incompatible with 1.10.0, and these sou
   `squants.market.defaultMoneyContext`, `squants.energy.KineticEnergy`).
 - **`Quantity.equals`** compares quantities in different units in the primary unit, as `hashCode` does, so it is
   symmetric. A few cross-unit pairs that differed only by rounding change result; use `approx` for those.
+- **`Temperature / Temperature`** (and `%`, `/%`) throws `UnsupportedOperationException` unless both temperatures are in
+  Kelvin or Rankine. It used to divide in the left operand's scale, so `Celsius(20) / Celsius(10)` was 2 and
+  `Celsius(20) / Kelvin(283.15)` was also 2. Write `a.toKelvinScale / b.toKelvinScale` for a ratio of temperatures or
+  `a.toKelvinDegrees / b.toKelvinDegrees` for a ratio of differences. `TemperatureScale.isAbsolute` tells the scales apart.
+  `Temperature * Double`, `/ Double`, `+` and `-` are unchanged.
 - **`Currency.hashCode`** values changed.
 - **`UnitConverter.converterTo` and `converterFrom` are final.** A unit with its own conversion extends `UnitOfMeasure`
   without `UnitConverter` and implements the two converters itself, as the temperature scales do.

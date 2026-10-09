@@ -211,6 +211,42 @@ class TemperatureSpec extends AnyFlatSpec
     Rankine(10) * 5 should be(Rankine(50))
   }
 
+  they should "divide by a Temperature when both are on an absolute scale" in {
+    Kelvin(293.15) / Kelvin(283.15) should be(293.15 / 283.15)
+    Rankine(600) / Rankine(300) should be(2d)
+    (Kelvin(300) divide Rankine(270)) should be(2d +- 1e-12)
+    Rankine(540) / Kelvin(150) should be(2d +- 1e-12)
+
+    Kelvin(7) % Kelvin(2) should be(1d)
+    Kelvin(7) /% Kelvin(2) should be((3d, Kelvin(1)))
+  }
+
+  they should "give the same ratio whichever absolute scales the two Temperatures are in" in {
+    for (a <- Seq(0.5, 278d, 5772d); b <- Seq(1d, 283.15, 4000d)) {
+      val expected = a / b
+      for (x <- Seq(Kelvin(a), Kelvin(a).in(Rankine)); y <- Seq(Kelvin(b), Kelvin(b).in(Rankine)))
+        withClue(s"$x / $y: ") { x / y should be(expected +- expected * 1e-12) }
+    }
+  }
+
+  they should "refuse to divide by a Temperature when either is on a scale that is not absolute" in {
+    val operands = Seq(
+      Celsius(20) -> Celsius(10), Fahrenheit(68) -> Fahrenheit(50), Celsius(20) -> Fahrenheit(50),
+      Celsius(20) -> Kelvin(283.15), Kelvin(293.15) -> Celsius(10), Fahrenheit(68) -> Rankine(500))
+    for ((a, b) <- operands) withClue(s"$a and $b: ") {
+      an[UnsupportedOperationException] should be thrownBy a / b
+      an[UnsupportedOperationException] should be thrownBy a % b
+      an[UnsupportedOperationException] should be thrownBy a /% b
+    }
+    the[UnsupportedOperationException] thrownBy Celsius(20) / Kelvin(283.15) should have message
+      "divide is only supported between temperatures on an absolute scale (Kelvin or Rankine), not 20.0°C and 283.15 K - " +
+      "use a.toKelvinScale / b.toKelvinScale for a ratio of temperatures, or a.toKelvinDegrees / b.toKelvinDegrees for a ratio of temperature differences"
+  }
+
+  they should "know which scales are absolute" in {
+    Seq(Kelvin, Rankine, Celsius, Fahrenheit).map(_.isAbsolute) should be(Seq(true, true, false, false))
+  }
+
   they should "properly divide Double (Degrees)" in {
     Kelvin(10) / 5 should be(Kelvin(2))
     Fahrenheit(10) / 5 should be(Fahrenheit(2))
