@@ -19,7 +19,7 @@ package squants
  *
  * @tparam A The type of Quantity being measured
  */
-trait UnitOfMeasure[A <: Quantity[A]] extends Serializable {
+trait UnitOfMeasure[A <: Quantity[A]] extends PrimaryConversion with Serializable {
   /**
    * Factory method for creating instances of a Quantity in this UnitOfMeasure
    * @param n N - the Quantity's value in terms of this UnitOfMeasure
@@ -70,12 +70,26 @@ trait UnitOfMeasure[A <: Quantity[A]] extends Serializable {
    * @return
    */
   final def convertFrom[N](n: N)(using num: Numeric[N]): Double = converterFrom(num.toDouble(n))
+
+  private[squants] def fromPrimary(value: Double): Double = converterTo(value)
+  private[squants] def toPrimary(value: Double): Double = converterFrom(value)
+}
+
+/**
+ * The conversions Quantity itself uses, to and from the Quantity's [[squants.PrimaryUnit]].
+ *
+ * They take the Double directly, where convertTo and convertFrom box it to pass it through Numeric, and a
+ * [[squants.UnitConverter]] implements them as plain arithmetic, with no function value built per conversion.
+ */
+trait PrimaryConversion {
+  private[squants] def fromPrimary(value: Double): Double
+  private[squants] def toPrimary(value: Double): Double
 }
 
 /**
  * A Unit of Measure that require a simple multiplier for converting to and from the underlying value's unit
  */
-trait UnitConverter { uom: UnitOfMeasure[?] =>
+trait UnitConverter extends PrimaryConversion { uom: UnitOfMeasure[?] =>
 
   /**
    * Defines a multiplier value relative to the Quantity's [[squants.PrimaryUnit]]
@@ -86,15 +100,21 @@ trait UnitConverter { uom: UnitOfMeasure[?] =>
 
   /**
    * Implements the converterTo method as a simple quotient of the value and the multiplier
+   *
+   * Final because Quantity converts through fromPrimary and toPrimary below, which repeat this arithmetic.
+   * A unit that converts some other way extends UnitOfMeasure without this trait.
    * @return
    */
-  protected def converterTo: Double => Double = value => value / conversionFactor
+  protected final def converterTo: Double => Double = value => value / conversionFactor
 
   /**
    * Implements the converterFrom method as a simple product of the value and the multiplier
    * @return
    */
-  protected def converterFrom: Double => Double = value => value * conversionFactor
+  protected final def converterFrom: Double => Double = value => value * conversionFactor
+
+  override private[squants] def fromPrimary(value: Double): Double = value / conversionFactor
+  override private[squants] def toPrimary(value: Double): Double = value * conversionFactor
 }
 
 /**
@@ -107,16 +127,10 @@ trait UnitConverter { uom: UnitOfMeasure[?] =>
 trait PrimaryUnit extends UnitConverter { uom: UnitOfMeasure[?] =>
 
   /**
-   * Implements the converterTo method to just return the underlying value
-   * @return
+   * Conversion to and from the primary unit just returns the underlying value
    */
-  override final def converterTo: Double => Double = value => value
-
-  /**
-   * Implements the converterFrom method to just return the underlying value
-   * @return
-   */
-  override final def converterFrom: Double => Double = value => value
+  override private[squants] final def fromPrimary(value: Double): Double = value
+  override private[squants] final def toPrimary(value: Double): Double = value
 
   /**
    * Value unit multiplier is always equal to 1

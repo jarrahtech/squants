@@ -68,6 +68,10 @@ have explicit result types. It is binary incompatible with 1.10.0, and these sou
 - **`Quantity.equals`** compares quantities in different units in the primary unit, as `hashCode` does, so it is
   symmetric. A few cross-unit pairs that differed only by rounding change result; use `approx` for those.
 - **`Currency.hashCode`** values changed.
+- **`UnitConverter.converterTo` and `converterFrom` are final.** A unit with its own conversion extends `UnitOfMeasure`
+  without `UnitConverter` and implements the two converters itself, as the temperature scales do.
+- `QuantityRange`'s `inc`, `dec`, `toQuantity`, `toSeq` and `toList`, and `QuantityBounds.toQuantity`, are `def`s (they were
+  `lazy val`s). Source compatible.
 - A `Time` in a unit `Duration` lacks (`EarthYears`) converts to a `Duration` instead of throwing `MatchError`.
 
 ### Iron refinement (`squants-iron`)

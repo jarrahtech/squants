@@ -42,7 +42,7 @@ final case class QuantityBounds[A <: Quantity[A]](lower: A, upper: A) {
   /** The same bounds as a [[QuantityRange]], or None for a point, which a range (lower < upper) cannot represent. */
   def toRange: Option[QuantityRange[A]] = if (isPoint) None else Some(QuantityRange(lower, upper))
 
-  lazy val toQuantity: A = upper - lower
+  def toQuantity: A = upper - lower
   def toSeq: Seq[A] = Seq(lower, upper)
   def toList: List[A] = List(lower, upper)
   def toTuple: (lower: A, upper: A) = (lower, upper)

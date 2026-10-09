@@ -182,16 +182,16 @@ sealed trait TemperatureScale extends UnitOfMeasure[Temperature] {
 object Celsius extends TemperatureScale {
   val symbol = "°C"
   val self = this
-  protected def converterFrom = TemperatureConversions.celsiusToKelvinScale
-  protected def converterTo = TemperatureConversions.kelvinToCelsiusScale
+  protected def converterFrom: Double => Double = TemperatureConversions.celsiusToKelvinScale(_)
+  protected def converterTo: Double => Double = TemperatureConversions.kelvinToCelsiusScale(_)
   def apply(temperature: Temperature): Temperature = temperature.inCelsius
 }
 
 object Fahrenheit extends TemperatureScale {
   val symbol = "°F"
   val self = this
-  protected def converterFrom = TemperatureConversions.fahrenheitToKelvinScale
-  protected def converterTo = TemperatureConversions.kelvinToFahrenheitScale
+  protected def converterFrom: Double => Double = TemperatureConversions.fahrenheitToKelvinScale(_)
+  protected def converterTo: Double => Double = TemperatureConversions.kelvinToFahrenheitScale(_)
   def apply(temperature: Temperature): Temperature = temperature.inFahrenheit
 }
 
@@ -204,8 +204,8 @@ object Kelvin extends TemperatureScale with PrimaryUnit with SiBaseUnit {
 object Rankine extends TemperatureScale {
   val symbol = "°R"
   val self = this
-  protected def converterFrom = TemperatureConversions.rankineToKelvinScale
-  protected def converterTo = TemperatureConversions.kelvinToRankineScale
+  protected def converterFrom: Double => Double = TemperatureConversions.rankineToKelvinScale(_)
+  protected def converterTo: Double => Double = TemperatureConversions.kelvinToRankineScale(_)
   def apply(temperature: Temperature): Temperature = temperature.in(Rankine)
 }
 

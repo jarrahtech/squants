@@ -268,7 +268,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    */
   infix def to(uom: UnitOfMeasure[A]): Double = uom match {
     case u if u == this.unit => value
-    case _ => uom.convertTo(this.unit.convertFrom(value))
+    case _ => uom.fromPrimary(this.unit.toPrimary(value))
   }
 
   /**
@@ -278,7 +278,7 @@ abstract class Quantity[A <: Quantity[A]] extends Serializable with Ordered[A] {
    */
   infix def in(uom: UnitOfMeasure[A]): A = uom match {
     case u if u == this.unit => this
-    case _ => uom(uom.convertTo(this.unit.convertFrom(value)))
+    case _ => uom(uom.fromPrimary(this.unit.toPrimary(value)))
   }
 
   /**

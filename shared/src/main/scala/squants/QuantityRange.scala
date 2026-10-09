@@ -36,8 +36,9 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
   infix def times(multiple: Double): QuantitySeries[A] = {
     val remainder = multiple % 1
     val count = ((multiple - remainder) / 1).toInt
-    val ranges = (0 until count).map(n => QuantityRange(lower + (toQuantity * n.toDouble), upper + (toQuantity * n.toDouble)))
-    if (remainder > 0) ranges :+ QuantityRange(lower + (toQuantity * count.toDouble), lower + (toQuantity * (count + remainder)))
+    val size = toQuantity
+    val ranges = (0 until count).map(n => QuantityRange(lower + (size * n.toDouble), upper + (size * n.toDouble)))
+    if (remainder > 0) ranges :+ QuantityRange(lower + (size * count.toDouble), lower + (size * (count + remainder)))
     else ranges
   }
   /** times */
@@ -176,7 +177,10 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * Increments the range's from and to values by an amount equal to the Quantity value of the range
    * @return
    */
-  lazy val inc: QuantityRange[A] = QuantityRange(lower + toQuantity, upper + toQuantity)
+  def inc: QuantityRange[A] = {
+    val size = toQuantity
+    QuantityRange(lower + size, upper + size)
+  }
   /** inc */
   def ++() = inc
 
@@ -193,7 +197,10 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * Decrements the range's from and to value by an amount equal to the Quantity value of the range
    * @return
    */
-  lazy val dec: QuantityRange[A] = QuantityRange(lower - toQuantity, upper - toQuantity)
+  def dec: QuantityRange[A] = {
+    val size = toQuantity
+    QuantityRange(lower - size, upper - size)
+  }
   /** dec */
   def --() = dec
 
@@ -311,17 +318,17 @@ case class QuantityRange[A <: Quantity[A]](lower: A, upper: A) {
    * Returns a quantity that is equal to the difference between the `from` and `to`
    * @return
    */
-  lazy val toQuantity: A = upper - lower
+  def toQuantity: A = upper - lower
 
   /**
    * Returns this Range's boundary values as a Seq[A] of the two
    * @return
    */
-  lazy val toSeq: Seq[A] = Seq(lower, upper)
+  def toSeq: Seq[A] = Seq(lower, upper)
 
   /**
    * Return this Range's boundary values as List[A] or the two
    * @return
    */
-  lazy val toList: List[A] = List(lower, upper)
+  def toList: List[A] = List(lower, upper)
 }
